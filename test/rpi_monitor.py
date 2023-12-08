@@ -40,7 +40,11 @@ if __name__ == "__main__":
 
     # execute client
     # command = f'bash run_client.sh 1'
+    # start_c1 = timeit.default_timer()
+    
+
     # command = f'bash run_client.sh 2'
+    # start_c2 = timeit.default_timer()
 
     # execute PyMonsoon
 
