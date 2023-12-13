@@ -8,7 +8,7 @@ pip install monsoon
 '''
 class MyMon():
     
-    def __init__(self, mode, node, vout, channel):
+    def __init__(self, node, vout, channel, mode = "PyMonsoon"):
         self.mode = mode
         self.node = node
         self.vout = vout
