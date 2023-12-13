@@ -6,7 +6,7 @@ import datetime
 '''
 pip install monsoon
 '''
-class MyMon():
+class PowerMon():
     
     def __init__(self, node, vout, channel, mode = "PyMonsoon"):
         self.mode = mode
