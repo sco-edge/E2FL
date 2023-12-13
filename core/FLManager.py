@@ -2,6 +2,7 @@ import serial
 import time
 import timeit
 import logging
+
 logging.basicConfig(
     format = '%(asctime)s:%(levelname)s:%(message)s',
     datefmt = '%m\%d\%Y %I:%M:%S %p',
