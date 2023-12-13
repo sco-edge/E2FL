@@ -1,6 +1,7 @@
 import monsoon.LVPM as LVPM
 import monsoon.sampleEngine as sampleEngine
 import monsoon.Operations as op
+import datetime
 
 '''
 pip install monsoon
@@ -12,33 +13,54 @@ class MyMon():
         self.vout = vout
         self.channel = channel
         if mode == "PyMonsoon":
+            init_run_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            numSamples = 5000 # sample for one second
+
             Mon = LVPM.Monsoon()
             Mon.setup_usb()
 
-            Mon.setVout(5.5)
+            Mon.setVout(vout) # vout = 5.5V
             engine = sampleEngine.SampleEngine(Mon)
-            engine.enableCSVOutput("E2FL_20231208.csv")
+            engine.enableCSVOutput("E2FL_"+init_run_timestamp+".csv")
             engine.ConsoleOutput(True)
-            numSamples = 5000 # sample for one second
             engine.startSampling(numSamples)
 
-            #Disable Main Channels
-            engine.disableChannel(sampleEngine.channels.MainCurrent)
-            engine.disableChannel(sampleEngine.channels.MainVoltage)
+            # The main power regulator can source 3.0 A of continuous current and 4.5 A of peak current
+            # Power up with no current limit for 20 ms, run continuously with the current limit set to 4.6 A
+            # If you require a higher measurement voltage, the AUX channel can support up to 5.5V.
+            # If you require larger sustaned currents, the AUX channel can support up to 4.5 Amps continuous current
+            # If it is necessary to vary voltage continuously, without ending the sampling run.
+            if vout >= 4.6 and vout <= 5.5:
+                #Disable Main channels
+                engine.disableChannel(sampleEngine.channels.MainCurrent)
+                engine.disableChannel(sampleEngine.channels.MainVoltage)
 
-            #Enable USB channels
-            engine.enableChannel(sampleEngine.channels.USBCurrent)
-            engine.enableChannel(sampleEngine.channels.USBVoltage)
+                #Enable USB channels
+                engine.enableChannel(sampleEngine.channels.USBCurrent)
+                engine.enableChannel(sampleEngine.channels.USBVoltage)
 
-            #Enable AUX channels
-            engine.enableChannel(sampleEngine.channels.AuxCurrent)
+                #Enable AUX channels
+                engine.enableChannel(sampleEngine.channels.AuxCurrent)
 
-            #Set USB Pasthrough mode to 'on', since it defaults to 'auto' 
-            #and will turn off when sampling mode begins
-            Mon.setUSBPassthroughMode(op.USB_Passthrough.On)
+                #Set USB Pasthrough mode to 'on', since it defaults to 'auto' 
+                #and will turn off when sampling mode begins
+                Mon.setUSBPassthroughMode(op.USB_Passthrough.On)
+            elif vout < 4.6:
+                #Disable USB channels
+                engine.disableChannel(sampleEngine.channels.USBCurrent)
+                engine.disableChannel(sampleEngine.channels.USBVoltage)
 
-            engine.enableCSVOutput("USB Example.csv")
-            engine.startSampling(numSamples)
+                #Disable AUX channels
+                engine.disableChannel(sampleEngine.channels.AuxCurrent)
+
+                #Enable Main channels
+                engine.enableChannel(sampleEngine.channels.MainCurrent)
+                engine.enableChannel(sampleEngine.channels.Mainoltage)
+                
+                #Set USB Pasthrough mode to 'auto' as default
+                Mon.setUSBPassthroughMode(op.USB_Passthrough.Auto)
+            else:
+                raise Exception("The required voltage is not supported on Monsoon Power Monitor.")
 
             #Don't stop based on sample count, continue until 
             #the trigger conditions have been satisfied.
@@ -49,15 +71,15 @@ class MyMon():
 
             #Stop when we drop below 10 mA
             engine.setStopTrigger(sampleEngine.triggers.LESS_THAN,10)
+                    
+            #Start and stop judged by the channel
+            if vout >= 4.6 and vout <= 5.5: # AUX channel
+                engine.setTriggerChannel(sampleEngine.channels.AUXCurrent)
+            else:  # main channel
+                engine.setTriggerChannel(sampleEngine.channels.MainCurrent)
 
-            #Start and stop judged by the main channel
-            engine.setTriggerChannel(sampleEngine.channels.MainCurrent)
-
-            #Start sampling
-            engine.startSampling(numSamples)
-
-            engine.disableCSVOutput()
-            engine.startSampling(5000)
+            '''
+            # engine.disableCSVOutput()
             samples = engine.getSamples()
 
             #Samples are stored in order, indexed sampleEngine.channels values
@@ -65,6 +87,7 @@ class MyMon():
                 timeStamp = samples[sampleEngine.channels.timeStamp][i]
                 Current = samples[sampleEngine.channels.timeStamp][i]
                 print("Main current at time " + repr(timeStamp) + " is: " + repr(Current) + "mA")
-            
+            '''
+    def 
             
 
