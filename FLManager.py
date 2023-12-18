@@ -1,15 +1,16 @@
 import serial
 import time
 import timeit
-import logging
+import log.ClientTimer as cliTimer
 import core.PerfEstimator as PerfEST
 
+'''
 logging.basicConfig(
     format = '%(asctime)s:%(levelname)s:%(message)s',
     datefmt = '%m\%d\%Y %I:%M:%S %p',
     level = logging.DEBUG
 )
-
+'''
 def execute_shell_script(serial_port, script_path):
     ser = serial.Serial(serial_port, baudrate=9600, timeout=1)
 
@@ -43,14 +44,16 @@ if __name__ == "__main__":
     # execute server on local edge server
     # command = f'bash run_server.sh'
 
-
     # execute client
     # command = f'bash run_client.sh 1'
     # start_c1 = timeit.default_timer()
+    device1_logger = cliTimer.Timer()
+    device1_logger.log_event("FL start")
     
-
     # command = f'bash run_client.sh 2'
     # start_c2 = timeit.default_timer()
+    device2_logger = cliTimer.Timer()
+    device2_logger.log_event("FL start")
 
     # execute PyMonsoon
 
@@ -60,6 +63,8 @@ if __name__ == "__main__":
     # start = timeit.default_timer()
     # stop = timeit.default_timer()
     # duration = stop - start
+    device1_logger.log_event("FL end")
+    device2_logger.log_event("FL end")
 
 
 '''
