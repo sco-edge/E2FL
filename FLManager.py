@@ -2,7 +2,7 @@ import serial
 import time
 import timeit
 import logging
-import PerfEstimator
+import core.PerfEstimator
 
 logging.basicConfig(
     format = '%(asctime)s:%(levelname)s:%(message)s',
