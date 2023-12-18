@@ -1,4 +1,4 @@
-import time
+import datetime
 import logging
 
 
@@ -11,6 +11,7 @@ class Timer():
         self.edgeDev_name = edgeDev_name
         self.log_entries = []
 
-
-    def startTimer(self):
-        self.
+    def log_event(self, event_name):
+        timestamp = datetime.datetime.now()
+        log_entry = {'device_name': self.edgeDev_name, 'event_name': event_name, 'timestamp': timestamp}
+        self.log_entries.append(log_entry)
