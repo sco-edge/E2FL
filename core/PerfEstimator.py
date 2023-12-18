@@ -27,7 +27,7 @@ class WirlENV:
     CSI: np.complex
     DR: float
 
-class PerfEST():
+class DevEST():
     '''
     * Performance Estimator for each device.
     '''
