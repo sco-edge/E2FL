@@ -42,10 +42,15 @@ if __name__ == "__main__":
     
     execute_shell_script(rpi_serial_port, shell_path)
 
+    # execute PyMonsoon
+    pymon = EMON.PowerMon('dev1', 5.5, mode = "PyMonsoon")
+
     # execute server on local edge server
     # command = f'bash run_server.sh'
     server_logger = cliTimer.Timer()
     server_logger.log_event("FL start")
+    pymon.setCSVOutput(bool=True)
+    pymon.setTrigger(bool=True)
 
     # execute client
     # command = f'bash run_client.sh 1'
@@ -57,9 +62,6 @@ if __name__ == "__main__":
     # start_c2 = timeit.default_timer()
     device2_logger = cliTimer.Timer()
     device2_logger.log_event("FL start")
-
-    # execute PyMonsoon
-    pymon = EMON.PowerMon('dev1', 5.5, mode = "PyMonsoon")
 
     # = PerfEST()
 
