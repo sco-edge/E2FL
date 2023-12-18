@@ -15,3 +15,6 @@ class Timer():
         timestamp = datetime.datetime.now()
         log_entry = {'device_name': self.edgeDev_name, 'event_name': event_name, 'timestamp': timestamp}
         self.log_entries.append(log_entry)
+    
+    def get_log_entries(self):
+        return self.log_entries
