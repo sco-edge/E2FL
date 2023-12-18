@@ -50,7 +50,7 @@ if __name__ == "__main__":
     server_logger = cliTimer.Timer()
     server_logger.log_event("FL start")
     pymon.setCSVOutput(bool=True)
-    pymon.setTrigger(bool=True)
+    pymon.setTrigger(bool=True) # startSampling
 
     # execute client
     # command = f'bash run_client.sh 1'
@@ -69,9 +69,10 @@ if __name__ == "__main__":
     # start = timeit.default_timer()
     # stop = timeit.default_timer()
     # duration = stop - start
-    server_logger.log_event("FL end")
+    pymon.stopSampling() # startSampling
     device1_logger.log_event("FL end")
     device2_logger.log_event("FL end")
+    server_logger.log_event("FL end")
 
 
 '''
