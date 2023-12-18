@@ -70,7 +70,7 @@ class PowerMon():
                 print("Main current at time " + repr(timeStamp) + " is: " + repr(Current) + "mA")
             '''
 
-    def set_trigger(self, bool, numSamples = 5000):
+    def setTrigger(self, bool, numSamples = 5000):
         if bool: # trigger mode
             #Don't stop based on sample count, continue until 
             #the trigger conditions have been satisfied.

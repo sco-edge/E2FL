@@ -2,22 +2,54 @@ from dataclasses import dataclass
 import numpy as np
 
 '''
+"SERVER Perspective"
 Collects RSSI and CSI from edge devices. 
 Estimates conditions of wireless environment from the measurements.
 Predicts the federated learning performance (energy consumption, learning time, so on).
 '''
 
 @dataclass #https://www.daleseo.com/python-dataclasses/
+
+
 class WirlENV:
     '''
-    Those measurements are collected on a per-packet basis.
-    Pkt means 
-    
+    * Those measurements are collected on a per-packet basis.
+    Pkt means the received packet index
+    RSSI means received signal strength index.
+    CSI means channel state information.
+    DR means transmission data rate
     '''
     Pkt: int
     RSSI: float
     CSI: np.complex
+    DR: float
 
 class PerfEST():
-    def __init__(self, RSSI, CSI, )
+    '''
+    * Performance Estimator for each device
+    '''
+    def __init__(self, edgeDev_name):
+        self.WirlENV = []
+        self.pktIdx = 0
+        self.edgeDev_name = edgeDev_name
+        self.H = 4
+
+    def addWirl(self, RSSI, CSI, DR):
+        self.WirlENV.append(WirlENV(Pkt = self.pktIdx, RSSI = RSSI, CSI = CSI, DR = DR))
+        self.pktIdx = self.pktIdx + 1
+    
+    def getWirl(self, pktIdx):
+        return (self.edgeDev_name, self.WirlENV[pktIdx])
+
+    def CalcH(self):
+        '''
+        calculates {H} from the wireless environmetns and transmission data rate.
+        {H} is the number of local training iterations.
+        '''
         
+        # estimates the channel conditions from the WirlENV list
+
+        # update H
+
+        return self.H
+
