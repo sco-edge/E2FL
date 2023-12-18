@@ -8,9 +8,12 @@ Estimates conditions of wireless environment from the measurements.
 Predicts the federated learning performance (energy consumption, learning time, so on).
 '''
 
+energy_profile = {
+    'RPi 3B+': 0.3
+}
+
+
 @dataclass #https://www.daleseo.com/python-dataclasses/
-
-
 class WirlENV:
     '''
     * Those measurements are collected on a per-packet basis.
@@ -26,7 +29,7 @@ class WirlENV:
 
 class PerfEST():
     '''
-    * Performance Estimator for each device
+    * Performance Estimator for each device.
     '''
     def __init__(self, edgeDev_name):
         self.WirlENV = []
@@ -53,3 +56,5 @@ class PerfEST():
 
         return self.H
 
+    def energyEST(self):
+        return 0
