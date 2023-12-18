@@ -3,6 +3,7 @@ import time
 import timeit
 import log.ClientTimer as cliTimer
 import core.PerfEstimator as PerfEST
+import power.Monitor as EMON
 
 '''
 logging.basicConfig(
@@ -58,6 +59,7 @@ if __name__ == "__main__":
     device2_logger.log_event("FL start")
 
     # execute PyMonsoon
+    pymon = EMON.PowerMon('dev1', 5.5, mode = "PyMonsoon")
 
     # = PerfEST()
 

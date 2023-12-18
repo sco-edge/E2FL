@@ -8,11 +8,10 @@ pip install monsoon
 '''
 class PowerMon():
     
-    def __init__(self, node, vout, channel, mode = "PyMonsoon"):
+    def __init__(self, node, vout, mode = "PyMonsoon"):
         self.mode = mode
         self.node = node
         self.vout = vout
-        self.channel = channel
         if mode == "PyMonsoon":
             Mon = LVPM.Monsoon()
             Mon.setup_usb()
