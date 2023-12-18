@@ -2,6 +2,7 @@ import serial
 import time
 import timeit
 import logging
+import PerfEstimator
 
 logging.basicConfig(
     format = '%(asctime)s:%(levelname)s:%(message)s',
@@ -26,7 +27,13 @@ def execute_shell_script(serial_port, script_path):
     finally:
         ser.close()
         
+def updatePolicy():
+    comp_round = 0
+    comm_round = 0
 
+
+
+    return (comp_round,comm_round)
 
 if __name__ == "__main__":
     # Configuration
