@@ -43,6 +43,8 @@ if __name__ == "__main__":
 
     # execute server on local edge server
     # command = f'bash run_server.sh'
+    server_logger = cliTimer.Timer()
+    server_logger.log_event("FL start")
 
     # execute client
     # command = f'bash run_client.sh 1'
