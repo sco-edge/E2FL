@@ -44,7 +44,7 @@ class PerfEST():
     def getWirl(self, pktIdx):
         return (self.edgeDev_name, self.WirlENV[pktIdx])
 
-    def CalcH(self):
+    def calcH(self):
         '''
         calculates {H} from the wireless environmetns and transmission data rate.
         {H} is the number of local training iterations.
@@ -56,5 +56,9 @@ class PerfEST():
 
         return self.H
 
-    def energyEST(self):
+    def estEslope(self):
+        '''
+        estimates the slope of energy consumption according to device type and wireless condition for the global round.
+        '''
         return 0
+
