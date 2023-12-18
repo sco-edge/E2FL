@@ -2,7 +2,7 @@ import serial
 import time
 import timeit
 import logging
-import core.PerfEstimator
+import core.PerfEstimator as PerfEST
 
 logging.basicConfig(
     format = '%(asctime)s:%(levelname)s:%(message)s',
@@ -31,8 +31,6 @@ def updatePolicy():
     comp_round = 0
     comm_round = 0
 
-
-
     return (comp_round,comm_round)
 
 if __name__ == "__main__":
@@ -56,7 +54,7 @@ if __name__ == "__main__":
 
     # execute PyMonsoon
 
-
+    # = PerfEST()
 
     # and log time 
     # start = timeit.default_timer()
