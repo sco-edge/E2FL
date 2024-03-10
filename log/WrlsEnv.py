@@ -72,12 +72,12 @@ class WiFI():
                     interfaces[current_interface] = {}
                 # ESSID 추출
                 elif "ESSID" in line:
-                    essid = re.search('ESSID:"([^]+)"', line)
+                    essid = re.search('ESSID:"([^"]+)"', line)
                     if essid:
                         interfaces[current_interface]['ESSID'] = essid.group(1)
                 # Quality 추출
                 elif "Link Quality" in line:
-                    quality = re.search('Link Quality=([^ ]+)', line)
+                    quality = re.search('Link Quality=(\d+/+\d+)', line)
                     if quality:
                         interfaces[current_interface]['Link Quality'] = quality.group(1)
                 # Signal level 추출
@@ -86,25 +86,25 @@ class WiFI():
                     if signal_level:
                         interfaces[current_interface]['Signal level'] = signal_level.group(1)
                 elif "TX-Power" in line:
-                    signal_level = re.search('TX-Power=([^]+)', line)
-                    if signal_level:
-                        interfaces[current_interface]['TX-Power'] = signal_level.group(1)
+                    TX_power = re.search('TX-Power=([^]+)', line)
+                    if TX_power:
+                        interfaces[current_interface]['TX-Power'] = TX_power.group(1)
                 elif "Bit Rate" in line:
-                    signal_level = re.search('Bit Rate=([^]+)', line)
-                    if signal_level:
-                        interfaces[current_interface]['Bit Rate'] = signal_level.group(1)
+                    bit_rate = re.search('Bit Rate=(\d+[.]?\d?) Mb/s', line)
+                    if bit_rate:
+                        interfaces[current_interface]['Bit Rate'] = bit_rate.group(1)
                 elif "Retry short limit" in line:
-                    signal_level = re.search('Retry short limit=([^]+)', line)
-                    if signal_level:
-                        interfaces[current_interface]['Retry short limit'] = signal_level.group(1)
+                    retry_limit = re.search('Retry short limit:(\d)', line)
+                    if retry_limit:
+                        interfaces[current_interface]['Retry short limit'] = retry_limit.group(1)
                 elif "Frequency" in line:
-                    signal_level = re.search('Frequency=([^]+)', line)
-                    if signal_level:
-                        interfaces[current_interface]['Frequency'] = signal_level.group(1)
+                    freq = re.search('Frequency:(\d+.+\d) GHz', line)
+                    if freq:
+                        interfaces[current_interface]['Frequency'] = freq.group(1)
                 elif "Rx invalid nwid" in line:
-                    signal_level = re.search('Rx invalid nwid=([^]+)', line)
-                    if signal_level:
-                        interfaces[current_interface]['Rx invalid nwid'] = signal_level.group(1)
+                    rx_nwid = re.search('Rx invalid nwid:(\d)', line)
+                    if rx_nwid:
+                        interfaces[current_interface]['Rx invalid nwid'] = rx_nwid.group(1)
             return interfaces
 
         # 결과 출력

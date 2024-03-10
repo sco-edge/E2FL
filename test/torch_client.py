@@ -73,6 +73,7 @@ class LogisticRegression(torch.nn.Module):
         return outputs
 
 
+
 if __name__ == "__main__":
     # init FedML framework
     args = fedml.init()
@@ -92,6 +93,39 @@ if __name__ == "__main__":
 
     
 '''
+import torch
+from torch import nn
+from fedml import FedML_init, FedML_FedAvg_training
+
+# 모델 정의
+class SimpleModel(nn.Module):
+    def __init__(self):
+        super(SimpleModel, self).__init__()
+        self.linear = nn.Linear(28 * 28, 10)  # 예: MNIST 데이터셋을 위한 설정
+
+    def forward(self, x):
+        x = x.view(-1, 28 * 28)
+        x = self.linear(x)
+        return x
+
+# 연합 학습 설정 및 초기화
+args = {
+    "model": SimpleModel(),
+    "dataset": "mnist",  # 데이터셋 선택
+    "data_dir": "./data",  # 데이터 저장 위치
+    "client_num_in_total": 4,  # 클라이언트의 총 수
+    "client_num_per_round": 4,  # 각 라운드에 참여하는 클라이언트 수
+    "comm_round": 10,  # 통신 라운드 수
+    "epochs": 1,  # 로컬 에폭 수
+    "lr": 0.01,  # 학습률
+    "batch_size": 32  # 배치 크기
+}
+
+# 연합 학습 초기화 및 실행
+FedML_init(args)
+FedML_FedAvg_training(args)
+
+
 [Reference]
 https://aws.amazon.com/ko/blogs/machine-learning/part-1-federated-learning-on-aws-with-fedml-health-analytics-without-sharing-sensitive-data/
 https://aws.amazon.com/ko/blogs/machine-learning/part-2-federated-learning-on-aws-with-fedml-health-analytics-without-sharing-sensitive-data/
