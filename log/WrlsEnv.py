@@ -1,6 +1,7 @@
 from wifi import Cell, Scheme
 import subprocess
 import re
+from pprint import pprint 
 
 
 class Timer():
@@ -71,7 +72,7 @@ class WiFI():
                     interfaces[current_interface] = {}
                 # ESSID 추출
                 elif "ESSID" in line:
-                    essid = re.search('ESSID:"([^"]+)"', line)
+                    essid = re.search('ESSID:"([^]+)"', line)
                     if essid:
                         interfaces[current_interface]['ESSID'] = essid.group(1)
                 # Quality 추출
@@ -81,15 +82,34 @@ class WiFI():
                         interfaces[current_interface]['Link Quality'] = quality.group(1)
                 # Signal level 추출
                 elif "Signal level" in line:
-                    signal_level = re.search('Signal level=([^ ]+)', line)
+                    signal_level = re.search('Signal level=([^]+)', line)
                     if signal_level:
                         interfaces[current_interface]['Signal level'] = signal_level.group(1)
-            
+                elif "TX-Power" in line:
+                    signal_level = re.search('TX-Power=([^]+)', line)
+                    if signal_level:
+                        interfaces[current_interface]['TX-Power'] = signal_level.group(1)
+                elif "Bit Rate" in line:
+                    signal_level = re.search('Bit Rate=([^]+)', line)
+                    if signal_level:
+                        interfaces[current_interface]['Bit Rate'] = signal_level.group(1)
+                elif "Retry short limit" in line:
+                    signal_level = re.search('Retry short limit=([^]+)', line)
+                    if signal_level:
+                        interfaces[current_interface]['Retry short limit'] = signal_level.group(1)
+                elif "Frequency" in line:
+                    signal_level = re.search('Frequency=([^]+)', line)
+                    if signal_level:
+                        interfaces[current_interface]['Frequency'] = signal_level.group(1)
+                elif "Rx invalid nwid" in line:
+                    signal_level = re.search('Rx invalid nwid=([^]+)', line)
+                    if signal_level:
+                        interfaces[current_interface]['Rx invalid nwid'] = signal_level.group(1)
             return interfaces
 
         # 결과 출력
         interfaces_info = parse_iwconfig_output()
-        print(interfaces_info)
+        pprint(interfaces_info)
 
 
     
