@@ -101,7 +101,7 @@ class WiFI():
                     freq = re.search('Frequency:(\d+.+\d) GHz', line)
                     if freq:
                         interfaces[current_interface]['Frequency'] = freq.group(1)
-                elif "Rx invalid nwid" in line:
+                elif `"Rx invalid nwid" in line:
                     rx_nwid = re.search('Rx invalid nwid:(\d)', line)
                     if rx_nwid:
                         interfaces[current_interface]['Rx invalid nwid'] = rx_nwid.group(1)
