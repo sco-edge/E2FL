@@ -126,7 +126,7 @@ class WiFI():
                     interfaces[current_interface]['Rx invalid nwid'] = rx_nwid.group(1)
         return interfaces
     
-    def parse_iwconfig_output(interfaces):
+    def pprint_iwconfig_output(interfaces):
         # 결과 출력
         pprint(interfaces)
 
