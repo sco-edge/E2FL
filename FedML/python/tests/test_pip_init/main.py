@@ -1,3 +1,0 @@
-import fedml
-
-fedml.init()

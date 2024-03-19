@@ -1,1 +1,0 @@
-python3 torch_client.py --cf config/fedml_config.yaml --rank %1 --role client --run_id %2
