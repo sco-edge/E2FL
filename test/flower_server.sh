@@ -7,4 +7,4 @@ round = 3
 # Will wait for at least 2 clients to be connected, then will train for 3 FL rounds
 # The command below will sample all clients connected (since sample_fraction=1.0)
 # The server is dataset agnostic (use the same command for MNIST and CIFAR10)
-python server.py --rounds $round --min_num_clients $num_clients --sample_fraction $sample_frac
+python ./FLOWER_embedded_devices/server.py --rounds $round --min_num_clients $num_clients --sample_fraction $sample_frac
