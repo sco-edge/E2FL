@@ -1,5 +1,5 @@
 #!/bin/sh
-server_address=192.168.0.7
+server_address=192.168.0.6
 client_id=1
 
 echo "Enter the client id: "
