@@ -1,7 +1,7 @@
 #!/bin/sh
-num_clients = 2
-sample_frac = 1.0
-round = 3
+num_clients=2
+sample_frac=1.0
+round=3
 
 # Launch your server.
 # Will wait for at least 2 clients to be connected, then will train for 3 FL rounds

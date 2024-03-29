@@ -1,6 +1,6 @@
 #!/bin/sh
-server_address = 192.168.0.7
-client_id = 1
+server_address=192.168.0.7
+client_id=1
 
 echo "Enter the client id: "
 read client_id
