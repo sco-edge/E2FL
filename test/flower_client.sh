@@ -6,6 +6,10 @@ echo "Enter the client id: "
 read client_id
 echo "client_id: $client_id"
 
+echo "Enter the server address: "
+read server_address
+echo "client_id: $server_address"
+
 # Run the default example (CIFAR-10)
 # python3 client_pytorch.py --cid=$client_id --server_address=$server_address
 
