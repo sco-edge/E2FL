@@ -15,3 +15,4 @@ echo "server_address: $server_address"
 
 # Use MNIST (and a smaller model) if your devices require a more lightweight workload
 python3.10 ./FLOWER_embedded_devices/client_pytorch.py --cid=$client_id --server_address=$server_address --mnist
+# python3.10 ./FLOWER_embedded_devices/client_pytorch.py --cid=0 --server_address=192.168.0.6 --mnist
