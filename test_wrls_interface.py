@@ -4,7 +4,7 @@ import time
 WiFi_interface_arr = []
 sleep_duration = 0.010 # scale = seconds, 0.001 means 1 ms.
 while_count = 0
-while_thold = 500
+while_thold = 100
  
 while True:
     temp = WrlsEnv.WiFi.parse_iwconfig_output()
