@@ -21,7 +21,7 @@ class Timer():
     def get_log_entries(self):
         return self.log_entries
     
-class WiFI():
+class WiFi():
     def read_rssi_from_proc_wireless():
         # /proc/net/wireless 파일 경로
         wireless_path = '/proc/net/wireless'
