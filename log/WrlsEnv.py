@@ -1,4 +1,3 @@
-from wifi import Cell, Scheme
 import subprocess
 import re
 from pprint import pprint 
