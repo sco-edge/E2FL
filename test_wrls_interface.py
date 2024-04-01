@@ -41,6 +41,24 @@ https://discourse.julialang.org/t/julia-seems-an-order-of-magnitude-slower-than-
 Windows: ~10-13ms
 Linux: ~1ms
 
+
+$ time iwconfig
+    rpi3B+        rpi4B       Desktop
+real 0m0.018s   0m0.014s    0m0.004s
+user 0m0.000s   0m0.000s    0m0.000s
+sys  0m0.015s   0m0.011s    0m0.004s
+
+https://stackoverflow.com/questions/556405/what-do-real-user-and-sys-mean-in-the-output-of-time1
+
+Real is wall clock time
+- time from start to finish of the call
+User is the amount of CPU time spent in user-mode code within the process
+-
+Sys is the amount of CPU time spent in the kernel within the process
+
+Ouputs of the test_wrls_interface.py
+12 time changes in 1 second.
+=> 100 ms ~ 83 ms
 '''
 
 
