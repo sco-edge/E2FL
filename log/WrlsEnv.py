@@ -88,26 +88,18 @@ class WiFi():
                 essid = re.search('ESSID:"([^"]+)"', line)
                 if essid:
                     interfaces[current_interface]['ESSID'] = essid.group(1)
-            # Quality 추출
+            # Quality 추출 Signal level 추출
             elif "Link Quality" in line:
-                quality = re.search('Link Quality=(\d+/+\d+)', line)
+                quality = re.search('Link Quality=(\d+)/(\d+)  Signal level=(-?\d+) dBm', line)
                 if quality:
                     interfaces[current_interface]['Link Quality'] = quality.group(1)
-            # Signal level 추출
-            elif "Signal level" in line:
-                signal_level = re.search('Signal level=([^]+)', line)
-                if signal_level:
-                    interfaces[current_interface]['Signal level'] = signal_level.group(1)
-            # TX-Power추출
-            elif "TX-Power" in line:
-                TX_power = re.search('TX-Power=([^]+)', line)
+                    interfaces[current_interface]['Signal level'] = quality.group(3)
+            # Bit Rate와 Tx-Power추출
+            elif "Bit Rate" in line: # and Tx-Power
+                TX_power = re.search('Bit Rate=(\d+[.]?\d?) Mb/s   Tx-Power=(\d+) dBm', line)
                 if TX_power:
-                    interfaces[current_interface]['TX-Power'] = TX_power.group(1)
-            # Bit Rate 추출
-            elif "Bit Rate" in line:
-                bit_rate = re.search('Bit Rate=(\d+[.]?\d?) Mb/s', line)
-                if bit_rate:
-                    interfaces[current_interface]['Bit Rate'] = bit_rate.group(1)
+                    interfaces[current_interface]['Bit Rate'] = TX_power.group(1)
+                    interfaces[current_interface]['Tx-Power'] = TX_power.group(2)
             # Retry short limit 추출
             elif "Retry short limit" in line:
                 retry_limit = re.search('Retry short limit:(\d)', line)
