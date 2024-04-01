@@ -2,9 +2,9 @@ from log import WrlsEnv
 import time
 
 WiFi_interface_arr = []
-sleep_duration = 0.050 # scale = seconds, 0.001 means 1 ms.
+sleep_duration = 0.010 # scale = seconds, 0.001 means 1 ms.
 while_count = 0
-while_thold = 50
+while_thold = 500
  
 while True:
     temp = WrlsEnv.WiFi.parse_iwconfig_output()
@@ -18,14 +18,16 @@ while True:
         break
 
 interf_count = 0
-RSSI_temp1, RSSI_temp2, RSSI_temp3 = 0, 0, 0
+RSSI_temp1, RSSI_temp2 = 0, 0
+link_temp1, link_temp2 = 0, 0
 for interf in WiFi_interface_arr:
     RSSI_temp1 = int(interf['wlan0']['Signal level'])
-    if RSSI_temp1 > RSSI_temp2:
+    link_temp1 = int(interf['wlan0']['Signal level'])
+    if RSSI_temp1 != RSSI_temp2:
         RSSI_temp2 = RSSI_temp1
         interf_count += 1
-    elif RSSI_temp1 < RSSI_temp2:
-        RSSI_temp2 = RSSI_temp1
+    elif link_temp1 != link_temp2:
+        link_temp2 = link_temp1
         interf_count += 1
 
 print()
