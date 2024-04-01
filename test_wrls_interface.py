@@ -28,6 +28,9 @@ for interf in WiFi_interface_arr:
         RSSI_temp2 = RSSI_temp1
         interf_count += 1
 
+print()
+print("interf_count: ",interf_count)
+
 
 '''
 the shortest time.sleep in Python?
