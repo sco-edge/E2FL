@@ -10,7 +10,7 @@ while True:
     temp = WrlsEnv.WiFi.parse_iwconfig_output()
     WiFi_interface_arr.append(temp)
     
-    print(".", end=" ")
+    #print(".", end=" ")
     time.sleep(sleep_duration) 
 
     while_count = while_count + 1
