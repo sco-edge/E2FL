@@ -20,7 +20,7 @@ while True:
 interf_count = 0
 RSSI_temp1, RSSI_temp2, RSSI_temp3 = 0, 0, 0
 for interf in WiFi_interface_arr:
-    RSSI_temp1 = interf['wlan0']['Signal level']
+    RSSI_temp1 = int(interf['wlan0']['Signal level'])
     if RSSI_temp1 > RSSI_temp2:
         RSSI_temp2 = RSSI_temp1
         interf_count += 1
