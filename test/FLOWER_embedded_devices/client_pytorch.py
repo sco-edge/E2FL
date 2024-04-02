@@ -154,8 +154,10 @@ class FlowerClient(fl.client.NumPyClient):
         # Read hyperparameters from config set by the server
         batch, epochs = config["batch_size"], config["epochs"]
         # Construct dataloader
+        #   Shuffle=True 
         trainloader = DataLoader(self.trainset, batch_size=batch, shuffle=True)
         # Define optimizer
+        #   momentum: after step calculation, we keep the inertia of SGD to deal with fast training speed and local minima problems.
         optimizer = torch.optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
         # Train
         train(self.model, trainloader, optimizer, epochs=epochs, device=self.device)
