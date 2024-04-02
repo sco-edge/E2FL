@@ -1,6 +1,29 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+def cm2inch(value):
+    	return value/2.54
+
+params = {'figure.figsize': (cm2inch(24), cm2inch(12)),
+    'font.family': 'Times New Roman', #monospace
+    'font.weight': 'bold',
+    'font.size': 18,
+    'lines.linewidth': 3,
+    'lines.markersize': 8,
+    'lines.markeredgewidth': 2,
+    'markers.fillstyle': 'none',
+    'axes.labelweight': 'bold',
+    'axes.labelsize': 'large',
+    'axes.xmargin': 0.05,
+    'axes.grid': False,
+    'grid.linewidth': 0.5,
+    'grid.linestyle': '--',
+    'legend.loc': 'upper right',
+    'legend.fontsize': 16,
+    'figure.autolayout': True,
+    'savefig.transparent': True,
+    }
+
 '''
 [tqdm function from tqdm.py]
 100%|████████████████████████████████████████████████████████████████| 57/57 [02:43<00:00,  2.87s/it]
@@ -61,6 +84,7 @@ total = FL_latency['server']['time'][0]
 # Fixing random state for reproducibility
 #np.random.seed(19680801)
 
+plt.rcParams.update(params)
 fig, ax = plt.subplots()
 
 # Example data
@@ -77,7 +101,7 @@ ax.set_xlabel('Time in seconds')
 
 plt.tight_layout()
 plt.show()
-plt.savefig('./1.png')
+fig.savefig('./1.png')
 plt.close()
 
 fig, ax = plt.subplots()
@@ -92,5 +116,5 @@ ax.set_ylabel('Time in seconds (in log)')
 
 plt.tight_layout()
 plt.show()
-plt.savefig('./2.png')
+fig.savefig('./2.png')
 plt.close()
