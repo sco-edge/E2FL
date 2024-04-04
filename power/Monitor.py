@@ -75,8 +75,10 @@ class PowerMon():
     def setTrigger(self, bool, numSamples = 5000, thld_high = 100, thld_low = 10):
         '''
             Set the threshold for trigger that starts sampleEngine's recording measurements.
+            sampleEngine begins recording measurements when the 'start' trigger condition is met,
+                      and stops sampling completely when the 'stop' trigger condition is met.
             
-            numSamples: 
+                * numSamples: sample for 1 second
         '''
         if bool: # trigger mode
             #Don't stop based on sample count, continue until 
@@ -98,17 +100,30 @@ class PowerMon():
         else: # turn off the trigger mode and start the sampling mode
             self.engine.startSampling(numSamples)
 
-    def setCSVOutput(self, bool):
+    def setCSVOutput(self, bool, filename="default"):
         '''
+            Opens a file and causes the sampleEngine to periodically output samples when taking measurements.
+            
+            The output CSV file will consist of one row of headers, followed by measurements.
+            If every output channel is enabled, it will have the format:
+                    Time,    Main Current,   USB Current,   Aux Current,    Main Voltage,   USB Voltage,
+                timestamp 1, main current 1,    usb 1,          aux 1,    main voltage 1,       usb 1
+                timestamp 2, main current 2,    usb 2,          aux 2,    main voltage 2,       usb 2
         '''
         if bool:
-            init_run_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            if filename == "default":
+                init_run_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = "E2FL_"+init_run_timestamp+".csv"
             self.engine.enableCSVOutput("E2FL_"+init_run_timestamp+".csv")
         else:
             self.engine.disableCSVOutput()
 
     def getSamples(self):
         '''
+            Returns samples in a Python list.
+            
+            Format is [timestamp, main, usb, aux, mainVolts, usbVolts]
+            Channels that were excluded with the disableChannel() function will have an empty list in their array index.
         '''
         return self.engine.getSamples()
 
