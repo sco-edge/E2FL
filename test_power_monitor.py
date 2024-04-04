@@ -1,5 +1,5 @@
 from power import Monitor
-import monsoon.sampleEngine as sampleEngine
+import Monsoon.sampleEngine as sampleEngine
 
 node_A_name = 'rpi3B+'
 node_A_vout = 5.0
