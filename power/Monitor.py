@@ -9,6 +9,9 @@ pip install monsoon
 class PowerMon():
     
     def __init__(self, node, vout, mode = "PyMonsoon"):
+        '''
+            Initialization
+        '''
         self.mode = mode
         self.node = node
         self.vout = vout
@@ -69,17 +72,22 @@ class PowerMon():
                 print("Main current at time " + repr(timeStamp) + " is: " + repr(Current) + "mA")
             '''
 
-    def setTrigger(self, bool, numSamples = 5000):
+    def setTrigger(self, bool, numSamples = 5000, thld_high = 100, thld_low = 10):
+        '''
+            Set the threshold for trigger that starts sampleEngine's recording measurements.
+            
+            numSamples: 
+        '''
         if bool: # trigger mode
             #Don't stop based on sample count, continue until 
             #the trigger conditions have been satisfied.
             numSamples = sampleEngine.triggers.SAMPLECOUNT_INFINITE
 
-            #Start when we exceed 100 mA
-            self.engine.setStartTrigger(sampleEngine.triggers.GREATER_THAN,100)
+            #Start when we exceed threshold_high (100 mA)
+            self.engine.setStartTrigger(sampleEngine.triggers.GREATER_THAN, thld_high)
 
-            #Stop when we drop below 10 mA
-            self.engine.setStopTrigger(sampleEngine.triggers.LESS_THAN,10)
+            #Stop when we drop below threshold_low (10 mA)
+            self.engine.setStopTrigger(sampleEngine.triggers.LESS_THAN, thld_low)
                     
             #Start and stop judged by the channel
             if self.vout >= 4.6 and self.vout <= 5.5: # AUX channel
@@ -91,6 +99,8 @@ class PowerMon():
             self.engine.startSampling(numSamples)
 
     def setCSVOutput(self, bool):
+        '''
+        '''
         if bool:
             init_run_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             self.engine.enableCSVOutput("E2FL_"+init_run_timestamp+".csv")
@@ -98,13 +108,19 @@ class PowerMon():
             self.engine.disableCSVOutput()
 
     def getSamples(self):
+        '''
+        '''
         return self.engine.getSamples()
 
     def startSampling(self, numSamples = 5000):
+        '''
+        '''
         # numSamples = sample for one second
         self.engine.startSampling(numSamples)
 
     def stopSampling(self):
+        '''
+        '''
         self.engine.stopSampling()
 
     #def calibration(self)
