@@ -19,7 +19,10 @@ class PowerMon():
             Mon = LVPM.Monsoon()
             Mon.setup_usb()
 
-            Mon.setVout(vout) # vout = 5.5V
+            if vout >= 4.56:
+                Mon.setVout(4.55) # vout = 5.5V
+            else:
+                Mon.setVout(vout) # vout = 5.5V
             self.engine = sampleEngine.SampleEngine(Mon)
             self.engine.ConsoleOutput(True)
             #self.engine.startSampling(numSamples)
@@ -29,7 +32,7 @@ class PowerMon():
             # If you require a higher measurement voltage, the AUX channel can support up to 5.5V.
             # If you require larger sustaned currents, the AUX channel can support up to 4.5 Amps continuous current
             # If it is necessary to vary voltage continuously, without ending the sampling run.
-            if vout >= 4.6 and vout <= 5.5:
+            if vout >= 4.56 and vout <= 5.5:
                 #Disable Main channels
                 self.engine.disableChannel(sampleEngine.channels.MainCurrent)
                 self.engine.disableChannel(sampleEngine.channels.MainVoltage)
@@ -44,7 +47,7 @@ class PowerMon():
                 #Set USB Pasthrough mode to 'on', since it defaults to 'auto' 
                 #and will turn off when sampling mode begins
                 Mon.setUSBPassthroughMode(op.USB_Passthrough.On) # == 1
-            elif vout < 4.6:
+            elif vout < 4.56:
                 #Disable USB channels
                 self.engine.disableChannel(sampleEngine.channels.USBCurrent)
                 self.engine.disableChannel(sampleEngine.channels.USBVoltage)
