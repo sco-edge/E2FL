@@ -18,7 +18,7 @@ class PowerMon():
         if mode == "PyMonsoon":
             Mon = LVPM.Monsoon()
             Mon.setup_usb(serialno=0)
-            if type(Mon.Device) == type(None):
+            if type(Mon.DEVICE) == type(None):
                 print("Mon.Device is NoneType")
 
             if vout >= 4.56:
