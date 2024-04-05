@@ -18,6 +18,8 @@ class PowerMon():
         if mode == "PyMonsoon":
             Mon = LVPM.Monsoon()
             Mon.setup_usb(serialno=0)
+            if type(Mon.Device) == type(None):
+                print("Mon.Device is NoneType")
 
             if vout >= 4.56:
                 Mon.setVout(4.55) # vout = 5.5V
