@@ -5,6 +5,7 @@ import datetime
 
 '''
 pip install monsoon
+It is broken for LVPM. Use HVPM or uses manual mode.
 '''
 class PowerMon():
     
