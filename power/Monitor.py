@@ -16,7 +16,9 @@ class PowerMon():
         self.mode = mode
         self.node = node
         self.vout = vout
-        if mode == "PyMonsoon":
+        if mode == "Manual":
+            print()
+        elif mode == "PyMonsoon":
             Mon = LVPM.Monsoon()
             Mon.setup_usb(serialno=0)
             if type(Mon.DEVICE) == type(None):
