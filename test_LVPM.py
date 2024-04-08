@@ -6,5 +6,5 @@ def device_matcher(d):
     except:#Catches some platform-specific errors when connecting to multiple PMs simultaneously.
         return False
 DEVICE = usb.core.find(custom_match=device_matcher)
-
+DEVICE = usb.core.find()
 print(DEVICE)
