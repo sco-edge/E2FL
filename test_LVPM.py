@@ -7,4 +7,4 @@ def device_matcher(d):
         return False
 DEVICE = usb.core.find(custom_match=device_matcher)
 print(DEVICE)
-DEVICE = usb.core.find()
+#DEVICE = usb.core.find()
