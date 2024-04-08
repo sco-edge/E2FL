@@ -20,7 +20,7 @@ class PowerMon():
             print()
         elif mode == "PyMonsoon":
             Mon = LVPM.Monsoon()
-            Mon.setup_usb(serialno=0)
+            Mon.setup_usb()
             if type(Mon.DEVICE) == type(None):
                 print("Mon.Device is NoneType")
 
