@@ -27,7 +27,7 @@ rpi3B.setCSVOutput( bool = node_A_CSVbool,
 rpi3B.startSampling()
 samples = rpi3B.getSamples()
 
-for i in range(len(samples[sampleEngine.channels.timeStamp])):
+for i in range(len(samples[sampleEngine.channels.MainCurrent])):
     timeStamp = samples[sampleEngine.channels.timeStamp][i]
     Current = samples[sampleEngine.channels.MainCurrent][i]
-    print("Main current at time " + repr(timeStamp) + " is: " + repr(Current) + "mA")
+    print("Main current     at time " + repr(timeStamp) + " is: " + repr(Current) + "mA")
