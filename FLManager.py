@@ -4,6 +4,7 @@ import timeit
 import log.ClientTimer as cliTimer
 import core.PerfEstimator as PerfEST
 import power.Monitor as EMON
+import argparse
 
 '''
 logging.basicConfig(
