@@ -21,7 +21,6 @@ RPC clients = FL clients
 
 '''
 
-
 def execute_shell_script(serial_port, script_path):
     ser = serial.Serial(serial_port, baudrate=9600, timeout=1)
 
@@ -49,6 +48,26 @@ if __name__ == "__main__":
     # Configuration
     rpi_serial_port = "/dev/ttyUSB0"
     shell_path = "/home/E2FL/test/"
+    
+    parser = argparse.ArgumentParser(description="Energy-Efficient Federated Learning")
+    parser.add_argument(
+        "--fl_address",
+        type=str,
+        default="~/E2FL/fl_template.xml",
+        help=f"XML File Path to indicate FL Server and Client's IP address (default '~/E2FL/fl_template.xml')"
+    )
+    parser.add_argument(
+        "--power_monitor",
+        type=str,
+        default="Monsoon", # "Monsoon" for RPi, "sysfs" for Jetson, "None" for Estimator
+        help="Specify the method for monitoring power"
+    )
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        default="CIFAR", # CIFA, MNIST, ...
+        help="Specify the dataset type"
+    )
     
     execute_shell_script(rpi_serial_port, shell_path)
 
