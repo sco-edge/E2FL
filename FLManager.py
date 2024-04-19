@@ -13,6 +13,15 @@ logging.basicConfig(
     level = logging.DEBUG
 )
 '''
+
+'''
+RPC server = FL server
+RPC clients = FL clients
+-> XML file
+
+'''
+
+
 def execute_shell_script(serial_port, script_path):
     ser = serial.Serial(serial_port, baudrate=9600, timeout=1)
 
