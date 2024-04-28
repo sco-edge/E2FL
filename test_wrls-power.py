@@ -3,6 +3,13 @@ import Monsoon.sampleEngine as sampleEngine
 from log import WrlsEnv
 import subprocess
 import re
+import iperf3
+import logging
+import time
+from datetime import datetime
+
+logging.basicCOnfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging.debug, logging.info, logging.warning, logging.error, logging.critical
 
 '''
 Wi-Fi interface table
@@ -14,15 +21,16 @@ Wi-Fi interface table
 'AX201'
 'br
 
+
+
 '''
 
 def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower = 15):
     # change Wi-Fi interface 
     result = subprocess.run([f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
 
-def setup_iperf3():
-    result = subprocess.run([f"iperf3"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
-    
+time_records = []
+
 # Set up WiFi interface
 # 1. Identify the capabilities of the Wi-Fi interface of the currently running system.
 
@@ -32,7 +40,7 @@ def setup_iperf3():
 
 
 # Log the start time.
-
+time_records.append(['Wi-Fi start(rate: , )',time.time()])
 
 # Start power monitoring.
 node_A_name = 'rpi3B+'
@@ -83,18 +91,36 @@ iperf3
 -P #: number of parallel client thrads to run
 -T : time-to-live, for multicast (default 1)
 '''
-iperf_server = '192.168.0.1'
 iperf_time_interv = 2
-iperf_port = 123
 
+iperf_client = iperf3.Client()
+iperf_client.server.hostname = '192.168.0.1'
+iperf_client.port = 5201
+iperf_client.duration = 60
+iperf_client.bind_address = '192.168.0.1' # wi-fi interface's ip address
+
+iperf_result = iperf_client.run()
+
+if iperf_result.error:
+    logging.error(iperf_result.error)
+else:
+    print("iperf3 is done.")
 
 # End power monitoring.
 
 
 # Log the end time.
+time_records.append(['Wi-Fi end(rate: , )',time.time()])
 
 
 # Calculate each rate's average power consumption.
+filename = 'nonexistentfile.txt'
+try:
+    # 파일을 열려고 시도합니다.
+    file = open(filename, 'r')
+except OSError as e:
+    # OSError 발생 시 오류 코드와 메시지를 출력합니다.
+    print(f"Error opening {filename}: {os.strerror(e.errno)}")
 
 
 # Plot the result.
