@@ -25,6 +25,10 @@ https://github.com/adap/flower/tree/main/examples/embedded-devices
 - git clone --depth=1 https://github.com/adap/flower.git && mv flower/examples/embedded-devices . && rm -rf flower && cd embedded-devices
 - pip3 install -r requirements_pytorch.txt
 
+## Linux Tool
+- iw
+- sudo apt install iw
+
 ## Python Dependencies
 - Monsoon Python library
 - iperf3 library
