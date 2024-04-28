@@ -18,12 +18,15 @@ Wi-Fi interface table
 - TX power = 100
 - Beacon 100ms
 
+
 'AX201'
 'bcm434355c0' on the RPI3+/RPI4 https://github.com/seemoo-lab/nexmon
+    - ~ 802.11a/g/n/ac with up 80 MHz
 '
 
 
 
+iw https://wireless.wiki.kernel.org/en/users/documentation/iw
 '''
 
 def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower = 15):
