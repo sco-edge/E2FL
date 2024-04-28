@@ -114,10 +114,13 @@ time_records.append(['Wi-Fi end(rate: , )',time.time()])
 
 
 # Calculate each rate's average power consumption.
-filename = 'nonexistentfile.txt'
+current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+filename = f"data_{current_time}.txt"
 try:
     # 파일을 열려고 시도합니다.
-    file = open(filename, 'r')
+    f = open(filename, 'w')
+    f.write(time_records)
+    f.close()
 except OSError as e:
     # OSError 발생 시 오류 코드와 메시지를 출력합니다.
     print(f"Error opening {filename}: {os.strerror(e.errno)}")
