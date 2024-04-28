@@ -19,7 +19,8 @@ Wi-Fi interface table
 - Beacon 100ms
 
 'AX201'
-'br
+'bcm434355c0' on the RPI3+/RPI4 https://github.com/seemoo-lab/nexmon
+'
 
 
 
