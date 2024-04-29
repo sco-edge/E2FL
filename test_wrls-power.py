@@ -7,11 +7,25 @@ import iperf3
 import logging
 import time
 from datetime import datetime
+import socket
 
 logging.basicCOnfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
 
+def get_ip_address():
+    try:
+        hostname = socket.gethostname()
+        ip_addr = socket.gethostbyname(hostname)
+        return ip_addr
+    except socket.error as e:
+        print(f'Unable to get IP address: {e}')
+        return None
+
 '''
+Client-Server Architecture
+- Client: Raspberry Pi (conneceted to power monitor as power supplier)
+- Server: Linux Desktop (conneceted to power monitor's USB interface)
+
 Wi-Fi interface table
 'Wi-Fi AP': IPTIME AX2002-Mesh
 - b, g, n, ax 20MHz, Korea
@@ -51,20 +65,7 @@ def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower 
     # change Wi-Fi interface 
     result = subprocess.run([f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
 
-time_records = []
-
-# Set up WiFi interface
-# 1. Identify the capabilities of the Wi-Fi interface of the currently running system.
-
-
-# 2. Set the rate (protocl version) of the Wi-Fi interface from the low data rate.
-
-
-
-# Log the start time.
-time_records.append(['Wi-Fi start(rate: , )',time.time()])
-
-# Start power monitoring.
+# Set up Power Monitor
 node_A_name = 'rpi3B+'
 node_A_vout = 5.0
 node_A_mode = "PyMonsoon"
@@ -74,44 +75,46 @@ node_A_thld_high = 100
 node_A_thld_low = 10
 node_A_CSVbool = False#True
 node_A_CSVname = "default"
-
 rpi3B = Monitor.PowerMon(   node = node_A_name,
                             vout = node_A_vout,
-                            mode = node_A_mode )
+                            mode = node_A_mode)
 '''
-rpi3B.setTrigger(   bool = node_A_triggerBool,
-                    numSamples = node_A_numSamples,
-                    thld_high = node_A_thld_high,
-                    thld_low = node_A_thld_low )
+    rpi3B.setTrigger(   bool = node_A_triggerBool,
+                        numSamples = node_A_numSamples,
+                        thld_high = node_A_thld_high,
+                        thld_low = node_A_thld_low )
 '''
 rpi3B.setCSVOutput( bool = node_A_CSVbool,
                     filename = node_A_CSVname)
 
+# Get IP address
+server_ip_addr = '192.168.0.17' #get_ip_address()
+if server_ip_addr:
+    print("The IP address of the server is: ",server_ip_addr)
+else:
+    print("IP address could not be determined")
+    exit()
 
-rpi3B.startSampling()
-samples = rpi3B.getSamples()
-
-
-# Use iperf3 to measure the Wi-Fi interface's power consumption.
+# Set up iperf3
 '''
-iperf3
+    iperf3
 
--s : server mode
--c : client mode
--p {#}: port
--u : use UDP rather than TCP
--b : indicate bandwidth when using UDP
--t {#}: time interval
--w {#}: TCP window size (socket buffer size)
--M {#}: set TCP maximum setment size (MTU - 40 bytes)
--N : set TCP no delay, disabling Nagle's Algorithm
--V : set the domain to IPv6
--d : measure bi-direcitonal
--n {#}: number of bytes to transmit
--F {name}: input the data to be transmitted from a file
--I : input the data to be transmitted from stdin
--P #: number of parallel client thrads to run
--T : time-to-live, for multicast (default 1)
+    -s : server mode
+    -c : client mode
+    -p {#}: port
+    -u : use UDP rather than TCP
+    -b : indicate bandwidth when using UDP
+    -t {#}: time interval
+    -w {#}: TCP window size (socket buffer size)
+    -M {#}: set TCP maximum setment size (MTU - 40 bytes)
+    -N : set TCP no delay, disabling Nagle's Algorithm
+    -V : set the domain to IPv6
+    -d : measure bi-direcitonal
+    -n {#}: number of bytes to transmit
+    -F {name}: input the data to be transmitted from a file
+    -I : input the data to be transmitted from stdin
+    -P #: number of parallel client thrads to run
+    -T : time-to-live, for multicast (default 1)
 '''
 iperf_time_interv = 2
 
@@ -121,18 +124,39 @@ iperf_client.port = 5201
 iperf_client.duration = 60
 iperf_client.bind_address = '192.168.0.1' # wi-fi interface's ip address
 
-iperf_result = iperf_client.run()
 
-if iperf_result.error:
-    logging.error(iperf_result.error)
-else:
-    print("iperf3 is done.")
-
-# End power monitoring.
+time_records = []
 
 
-# Log the end time.
-time_records.append(['Wi-Fi end(rate: , )',time.time()])
+# Set up WiFi interface
+# 1. Identify the capabilities of the Wi-Fi interface of the currently running system.
+WiFi_rates = [1, 2, 5.5, 11, 6, 9, 12, 18, 24, 36, 48, 54]
+
+# 2. Set the rate (protocl version) of the Wi-Fi interface from the low data rate.
+for rate in WiFi_rates:
+    # Log the start time.
+    time_records.append([f'Wi-Fi start(rate: {rate})',time.time()])
+
+    # Start power monitoring.
+
+    
+    rpi3B.startSampling()
+    samples = rpi3B.getSamples()
+
+
+    # Use iperf3 to measure the Wi-Fi interface's power consumption.
+    iperf_result = iperf_client.run()
+
+    if iperf_result.error:
+        logging.error(iperf_result.error)
+    else:
+        print("iperf3 is done.")
+
+    # End power monitoring.
+
+
+    # Log the end time.
+    time_records.append(['Wi-Fi end(rate: , )',time.time()])
 
 
 # Calculate each rate's average power consumption.
