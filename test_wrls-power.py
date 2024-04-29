@@ -8,18 +8,10 @@ import logging
 import time
 from datetime import datetime
 import socket
+import paramiko
 
 logging.basicCOnfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
-
-def get_ip_address():
-    try:
-        hostname = socket.gethostname()
-        ip_addr = socket.gethostbyname(hostname)
-        return ip_addr
-    except socket.error as e:
-        print(f'Unable to get IP address: {e}')
-        return None
 
 '''
 Client-Server Architecture
@@ -61,6 +53,15 @@ data rate
 iw https://wireless.wiki.kernel.org/en/users/documentation/iw
 '''
 
+def get_ip_address():
+    try:
+        hostname = socket.gethostname()
+        ip_addr = socket.gethostbyname(hostname)
+        return ip_addr
+    except socket.error as e:
+        print(f'Unable to get IP address: {e}')
+        return None
+
 def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower = 15):
     # change Wi-Fi interface 
     result = subprocess.run([f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
@@ -87,13 +88,23 @@ rpi3B = Monitor.PowerMon(   node = node_A_name,
 rpi3B.setCSVOutput( bool = node_A_CSVbool,
                     filename = node_A_CSVname)
 
+# Read the client IP address from the yaml file
+client_ip = '192.168.0.18'
+client_id = 'pi'
+client_pwd = 'raspberry'
+ssh_port = 22
+
 # Get IP address
-server_ip_addr = '192.168.0.17' #get_ip_address()
-if server_ip_addr:
-    print("The IP address of the server is: ",server_ip_addr)
+server_ip = '192.168.0.17' #get_ip_address()
+if server_ip:
+    print("The IP address of the server is: ",server_ip)
 else:
     print("IP address could not be determined")
-    exit()
+    exit(1)
+
+# Set up SSH service
+
+
 
 # Set up iperf3
 '''
