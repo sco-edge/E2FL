@@ -33,10 +33,12 @@ https://github.com/adap/flower/tree/main/examples/embedded-devices
 - Monsoon Python library
 - iperf3 library
 - paramiko library
+- yaml library
 
 - pip install Monsoon
 - pip install iperf3
 - pip install paramiko
+- pip install yaml
 
 ### Troubleshooting Monsoon Python Library 
 
