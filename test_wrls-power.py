@@ -9,6 +9,7 @@ import time
 from datetime import datetime
 import socket
 import paramiko
+import yaml
 
 logging.basicCOnfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
@@ -66,6 +67,56 @@ def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower 
     # change Wi-Fi interface 
     result = subprocess.run([f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
 
+
+def start_iperf3_server():
+    """서버 A에서 iperf3 서버를 비동기적으로 시작합니다."""
+    # iperf3 서버 시작 (포트 5201에서 대기)
+    return subprocess.Popen(['iperf3', '-s'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+def run_iperf3_client(host, username, key_path):
+    """기기 B에서 iperf3 클라이언트를 실행하여 서버 A로 데이터를 전송합니다."""
+    # SSH 클라이언트 설정
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(host, username=username, key_filename=key_path)
+    
+    try:
+        # 서버 A의 IP 주소 (외부 접근 가능한 IP)
+        server_ip = '서버 A의 IP 주소 입력'
+        # iperf3 클라이언트 실행 명령
+        command = f'iperf3 -c {server_ip}'
+        stdin, stdout, stderr = client.exec_command(command)
+        
+        # 실행 결과 출력
+        for line in stdout:
+            print('STDOUT:', line.strip())
+        for line in stderr:
+            print('STDERR:', line.strip())
+            
+    finally:
+        client.close()
+
+# 메인 실행
+if __name__ == '__main__':
+    # iperf3 서버를 시작
+    server_process = start_iperf3_server()
+    print("iperf3 서버가 시작되었습니다.")
+
+    # 기기 B의 SSH 접속 정보
+    host = '기기 B의 IP 주소'
+    username = '기기 B의 사용자 이름'
+    key_path = '기기 B의 SSH 키 경로'
+
+    # 클라이언트 실행에 앞서 서버가 시작될 시간을 줍니다.
+    time.sleep(5)
+    
+    # 기기 B에서 iperf3 클라이언트 실행
+    run_iperf3_client(host, username, key_path)
+
+    # 서버 프로세스 종료
+    server_process.terminate()
+    print("iperf3 서버가 종료되었습니다.")
+
 # Set up Power Monitor
 node_A_name = 'rpi3B+'
 node_A_vout = 5.0
@@ -91,10 +142,20 @@ rpi3B.setCSVOutput( bool = node_A_CSVbool,
 # Read the client IP address from the yaml file
 client_ip = '192.168.0.18'
 client_id = 'pi'
-client_pwd = 'raspberry'
 ssh_port = 22
+private_key_path = './client.key'
 
 # Get IP address
+# YAML 파일 열기 및 읽기
+with open('config.yaml', 'r') as file:
+    config = yaml.safe_load(file)  # 파일에서 YAML을 읽고 파이썬 데이터 구조로 변환
+
+# IP 주소 추출
+server_ip = config['server']['host']  # 'server' 키 아래 'host' 키의 값을 추출
+
+# IP 주소 출력
+print("The server IP address is:", server_ip)
+
 server_ip = '192.168.0.17' #get_ip_address()
 if server_ip:
     print("The IP address of the server is: ",server_ip)
@@ -103,7 +164,29 @@ else:
     exit(1)
 
 # Set up SSH service
+client = paramiko.SSHClient()
+client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # 호스트 키 자동 추가
 
+try:
+    mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
+    # SSH 연결
+    client.connect(client_ip, ssh_port, client_id, pkey=mykey)
+
+    # iperf3 명령 실행 (서버 A로 데이터를 보내는 클라이언트로 기기 B를 설정)
+    command = f'iperf3 -c {server_ip}'
+    stdin, stdout, stderr = client.exec_command(command)
+    
+    # 결과 출력
+    print("STDOUT:")
+    for line in stdout.read().splitlines():
+        print(line.decode('utf-8'))
+    print("\nSTDERR:")
+    for line in stderr.read().splitlines():
+        print(line.decode('utf-8'))
+
+finally:
+    # SSH 연결 종료
+    client.close()
 
 
 # Set up iperf3
