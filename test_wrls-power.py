@@ -139,11 +139,6 @@ rpi3B = Monitor.PowerMon(   node = node_A_name,
 rpi3B.setCSVOutput( bool = node_A_CSVbool,
                     filename = node_A_CSVname)
 
-# Read the client IP address from the yaml file
-client_ip = '192.168.0.18'
-client_id = 'pi'
-ssh_port = 22
-private_key_path = './client.key'
 
 # Get IP address
 # YAML 파일 열기 및 읽기
@@ -152,11 +147,8 @@ with open('config.yaml', 'r') as file:
 
 # IP 주소 추출
 server_ip = config['server']['host']  # 'server' 키 아래 'host' 키의 값을 추출
+client_ip = config['RPi3B+']['host']
 
-# IP 주소 출력
-print("The server IP address is:", server_ip)
-
-server_ip = '192.168.0.17' #get_ip_address()
 if server_ip:
     print("The IP address of the server is: ",server_ip)
 else:
@@ -166,6 +158,9 @@ else:
 # Set up SSH service
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # 호스트 키 자동 추가
+ssh_port = 22
+private_key_path = './client.key'
+client_id = 'pi'
 
 try:
     mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
