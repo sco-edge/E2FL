@@ -15,16 +15,15 @@ logging.basicCOnfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
 
 '''
-Client-Server Architecture
+# Client-Server Architecture
 - Client: Raspberry Pi (conneceted to power monitor as power supplier)
 - Server: Linux Desktop (conneceted to power monitor's USB interface)
 
-Wi-Fi interface table
+# Wi-Fi interface table
 'Wi-Fi AP': IPTIME AX2002-Mesh
 - b, g, n, ax 20MHz, Korea
 - TX power = 100
 - Beacon 100ms
-
 
 'AX201'
 'bcm434355c0' on the RPI3+/RPI4 https://github.com/seemoo-lab/nexmon
@@ -51,7 +50,12 @@ data rate
         208, 231.2, 432, 480, 234, 260, 486, 540, 260, 288.8, 540, 600
 ]
 
-iw https://wireless.wiki.kernel.org/en/users/documentation/iw
+# iw https://wireless.wiki.kernel.org/en/users/documentation/iw
+
+# SSH Key Generation
+- $ ssh-keygen
+- $ rpi3b_plus
+- $ # just enter; empty passphase 
 '''
 
 def get_ip_address():
@@ -159,7 +163,7 @@ else:
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # 호스트 키 자동 추가
 ssh_port = 22
-private_key_path = './client.key'
+private_key_path = './rpi3b_plus.key'
 client_id = 'pi'
 
 try:

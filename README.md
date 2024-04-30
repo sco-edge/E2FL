@@ -27,7 +27,10 @@ https://github.com/adap/flower/tree/main/examples/embedded-devices
 
 ## Linux Tool
 - iw
-- sudo apt install iw
+- iperf3
+
+- sudo apt install iw -y
+- sudo apt install iperf3 -y
 
 ## Python Dependencies
 - Monsoon Python library
