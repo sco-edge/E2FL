@@ -51,7 +51,7 @@ $ pip install -r requirements_test_wrls-power.txt
 '''
 or
 '''
-$ pip install Monsoon, cffi, paramiko, yaml, pickle -y
+$ pip install Monsoon, cffi, paramiko, yaml, pickle
 '''
 
 ### Troubleshooting Monsoon Python Library 
