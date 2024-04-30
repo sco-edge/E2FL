@@ -10,6 +10,7 @@ from datetime import datetime
 import socket
 import paramiko
 import yaml
+import pickle
 
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
@@ -47,29 +48,21 @@ def get_ip_address():
 def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower = 15):
     # change Wi-Fi interface 
     result = subprocess.run([f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    return result
 
+def start_iperf3_server(server_ip, port=5201):
+    """Start a iperf3 server at a server A asynchronously."""
+    # Start iperf3 server. (Waitting at 5201 port)
+    return subprocess.Popen(['iperf3', '-s', '-B', server_ip, '-p', port], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-def start_iperf3_server(server_ip, port=22):
-    """서버 A에서 iperf3 서버를 비동기적으로 시작합니다."""
-    # iperf3 서버 시작 (포트 5201에서 대기)
-    iperf_time_interv = 2
-
-    iperf_client = iperf3.Client()
-    iperf_client.server.hostname = '192.168.0.1'
-    iperf_client.port = 5201
-    iperf_client.duration = 60
-    iperf_client.bind_address = '192.168.0.1' # wi-fi interface's ip address
-
-    return subprocess.Popen(['iperf3', '-s'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-def run_iperf3_client(client_SSH, server_ip):
-    """기기 B에서 iperf3 클라이언트를 실행하여 서버 A로 데이터를 전송합니다."""
+def run_iperf3_client(client_SSH, server_ip, server_port=5201):
+    """Run a iperf3 client at a edge device B to send data to server A."""
     try:
-        # iperf3 클라이언트 실행 명령
-        command = f'iperf3 -c {server_ip}'
+        # Run iperf3 client command.
+        command = f'iperf3 -c {server_ip} -p {server_port}'
         stdin, stdout, stderr = client_SSH.exec_command(command)
         
-        # 실행 결과 출력
+        # Print the results.
         for line in stdout.read().splitlines():
             logger.info('client_SSH:')
             logger.info(line.decode('utf-8'))
@@ -79,31 +72,13 @@ def run_iperf3_client(client_SSH, server_ip):
         logger.error("run_iperf3_client failed.")
         exit(1)
 
-# 메인 실행
-if __name__ == '__main__':
-    # iperf3 서버를 시작
-    server_process = start_iperf3_server()
-    print("iperf3 서버가 시작되었습니다.")
-
-    # 기기 B의 SSH 접속 정보
-    host = '기기 B의 IP 주소'
-    username = '기기 B의 사용자 이름'
-    key_path = '기기 B의 SSH 키 경로'
-
-    # 클라이언트 실행에 앞서 서버가 시작될 시간을 줍니다.
-    time.sleep(5)
-    
-    # 기기 B에서 iperf3 클라이언트 실행
-    run_iperf3_client(host, username, key_path)
-
-    # 서버 프로세스 종료
-    server_process.terminate()
-    print("iperf3 서버가 종료되었습니다.")
-
 # default parameters
 root_path = './'
 node_A_name = 'rpi3B+'
 node_A_mode = "PyMonsoon"
+client_ssh_id = 'pi'
+ssh_port = 22
+iperf3_server_port = 5201
 
 # Set up logger
 logger = logging.getLogger("test")
@@ -133,86 +108,91 @@ rpi3B = Monitor.PowerMon(   node = node_A_name,
 rpi3B.setCSVOutput( bool = node_A_CSVbool,
                     filename = node_A_CSVname)
 
-
-# Get IP address
-# YAML 파일 열기 및 읽기
+# Read the YAML config file.
 with open(root_path+'config.yaml', 'r') as file:
-    config = yaml.safe_load(file)  # 파일에서 YAML을 읽고 파이썬 데이터 구조로 변환
+    config = yaml.safe_load(file)  # Read YAML from the file and convert the structure of the python's dictionary.
 
-# IP 주소 추출
-server_ip = config['server']['host']  # 'server' 키 아래 'host' 키의 값을 추출
+# Get IP addresses.
+server_ip = config['server']['host']  # Extract 'host' key's value from the 'server' key
 client_ip = config['RPi3B+']['host']
+private_key_path = root_path + config['RPi3B+']['ssh_key']
+client_interf = config['RPi3B+']['interface']
 
-if server_ip:
-    print("The IP address of the server is: ",server_ip)
+if server_ip or client_ip:
+    print("The IP address of the server is: ", server_ip)
 else:
     print("IP address could not be determined")
     exit(1)
 
 # Set up SSH service
 client_SSH = paramiko.SSHClient()
-client_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # 호스트 키 자동 추가
-ssh_port = 22
-private_key_path = root_path + config['RPi3B+']['ssh_key']
-client_id = 'pi'
+client_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Add the host key automatically
 
 try:
     mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
-    # SSH 연결
-    client_SSH.connect(client_ip, ssh_port, client_id, pkey=mykey)
+    client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
 except:
     logger.error("SSH is failed.")
-    exit()
+    exit(1)
 
-# Set up iperf3
-time_records = []
+# Start the iperf3 server.
+try:
+    server_process = start_iperf3_server()
+    logger.info("Start iperf3 server.")
+    # Wait for server to start iperf3 properly.
+    time.sleep(5)
+except:
+    logger.error('iperf3 is failed.')
+    exit(1)
 
+# Prepare a bucket to store the results.
+measurements_dict = []
 
-# Set up WiFi interface
-# 1. Identify the capabilities of the Wi-Fi interface of the currently running system.
+# Set up the edge device's the WiFi interface.
+# Identify the capabilities of the Wi-Fi interface of the currently running system.
 WiFi_rates = [1, 2, 5.5, 11, 6, 9, 12, 18, 24, 36, 48, 54]
 
-# 2. Set the rate (protocl version) of the Wi-Fi interface from the low data rate.
 for rate in WiFi_rates:
-    # Log the start time.
-    time_records.append([f'Wi-Fi start(rate: {rate})',time.time()])
+    time_records = []
 
-    # Start power monitoring.
-
+    # Set the edge device's rate (protocol version) in the Wi-Fi interface from the low data rate.
+    result = change_WiFi_interface(interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
+    logger.debug(result)
     
+    # Log the start time.
+    time_records.append(time.time())
+    logger.info([f'Wi-Fi start(rate: {rate})',time.time()])
+
+    # Start power monitoring.    
     rpi3B.startSampling()
     samples = rpi3B.getSamples()
 
-
     # Use iperf3 to measure the Wi-Fi interface's power consumption.
-    iperf_result = iperf_client.run()
-
-    if iperf_result.error:
-        logging.error(iperf_result.error)
-    else:
-        logging.info("iperf3 is done.")
+    run_iperf3_client(client_SSH, server_ip, iperf3_server_port)
 
     # End power monitoring.
-
+    rpi3B.stopSampling()
 
     # Log the end time.
-    time_records.append(['Wi-Fi end(rate: , )',time.time()])
+    time_records.append(time.time())
+    logger.info([f'Wi-Fi end(rate: {rate})',time.time()])
 
-# SSH 연결 종료
+    measurements_dict.append({'rate': rate, 'time': time_records, 'power': samples})
+
+# Close the SSH connection.
 client_SSH.close()
 
-# Calculate each rate's average power consumption.
-current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-filename = f"data_{current_time}.txt"
-try:
-    # 파일을 열려고 시도합니다.
-    f = open(filename, 'w')
-    f.write(time_records)
-    f.close()
-except OSError as e:
-    # OSError 발생 시 오류 코드와 메시지를 출력합니다.
-    logger.error(f"Error opening {filename}: {os.strerror(e.errno)}")
+# Terminate the iperf3 server process.
+server_process.terminate()
+print("iperf3 서버가 종료되었습니다.")
 
+# Save the data.
+current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+filename = f"data_{current_time}.pickle"
+with open(filename, 'wb') as handle:
+    pickle.dump(measurements_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+# Calculate each rate's average power consumption.
 
 # Plot the result.
 

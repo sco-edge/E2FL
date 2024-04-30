@@ -37,6 +37,7 @@ https://github.com/adap/flower/tree/main/examples/embedded-devices
 - iperf3 library
 - paramiko library
 - yaml library
+- pickle library
 
 - pip install Monsoon
 - pip install iperf3
