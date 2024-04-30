@@ -41,6 +41,7 @@ $ sudo apt install iw, iperf3 -y
 ## Python Dependencies
 - Monsoon Python library
 - paramiko library
+- cffi library
 - yaml library
 - pickle library
 
@@ -50,7 +51,7 @@ $ pip install -r requirements_test_wrls-power.txt
 '''
 or
 '''
-$ pip install Monsoon, paramiko, yaml, pickle -y
+$ pip install Monsoon, cffi, paramiko, yaml, pickle -y
 '''
 
 ### Troubleshooting Monsoon Python Library 
