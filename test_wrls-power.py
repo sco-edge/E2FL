@@ -90,7 +90,7 @@ logger.addHandler(ch)
 # Set up Power Monitor
 node_A_vout = 5.0
 node_A_triggerBool = True
-node_A_numSamples = 5000
+node_A_numSamples = sampleEngine.triggers.SAMPLECOUNT_INFINITE
 node_A_thld_high = 100
 node_A_thld_low = 10
 node_A_CSVbool = False #True
@@ -98,12 +98,9 @@ node_A_CSVname = "default"
 rpi3B = Monitor.PowerMon(   node = node_A_name,
                             vout = node_A_vout,
                             mode = node_A_mode)
-'''
-    rpi3B.setTrigger(   bool = node_A_triggerBool,
-                        numSamples = node_A_numSamples,
-                        thld_high = node_A_thld_high,
-                        thld_low = node_A_thld_low )
-'''
+rpi3B.setTrigger(   bool = node_A_triggerBool,
+                    thld_high = node_A_thld_high,
+                    thld_low = node_A_thld_low )
 rpi3B.setCSVOutput( bool = node_A_CSVbool,
                     filename = node_A_CSVname)
 
@@ -162,8 +159,8 @@ for rate in WiFi_rates:
     time_records.append(time.time())
     logger.info([f'Wi-Fi start(rate: {rate})',time.time()])
 
-    # Start power monitoring.    
-    rpi3B.startSampling()
+    # Start power monitoring.
+    rpi3B.startSampling(numSamples = node_A_numSamples) # it will take measurements every 200us
 
     # Use iperf3 to measure the Wi-Fi interface's power consumption.
     run_iperf3_client(client_SSH, server_ip, iperf3_server_port)
@@ -171,7 +168,7 @@ for rate in WiFi_rates:
     # End power monitoring.
     rpi3B.stopSampling()
     samples = rpi3B.getSamples()
-    
+
     # Log the end time.
     time_records.append(time.time())
     logger.info([f'Wi-Fi end(rate: {rate})',time.time()])
@@ -183,13 +180,14 @@ client_SSH.close()
 
 # Terminate the iperf3 server process.
 server_process.terminate()
-print("iperf3 서버가 종료되었습니다.")
+logger.info("Close the iperf3 serveer.")
 
 # Save the data.
 current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 filename = f"data_{current_time}.pickle"
 with open(filename, 'wb') as handle:
     pickle.dump(measurements_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+logger.info(f"The measurement data is saved as {filename}.")
 
 # Calculate each rate's average power consumption.
 

@@ -102,9 +102,11 @@ class PowerMon():
                 self.engine.setTriggerChannel(sampleEngine.channels.AUXCurrent)
             else:  # main channel
                 self.engine.setTriggerChannel(sampleEngine.channels.MainCurrent)
-            self.engine.startSampling(numSamples)
+            #self.engine.startSampling(numSamples)
+            return True
         else: # turn off the trigger mode and start the sampling mode
-            self.engine.startSampling(numSamples)
+            return False
+            #self.engine.startSampling(numSamples)
 
     def setCSVOutput(self, bool, filename="default"):
         '''
