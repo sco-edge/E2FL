@@ -3,7 +3,6 @@ import Monsoon.sampleEngine as sampleEngine
 from log import WrlsEnv
 import subprocess
 import re
-import iperf3
 import logging
 import time
 from datetime import datetime
@@ -165,14 +164,14 @@ for rate in WiFi_rates:
 
     # Start power monitoring.    
     rpi3B.startSampling()
-    samples = rpi3B.getSamples()
 
     # Use iperf3 to measure the Wi-Fi interface's power consumption.
     run_iperf3_client(client_SSH, server_ip, iperf3_server_port)
 
     # End power monitoring.
     rpi3B.stopSampling()
-
+    samples = rpi3B.getSamples()
+    
     # Log the end time.
     time_records.append(time.time())
     logger.info([f'Wi-Fi end(rate: {rate})',time.time()])
