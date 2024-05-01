@@ -33,6 +33,7 @@ $ pip3 install -r requirements_pytorch.txt
 ## Linux Tool
 - iw
 - iperf3
+- net-tools
 
 '''
 $ sudo apt install iw, iperf3 -y
