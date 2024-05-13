@@ -76,7 +76,7 @@ def run_iperf3_client(client_SSH, server_ip, server_port=5201):
         exit(1)
 
 # default parameters
-root_path = os.path.abspath(os.getcwd())
+root_path = os.path.abspath(os.getcwd())+'/'
 node_A_name = 'rpi3B+'
 node_A_mode = "PyMonsoon"
 client_ssh_id = 'pi'
