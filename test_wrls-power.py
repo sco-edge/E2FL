@@ -128,6 +128,7 @@ try:
     mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
     client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
 except Exception as e:
+    logger.error("key file: ", private_key_path)
     logger.error("SSH is failed: ", e)
     exit(1)
 
