@@ -124,7 +124,7 @@ else:
     exit(1)
 
 # Wait for boot up
-time.wait(_UPTIME_RPI3B)
+time.sleep(_UPTIME_RPI3B)
 
 # Set up SSH service
 client_SSH = paramiko.SSHClient()
