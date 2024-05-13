@@ -127,8 +127,8 @@ client_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Add the host
 try:
     mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
     client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
-except:
-    logger.error("SSH is failed.")
+except Exception as e:
+    logger.error("SSH is failed: ", e)
     exit(1)
 
 # Start the iperf3 server.
