@@ -99,7 +99,7 @@ class PowerMon():
                     
             #Start and stop judged by the channel
             if self.vout >= 4.6 and self.vout <= 5.5: # AUX channel
-                self.engine.setTriggerChannel(sampleEngine.channels.AUXCurrent)
+                self.engine.setTriggerChannel(sampleEngine.channels.AuxCurrent)
             else:  # main channel
                 self.engine.setTriggerChannel(sampleEngine.channels.MainCurrent)
             #self.engine.startSampling(numSamples)
