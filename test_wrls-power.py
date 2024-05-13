@@ -124,6 +124,7 @@ else:
     exit(1)
 
 # Wait for boot up
+print(f"Wait {_UPTIME_RPI3B} seconds for the edge device to boot.")
 time.sleep(_UPTIME_RPI3B)
 
 # Set up SSH service
