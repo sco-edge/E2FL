@@ -11,6 +11,9 @@ import paramiko
 import yaml
 import pickle
 
+
+_UPTIME_RPI3B = 240
+
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
 class CustomFormatter(logging.Formatter):
@@ -119,6 +122,9 @@ if server_ip or client_ip:
 else:
     print("IP address could not be determined")
     exit(1)
+
+# Wait for boot up
+#time.wait(_UPTIME_RPI3B)
 
 # Set up SSH service
 client_SSH = paramiko.SSHClient()
