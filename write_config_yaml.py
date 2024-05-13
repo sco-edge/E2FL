@@ -4,22 +4,22 @@ import yaml
 data = {
     'server': {
         'host': '192.168.0.17',
-        'ssh_key': 'server.pub',
+        'ssh_key': 'server',
         'interface': 'wlx30b5c212273b'
     },
     'RPi3B+': {
         'host': '192.168.0.14',
-        'ssh_key': 'rpi3b_plus.pub',
+        'ssh_key': 'rpi3b_plus',
         'interface': 'wlan0'
     },
     'RPi4B': {
         'host': '192.168.0.15',
-        'ssh_key': 'rpi4b.pub',
+        'ssh_key': 'rpi4b',
         'interface': 'wlan0'
     },
     'RPi5': {
         'host': '192.168.0.19',
-        'ssh_key': 'rpi5.pub',
+        'ssh_key': 'rpi5',
         'interface': 'wlan0'
     }
 }
