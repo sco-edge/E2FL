@@ -52,23 +52,6 @@ ch.setLevel(logging.DEBUG)
 ch.setFormatter(CustomFormatter())
 logger.addHandler(ch)
 
-# Set up Power Monitor
-node_A_vout = 5.0
-node_A_triggerBool = True
-node_A_numSamples = sampleEngine.triggers.SAMPLECOUNT_INFINITE
-node_A_thld_high = 100
-node_A_thld_low = 10
-node_A_CSVbool = False #True
-node_A_CSVname = "default"
-rpi3B = Monitor.PowerMon(   node = node_A_name,
-                            vout = node_A_vout,
-                            mode = node_A_mode)
-rpi3B.setTrigger(   bool = node_A_triggerBool,
-                    thld_high = node_A_thld_high,
-                    thld_low = node_A_thld_low )
-rpi3B.setCSVOutput( bool = node_A_CSVbool,
-                    filename = node_A_CSVname)
-
 # Read the YAML config file.
 with open(root_path+'config.yaml', 'r') as file:
     config = yaml.safe_load(file)  # Read YAML from the file and convert the structure of the python's dictionary.
