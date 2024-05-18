@@ -137,6 +137,7 @@ start_time = time.time()
 while 1:
     print(f'{try_count} try ...')
     client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
+    time.sleep(10)
     if time.time() - start_time > _UPTIME_RPI3B:
         try:
             client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
