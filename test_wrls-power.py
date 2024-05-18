@@ -82,7 +82,6 @@ node_A_mode = "PyMonsoon"
 client_ssh_id = 'pi'
 ssh_port = 22
 iperf3_server_port = 5201
-power_on_timeout = 180
 
 # Set up logger
 logger = logging.getLogger("test")
@@ -127,7 +126,6 @@ else:
 
 # Wait for boot up
 print(f"Wait {_UPTIME_RPI3B} seconds for the edge device to boot.")
-time.sleep(_UPTIME_RPI3B)
 
 # Set up SSH service
 client_SSH = paramiko.SSHClient()
@@ -137,7 +135,7 @@ mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 start_time = time.time() 
 while 1:
     client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
-    if time.time() - start_time > power_on_timeout:
+    if time.time() - start_time > _UPTIME_RPI3B:
         try:
             client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
         except Exception as e:
