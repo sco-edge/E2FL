@@ -132,8 +132,10 @@ client_SSH = paramiko.SSHClient()
 client_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Add the host key automatically
 mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 
-start_time = time.time() 
+try_count = 0
+start_time = time.time()
 while 1:
+    print(f'{try_count} try ...')
     client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
     if time.time() - start_time > _UPTIME_RPI3B:
         try:
