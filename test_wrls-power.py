@@ -82,6 +82,7 @@ node_A_mode = "PyMonsoon"
 client_ssh_id = 'pi'
 ssh_port = 22
 iperf3_server_port = 5201
+power_on_timeout = 180
 
 # Set up logger
 logger = logging.getLogger("test")
@@ -131,14 +132,18 @@ time.sleep(_UPTIME_RPI3B)
 # Set up SSH service
 client_SSH = paramiko.SSHClient()
 client_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Add the host key automatically
+mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 
-try:
-    mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
+start_time = time.time() 
+while 1:
     client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
-except Exception as e:
-    logger.error("SSH is failed: ", e)
-    logger.error(private_key_path)
-    exit(1)
+    if time.time() - start_time > power_on_timeout:
+        try:
+            client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
+        except Exception as e:
+            logger.error("SSH is failed: ", e)
+            logger.error(private_key_path)
+            exit(1)
 
 # Start the iperf3 server.
 try:
