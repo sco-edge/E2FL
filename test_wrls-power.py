@@ -119,8 +119,8 @@ private_key_path = root_path + config['RPi3B+']['ssh_key']
 client_interf = config['RPi3B+']['interface']
 
 if server_ip or client_ip:
-    print("The IP address of the server is: ", server_ip)
-    print("The IP address of the client is: ", client_ip)
+    print(f"The IP address of the server is: {server_ip}")
+    print(f"The IP address of the client is: {client_ip}")
 else:
     print("IP address could not be determined")
     exit(1)
