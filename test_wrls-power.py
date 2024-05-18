@@ -13,7 +13,7 @@ import yaml
 import pickle
 
 
-_UPTIME_RPI3B = 300
+_UPTIME_RPI3B = 500
 
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
