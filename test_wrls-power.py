@@ -137,7 +137,7 @@ start_time = time.time()
 while 1:
     print(f'{try_count} try ...')
     try:
-        client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
+        client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, pkey=mykey)
         break
     except:
         try_count = try_count + 1
