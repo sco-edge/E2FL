@@ -75,21 +75,11 @@ client_SSH.set_missing_host_key_policy(paramiko.RejectPolicy())  # Add the host 
 mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 
 try_count = 0
-start_time = time.time()
-while 1:
-    print(f'{try_count} try ...')
-    try:
-        client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, pkey=mykey)
-        break
-    except:
-        try_count = try_count + 1
-        pass
-    time.sleep(10)
-    if time.time() - start_time > _UPTIME_RPI3B:
-        try:
-            client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
-        except Exception as e:
-            logger.error("SSH is failed: ", e)
-            logger.error(private_key_path)
-            exit(1)
-print("SUCCESS")
+try:
+    client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, pkey=mykey)
+    print("SUCCESS")
+except Exception as e:
+    logger.error("SSH is failed: ", e)
+    logger.error(private_key_path)
+    exit(1)
+
