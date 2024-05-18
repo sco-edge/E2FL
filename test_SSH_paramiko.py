@@ -92,3 +92,4 @@ while 1:
             logger.error("SSH is failed: ", e)
             logger.error(private_key_path)
             exit(1)
+print("SUCCESS")
