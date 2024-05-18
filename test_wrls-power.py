@@ -130,7 +130,7 @@ print(f"Wait {_UPTIME_RPI3B} seconds for the edge device to boot.")
 
 # Set up SSH service
 client_SSH = paramiko.SSHClient()
-client_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Add the host key automatically
+client_SSH.set_missing_host_key_policy(paramiko.WarningPolicy())  # Add the host key automatically AutoAddPolicy()
 mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 
 try_count = 0
