@@ -159,7 +159,7 @@ try:
     logger.info("Start iperf3 server.")
     # Wait for server to start iperf3 properly.
     time.sleep(5)
-except e:
+except Exception as e:
     logger.error('iperf3 is failed: ', e)
     exit(1)
 
