@@ -78,7 +78,7 @@ mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 
 try_count = 0
 try:
-    client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", key_filename=private_key_path, look_for_keys=False)
+    client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", pkey=mykey, look_for_keys=False)
     print("SUCCESS")
 except Exception as e:
     logger.error("SSH is failed: ", e)
