@@ -121,6 +121,7 @@ client_interf = config['RPi3B+']['interface']
 if server_ip or client_ip:
     print(f"The IP address of the server is: {server_ip}")
     print(f"The IP address of the client is: {client_ip}")
+    print(f"The ID of the client is: {client_ssh_id}")
 else:
     print("IP address could not be determined")
     exit(1)
@@ -138,7 +139,7 @@ start_time = time.time()
 while 1:
     print(f'{try_count} try ...')
     try:
-        client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, pkey=mykey)
+        client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", pkey=mykey, look_for_keys=False)
         break
     except:
         try_count = try_count + 1
@@ -146,7 +147,7 @@ while 1:
     time.sleep(10)
     if time.time() - start_time > _UPTIME_RPI3B:
         try:
-            client_SSH.connect(client_ip, ssh_port, client_ssh_id, pkey=mykey)
+            client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", pkey=mykey, look_for_keys=False)
         except Exception as e:
             logger.error("SSH is failed: ", e)
             logger.error(private_key_path)

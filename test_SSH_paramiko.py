@@ -72,7 +72,7 @@ else:
 
 # Set up SSH service
 client_SSH = paramiko.SSHClient()
-client_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Add the host key automatically AutoAddPolicy()
+client_SSH.set_missing_host_key_policy(paramiko.RejectPolicy())  # Add the host key automatically AutoAddPolicy()
 #client_SSH.set_missing_host_key_policy(paramiko.RejectPolicy())  # Add the host key automatically AutoAddPolicy()
 mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 
