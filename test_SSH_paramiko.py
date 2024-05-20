@@ -77,6 +77,9 @@ mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 
 try_count = 0
 try:
+    transport = paramiko.Transport(client_ip)
+    transport.connect()
+    transport.auth_none(client_ssh_id)
     client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, pkey=mykey, look_for_keys=False)
     print("SUCCESS")
 except Exception as e:
