@@ -155,7 +155,7 @@ while 1:
 
 # Start the iperf3 server.
 try:
-    server_process = start_iperf3_server()
+    server_process = start_iperf3_server(server_ip = server_ip)
     logger.info("Start iperf3 server.")
     # Wait for server to start iperf3 properly.
     time.sleep(5)
