@@ -65,6 +65,7 @@ client_interf = config['RPi4B']['interface']
 if server_ip or client_ip:
     print(f"The IP address of the server is: {server_ip}")
     print(f"The IP address of the client is: {client_ip}")
+    print(f"The ID of the client is: {client_ssh_id}")
 else:
     print("IP address could not be determined")
     exit(1)
@@ -77,7 +78,7 @@ mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 
 try_count = 0
 try:
-    client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", key_filename=private_key_path+'.pub', look_for_keys=False)
+    client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", key_filename=private_key_path, look_for_keys=False)
     print("SUCCESS")
 except Exception as e:
     logger.error("SSH is failed: ", e)
