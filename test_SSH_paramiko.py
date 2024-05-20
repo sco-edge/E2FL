@@ -72,13 +72,14 @@ else:
 
 # Set up SSH service
 client_SSH = paramiko.SSHClient()
-client_SSH.set_missing_host_key_policy(paramiko.WarningPolicy())  # Add the host key automatically AutoAddPolicy()
+client_SSH.load_host_keys(filename=private_key_path)
+#client_SSH.set_missing_host_key_policy(paramiko.WarningPolicy())  # Add the host key automatically AutoAddPolicy()
 #client_SSH.set_missing_host_key_policy(paramiko.RejectPolicy())  # Add the host key automatically AutoAddPolicy()
-mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
+#mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 
 try_count = 0
 try:
-    client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", pkey=mykey, look_for_keys=False)
+    client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", look_for_keys=False) # , pkey=mykey
     print("SUCCESS")
 except Exception as e:
     logger.error("SSH is failed: ", e)
