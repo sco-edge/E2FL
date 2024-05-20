@@ -59,7 +59,7 @@ with open(root_path+'config.yaml', 'r') as file:
 # Get IP addresses.
 server_ip = config['server']['host']  # Extract 'host' key's value from the 'server' key
 client_ip = config['RPi4B']['host']
-private_key_path = root_path + 'known_hosts/' + config['RPi4B']['ssh_key']+'.pub'
+private_key_path = root_path + config['RPi4B']['ssh_key']
 client_interf = config['RPi4B']['interface']
 
 if server_ip or client_ip:
@@ -72,14 +72,13 @@ else:
 
 # Set up SSH service
 client_SSH = paramiko.SSHClient()
-client_SSH.load_host_keys(filename=private_key_path)
-#client_SSH.set_missing_host_key_policy(paramiko.WarningPolicy())  # Add the host key automatically AutoAddPolicy()
+client_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Add the host key automatically AutoAddPolicy()
 #client_SSH.set_missing_host_key_policy(paramiko.RejectPolicy())  # Add the host key automatically AutoAddPolicy()
-#mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
+mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
 
 try_count = 0
 try:
-    client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", look_for_keys=False) # , pkey=mykey
+    client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", pkey=mykey, look_for_keys=False)
     print("SUCCESS")
 except Exception as e:
     logger.error("SSH is failed: ", e)
