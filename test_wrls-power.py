@@ -53,6 +53,11 @@ def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower 
     result = subprocess.run([f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
     return result
 
+def change_WiFi_interface_client(client_ssh, interf = 'wlan0', channel = 11, rate = '11M', txpower = 15):
+    # change Wi-Fi interface 
+    result = client_ssh.exec_command(f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}")
+    return result
+
 def start_iperf3_server(server_ip, port=5201):
     """Start a iperf3 server at a server A asynchronously."""
     # Start iperf3 server. (Waitting at 5201 port)
@@ -174,7 +179,8 @@ for rate in WiFi_rates:
     time_records = []
 
     # Set the edge device's rate (protocol version) in the Wi-Fi interface from the low data rate.
-    result = change_WiFi_interface(interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
+    #result = change_WiFi_interface(interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
+    result = change_WiFi_interface_client(interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
     logger.debug(result)
     
     # Log the start time.
