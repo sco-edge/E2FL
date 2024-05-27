@@ -180,7 +180,7 @@ for rate in WiFi_rates:
 
     # Set the edge device's rate (protocol version) in the Wi-Fi interface from the low data rate.
     #result = change_WiFi_interface(interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
-    result = change_WiFi_interface_client(interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
+    result = change_WiFi_interface_client(client_ssh = client_SSH, interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
     logger.debug(result)
     
     # Log the start time.
