@@ -139,7 +139,7 @@ class PowerMon():
         '''
         '''
         # numSamples = sample for one second
-        self.engine.startSampling(numSamples)
+        self.engine.StartSampling(numSamples)
 
     def stopSampling(self):
         '''
