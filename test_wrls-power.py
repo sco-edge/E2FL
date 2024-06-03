@@ -83,7 +83,7 @@ def run_iperf3_client(client_SSH, server_ip, duration = 10, server_port=5201):
     """Run a iperf3 client at a edge device B to send data to server A."""
     try:
         # Run iperf3 client command.
-        command = f'iperf3 -c {server_ip} -p {server_port} -t {duration}'
+        command = 'iperf3 -c '+str(server_ip)+' -p '+str(server_port)+' -t '+str(duration)
         stdin, stdout, stderr = client_SSH.exec_command(command)
         
         # Print the results.
