@@ -90,6 +90,7 @@ def run_iperf3_client(client_SSH, server_ip, duration = 60, server_port=5201):
             logger.info(line.decode('utf-8'))
         for line in stderr.read().splitlines():
             logger.error(line.decode('utf-8'))
+            exit(1)
     except:
         logger.error("run_iperf3_client failed.")
         exit(1)
@@ -100,7 +101,7 @@ node_A_name = 'rpi3B+'
 node_A_mode = "PyMonsoon"
 client_ssh_id = 'pi'
 ssh_port = 22
-iperf3_server_port = 5201
+iperf3_server_port = 5205
 
 # Set up logger
 logger = logging.getLogger("test")
