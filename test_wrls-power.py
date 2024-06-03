@@ -57,11 +57,11 @@ def start_iperf3_server(server_ip, port=5201):
     # Start iperf3 server. (Waitting at 5201 port)
     return subprocess.Popen(['iperf3', '-s', '-B', str(server_ip), '-p', str(port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-def run_iperf3_client(client_SSH, server_ip, server_port=5201):
+def run_iperf3_client(client_SSH, server_ip, duration = 60, server_port=5201):
     """Run a iperf3 client at a edge device B to send data to server A."""
     try:
         # Run iperf3 client command.
-        command = f'iperf3 -c {server_ip} -p {server_port}'
+        command = f'iperf3 -c {server_ip} -p {server_port} -t {duration}'
         stdin, stdout, stderr = client_SSH.exec_command(command)
         
         # Print the results.
