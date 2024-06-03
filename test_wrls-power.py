@@ -77,7 +77,7 @@ def start_iperf3_server(server_ip, port=5201):
     # Start iperf3 server. (Waitting at 5201 port)
     return subprocess.Popen(['iperf3', '-s', '-B', str(server_ip), '-p', str(port), '-1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-def run_iperf3_client(client_SSH, server_ip, duration = 60, server_port=5201):
+def run_iperf3_client(client_SSH, server_ip, duration = 10, server_port=5201):
     """Run a iperf3 client at a edge device B to send data to server A."""
     try:
         # Run iperf3 client command.
@@ -101,7 +101,8 @@ node_A_name = 'rpi3B+'
 node_A_mode = "PyMonsoon"
 client_ssh_id = 'pi'
 ssh_port = 22
-iperf3_server_port = 5205
+iperf3_server_port = 5203
+iperf3_duration = 10
 
 # Set up logger
 logger = logging.getLogger("test")
@@ -207,7 +208,7 @@ for rate in WiFi_rates:
     rpi3B.startSampling(numSamples = node_A_numSamples) # it will take measurements every 200us
 
     # Use iperf3 to measure the Wi-Fi interface's power consumption.
-    run_iperf3_client(client_SSH, server_ip, iperf3_server_port)
+    run_iperf3_client(client_SSH, server_ip, duration = iperf3_duration, server_port = iperf3_server_port)
 
     # End power monitoring.
     rpi3B.stopSampling()
