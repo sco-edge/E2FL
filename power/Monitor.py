@@ -139,12 +139,12 @@ class PowerMon():
         '''
         '''
         # numSamples = sample for one second
-        self.engine.StartSampling(numSamples)
+        self.engine.startSampling(numSamples)
 
-    def stopSampling(self):
+    def stopSampling(self, closeCSV=False):
         '''
         '''
-        self.engine.stopSampling()
+        self.engine.periodicStopSampling(closeCSV)
 
     #def calibration(self)
     
