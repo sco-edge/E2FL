@@ -52,8 +52,28 @@ def change_WiFi_interface_client(client_ssh, interf = 'wlan0', channel = 11, rat
     result = client_ssh.exec_command(f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}")
     return result
 
+def kill_running_iperf3_server():
+    result = subprocess.run(['ps', 'aux'], stdout=subprocess.PIPE, text=True)
+    process_list = result.stdout.splitlines()
+
+    # Look for iperf3 server process
+    for process in process_list:
+        if 'iperf3 -s' in process:
+            # Extract process ID
+            parts = process.split()
+            pid = parts[1]
+            
+            # Kill the iperf3 server process
+            try:
+                subprocess.run(['kill', '-9', pid], check=True)
+                logger.info(f"iperf3 server process (PID: {pid}) has been terminated.")
+            except subprocess.CalledProcessError as e:
+                logger.error(f"Failed to terminate iperf3 server process (PID: {pid}): {e}")
+                exit(1)
+
 def start_iperf3_server(server_ip, port=5201):
     """Start a iperf3 server at a server A asynchronously."""
+    kill_running_iperf3_server()
     # Start iperf3 server. (Waitting at 5201 port)
     return subprocess.Popen(['iperf3', '-s', '-B', str(server_ip), '-p', str(port), '-1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
