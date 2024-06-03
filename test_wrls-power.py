@@ -79,7 +79,7 @@ def start_iperf3_server(server_ip, port=5201):
     # Start iperf3 server. (Waitting at 5201 port)
     return subprocess.Popen(['iperf3', '-s', str(server_ip), '-p', str(port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-def run_iperf3_client(client_SSH, server_ip, duration = 10, server_port=5201):
+def run_iperf3_client(client_SSH, server_ip, duration = 10, server_port = 5201):
     """Run a iperf3 client at a edge device B to send data to server A."""
     try:
         # Run iperf3 client command.
@@ -181,7 +181,7 @@ while 1:
 if client_SSH.get_transport() is not None and client_SSH.get_transport().is_active():
     logger.info('An SSH connection for the client is established.')
     # Enable Keep Alive
-    client_SSH.get_transport().set_keepalive(60)
+    client_SSH.get_transport().set_keepalive(30)
     logger.debug("Set the client_SSH's keepalive option.")
 else:
     logger.debug("client_SSH is closed. exit()")
@@ -225,6 +225,9 @@ for rate in WiFi_rates:
     # Start power monitoring.
     rpi3B.startSampling(numSamples = node_A_numSamples) # it will take measurements every 200us
     logger.info('Start power monitor.')
+
+    if client_SSH.get_transport().is_active():
+        logger.info("client_SSH is alive.")
 
     # Use iperf3 to measure the Wi-Fi interface's power consumption.
     run_iperf3_client(client_SSH, server_ip, duration = iperf3_duration, server_port = iperf3_server_port)
