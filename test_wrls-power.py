@@ -177,7 +177,7 @@ while 1:
             logger.error(private_key_path)
             exit(1)
         # Enable Keep Alive
-        client_SSH.get_transport().set_keepalive(100)
+        client_SSH.get_transport().set_keepalive(60)
         logger.debug("Set the client_SSH's keepalive option.")
 
 # Start the iperf3 server.
