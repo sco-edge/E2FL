@@ -55,7 +55,7 @@ def change_WiFi_interface_client(client_ssh, interf = 'wlan0', channel = 11, rat
 def start_iperf3_server(server_ip, port=5201):
     """Start a iperf3 server at a server A asynchronously."""
     # Start iperf3 server. (Waitting at 5201 port)
-    return subprocess.Popen(['iperf3', '-s', '-B', str(server_ip), '-p', str(port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return subprocess.Popen(['iperf3', '-s', '-B', str(server_ip), '-p', str(port), '-1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def run_iperf3_client(client_SSH, server_ip, duration = 60, server_port=5201):
     """Run a iperf3 client at a edge device B to send data to server A."""
