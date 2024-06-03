@@ -50,7 +50,7 @@ def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower 
 def change_WiFi_interface_client(client_ssh, interf = 'wlan0', channel = 11, rate = '11M', txpower = 15):
     # change Wi-Fi interface 
     stdin, stdout, stderr = client_ssh.exec_command(f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}")
-    return stdout
+    return [stdin, stdout, stderr]
 
 def kill_running_iperf3_server():
     result = subprocess.run(['ps', 'aux'], stdout=subprocess.PIPE, text=True)
@@ -92,10 +92,11 @@ def run_iperf3_client(client_SSH, server_ip, duration = 10, server_port=5201):
             logger.info(line.decode('utf-8'))
         for line in stderr.read().splitlines():
             logger.error(line.decode('utf-8'))
-            exit(1)
+            return False
     except:
         logger.error("run_iperf3_client failed.")
-        exit(1)
+        return False
+    return True
 
 # default parameters
 root_path = os.path.abspath(os.getcwd())+'/'
