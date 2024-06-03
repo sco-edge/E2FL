@@ -77,7 +77,7 @@ def start_iperf3_server(server_ip, port=5201):
     logger.info(f"Kill existing iperf3 server process and wait.")
     time.sleep(10)
     # Start iperf3 server. (Waitting at 5201 port)
-    return subprocess.Popen(['iperf3', '-s', '-B', str(server_ip), '-p', str(port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return subprocess.Popen(['iperf3', '-s', str(server_ip), '-p', str(port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def run_iperf3_client(client_SSH, server_ip, duration = 10, server_port=5201):
     """Run a iperf3 client at a edge device B to send data to server A."""
@@ -182,7 +182,7 @@ while 1:
 
 # Start the iperf3 server.
 try:
-    server_process = start_iperf3_server(server_ip = server_ip)
+    server_process = start_iperf3_server(server_ip = server_ip, port = iperf3_server_port)
     logger.info("Start iperf3 server.")
     # Wait for server to start iperf3 properly.
     time.sleep(5)
