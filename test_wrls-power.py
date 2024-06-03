@@ -49,8 +49,8 @@ def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower 
 
 def change_WiFi_interface_client(client_ssh, interf = 'wlan0', channel = 11, rate = '11M', txpower = 15):
     # change Wi-Fi interface 
-    result = client_ssh.exec_command(f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}")
-    return result
+    stdin, stdout, stderr = client_ssh.exec_command(f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}")
+    return stdout
 
 def kill_running_iperf3_server():
     result = subprocess.run(['ps', 'aux'], stdout=subprocess.PIPE, text=True)
@@ -192,6 +192,8 @@ try:
     logger.info("Start iperf3 server.")
     # Wait for server to start iperf3 properly.
     time.sleep(5)
+    server_process.stdout.readline()
+    logger.info(server_process.stdout.readline())
 except Exception as e:
     logger.error('iperf3 is failed: ', e)
     exit(1)
@@ -209,7 +211,8 @@ for rate in WiFi_rates:
     # Set the edge device's rate (protocol version) in the Wi-Fi interface from the low data rate.
     #result = change_WiFi_interface(interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
     result = change_WiFi_interface_client(client_ssh = client_SSH, interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
-    logger.debug(result)
+    for line in result.read().splitlines():
+            logger.debug(line.decode('utf-8'))
     
     # Log the start time.
     time_records.append(time.time())
