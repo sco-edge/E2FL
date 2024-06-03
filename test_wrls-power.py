@@ -193,7 +193,7 @@ try:
     # Wait for server to start iperf3 properly.
     time.sleep(5)
     #server_process.stdout.readline()
-    logger.info(server_process.stdout.readline())
+    #logger.info(server_process.stdout.readline())
 except Exception as e:
     logger.error('iperf3 is failed: ', e)
     exit(1)
