@@ -74,6 +74,8 @@ def kill_running_iperf3_server():
 def start_iperf3_server(server_ip, port=5201):
     """Start a iperf3 server at a server A asynchronously."""
     kill_running_iperf3_server()
+    logger.info(f"Kill existing iperf3 server process and wait.")
+    time.sleep(10)
     # Start iperf3 server. (Waitting at 5201 port)
     return subprocess.Popen(['iperf3', '-s', '-B', str(server_ip), '-p', str(port), '-1'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
