@@ -176,9 +176,15 @@ while 1:
             logger.error("SSH is failed: ", e)
             logger.error(private_key_path)
             exit(1)
-        # Enable Keep Alive
-        client_SSH.get_transport().set_keepalive(60)
-        logger.debug("Set the client_SSH's keepalive option.")
+
+if client_SSH.get_transport() is not None and client_SSH.get_transport().is_active():
+    logger.info('An SSH connection for the client is established.')
+    # Enable Keep Alive
+    client_SSH.get_transport().set_keepalive(60)
+    logger.debug("Set the client_SSH's keepalive option.")
+else:
+    logger.debug("client_SSH is closed. exit()")
+    exit()
 
 # Start the iperf3 server.
 try:
