@@ -192,7 +192,7 @@ try:
     logger.info("Start iperf3 server.")
     # Wait for server to start iperf3 properly.
     time.sleep(5)
-    server_process.stdout.readline()
+    #server_process.stdout.readline()
     logger.info(server_process.stdout.readline())
 except Exception as e:
     logger.error('iperf3 is failed: ', e)
@@ -212,7 +212,7 @@ for rate in WiFi_rates:
     #result = change_WiFi_interface(interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
     result = change_WiFi_interface_client(client_ssh = client_SSH, interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
     for line in result.read().splitlines():
-            logger.debug(line.decode('utf-8'))
+        logger.debug(line.decode('utf-8'))
     
     # Log the start time.
     time_records.append(time.time())
