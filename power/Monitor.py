@@ -9,7 +9,7 @@ It is broken for LVPM. Use HVPM or uses manual mode.
 '''
 class PowerMon():
     
-    def __init__(self, node, vout, mode = "PyMonsoon"):
+    def __init__(self, node, vout, mode = "PyMonsoon", ConsoleIO = False):
         '''
             Initialization
         '''
@@ -27,7 +27,7 @@ class PowerMon():
             else:
                 Mon.setVout(vout) # vout = 5.5V
             self.engine = sampleEngine.SampleEngine(Mon)
-            self.engine.ConsoleOutput(True)
+            self.engine.ConsoleOutput(ConsoleIO)
             #self.engine.startSampling(numSamples)
 
             # The main power regulator can source 3.0 A of continuous current and 4.5 A of peak current

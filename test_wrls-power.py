@@ -1,16 +1,10 @@
 from power import Monitor
 import Monsoon.sampleEngine as sampleEngine
 from log import WrlsEnv
-import subprocess
-import re
-import os
-import logging
-import time
 from datetime import datetime
-import socket
-import paramiko
-import yaml
-import pickle
+import subprocess, os, logging, time, socket, pickle
+import paramiko, yaml
+import re
 
 
 _UPTIME_RPI3B = 500
@@ -106,7 +100,8 @@ node_A_CSVbool = False #True
 node_A_CSVname = "default"
 rpi3B = Monitor.PowerMon(   node = node_A_name,
                             vout = node_A_vout,
-                            mode = node_A_mode)
+                            mode = node_A_mode,
+                            ConsoleIO = False)
 rpi3B.setTrigger(   bool = node_A_triggerBool,
                     thld_high = node_A_thld_high,
                     thld_low = node_A_thld_low )
