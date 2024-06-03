@@ -176,6 +176,9 @@ while 1:
             logger.error("SSH is failed: ", e)
             logger.error(private_key_path)
             exit(1)
+        # Enable Keep Alive
+        client_SSH.get_transport().set_keepalive(100)
+        logger.debug("Set the client_SSH's keepalive option.")
 
 # Start the iperf3 server.
 try:
@@ -208,6 +211,7 @@ for rate in WiFi_rates:
 
     # Start power monitoring.
     rpi3B.startSampling(numSamples = node_A_numSamples) # it will take measurements every 200us
+    logger.info('Start power monitor.')
 
     # Use iperf3 to measure the Wi-Fi interface's power consumption.
     run_iperf3_client(client_SSH, server_ip, duration = iperf3_duration, server_port = iperf3_server_port)
