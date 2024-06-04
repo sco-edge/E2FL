@@ -59,7 +59,7 @@ def change_WiFi_interface_client(client_ssh, interf = 'wlan0', channel = 11, rat
             logger.error("Error detected in the command output.")
             return False
     else:
-        logger.info("iperf3 executed successfully.")
+        logger.info("iwconfig executed successfully.")
         logger.info(output)
     
     return True
@@ -107,7 +107,9 @@ def run_iperf3_client(client_SSH, server_ip, duration = 10, server_port = 5201):
             return False
         else:
             logger.info("iperf3 executed successfully.")
+            logger.info("===============(Terminal Output START)===============")
             logger.info(output)
+            logger.info("===============(Terminal Output  END )===============")
 
         '''
         # Print the results.
