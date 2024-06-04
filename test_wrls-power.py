@@ -49,8 +49,20 @@ def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower 
 
 def change_WiFi_interface_client(client_ssh, interf = 'wlan0', channel = 11, rate = '11M', txpower = 15):
     # change Wi-Fi interface 
-    stdin, stdout, stderr = client_ssh.exec_command(f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}")
-    return [stdin, stdout, stderr]
+    stdin, stdout, stderr = client_ssh.send(f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}") # exec_command
+    time.sleep(2)
+    
+    # Receive the output
+    output = client_ssh.recv(65535).decode() # 65535 is the maximum bytes that can read by recv() method.
+
+    if 'error' in output.lower() or 'command not found' in output.lower():
+            logger.error("Error detected in the command output.")
+            return False
+    else:
+        logger.info("iperf3 executed successfully.")
+        logger.info(output)
+    
+    return True
 
 def kill_running_iperf3_server():
     result = subprocess.run(['ps', 'aux'], stdout=subprocess.PIPE, text=True)
@@ -84,8 +96,20 @@ def run_iperf3_client(client_SSH, server_ip, duration = 10, server_port = 5201):
     try:
         # Run iperf3 client command.
         command = 'iperf3 -c '+str(server_ip)+' -p '+str(server_port)+' -t '+str(duration)
-        stdin, stdout, stderr = client_SSH.exec_command(command)
+        output = client_SSH.send(command) # exec_command
+        time.sleep(2)
+    
+        # Receive the output
+        output = client_SSH.recv(65535).decode() # 65535 is the maximum bytes that can read by recv() method.
         
+        if 'error' in output.lower() or 'command not found' in output.lower():
+            logger.error("Error detected in the command output.")
+            return False
+        else:
+            logger.info("iperf3 executed successfully.")
+            logger.info(output)
+
+        '''
         # Print the results.
         for line in stdout.read().splitlines():
             logger.info('client_SSH:')
@@ -93,6 +117,7 @@ def run_iperf3_client(client_SSH, server_ip, duration = 10, server_port = 5201):
         for line in stderr.read().splitlines():
             logger.error(line.decode('utf-8'))
             return False
+        '''
     except:
         logger.error("run_iperf3_client failed.")
         return False
@@ -188,6 +213,8 @@ else:
     logger.debug("client_SSH is closed. exit()")
     exit()
 
+client_shell = client_SSH.invoke_shell()
+
 # Start the iperf3 server.
 try:
     server_process = start_iperf3_server(server_ip = server_ip, port = iperf3_server_port)
@@ -212,12 +239,10 @@ for rate in WiFi_rates:
 
     # Set the edge device's rate (protocol version) in the Wi-Fi interface from the low data rate.
     #result = change_WiFi_interface(interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
-    result = change_WiFi_interface_client(client_ssh = client_SSH, interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
-    logger.error(result[0])
-    logger.error(result[1])
-    logger.error(result[2])
-    #for line in result.read().splitlines():
-        #logger.debug(line.decode('utf-8'))
+    result = change_WiFi_interface_client(client_ssh = client_shell, interf = client_interf, channel = 11, rate = str(rate)+'M', txpower = 15)
+    if result == False:
+        logger.error("iwconfig IS FAILED>")
+        exit(1)
     
     # Log the start time.
     time_records.append(time.time())
@@ -231,7 +256,10 @@ for rate in WiFi_rates:
         logger.info("client_SSH is alive.")
 
     # Use iperf3 to measure the Wi-Fi interface's power consumption.
-    run_iperf3_client(client_SSH, server_ip, duration = iperf3_duration, server_port = iperf3_server_port)
+    result = run_iperf3_client(client_shell, server_ip, duration = iperf3_duration, server_port = iperf3_server_port)
+    if result == False:
+        logger.error("IPERF3 CLIENT IS FAILED.")
+        exit(1)
 
     # End power monitoring.
     rpi3B.stopSampling()
