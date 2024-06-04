@@ -232,7 +232,7 @@ measurements_dict = []
 
 # Set up the edge device's the WiFi interface.
 # Identify the capabilities of the Wi-Fi interface of the currently running system.
-WiFi_rates = [1, 2, 5.5, 11, 6, 9, 12, 18, 24, 36, 48, 54]
+WiFi_rates = [1] #[1, 2, 5.5, 11, 6, 9, 12, 18, 24, 36, 48, 54]
 
 for rate in WiFi_rates:
     time_records = []
