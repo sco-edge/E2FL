@@ -292,3 +292,340 @@ dataset = ['CIFAR']
 
 client_cmd = "python3.10 ./FLOWER_embedded_devices/client_pytorch.py --cid=$client_id --server_address=$server_address --mnist"
 server_cmd = "python3.10 ./FLOWER_embedded_devices/server.py --rounds $round --min_num_clients $num_clients --sample_fraction $sample_frac"
+
+
+sever.py
+
+import flwr as fl
+
+def main():
+    # Start Flower server
+    fl.server.start_server(config={"num_rounds": 3})
+
+if __name__ == "__main__":
+    main()
+
+
+
+clinet.py
+
+import flwr as fl
+import torch
+import torchvision.transforms as transforms
+from torchvision.datasets import MNIST
+from torch.utils.data import DataLoader
+import torch.nn as nn
+import torch.optim as optim
+
+# Model definition (simple CNN for MNIST)
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3)
+        self.fc1 = nn.Linear(9216, 128)
+        self.fc2 = nn.Linear(128, 10)
+
+    def forward(self, x):
+        x = torch.relu(self.conv1(x))
+        x = torch.relu(self.conv2(x))
+        x = torch.flatten(x, 1)
+        x = torch.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+# Load data
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.1307,), (0.3081,))
+])
+
+trainset = MNIST('./data', train=True, download=True, transform=transform)
+trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
+testset = MNIST('./data', train=False, download=True, transform=transform)
+testloader = DataLoader(testset, batch_size=32, shuffle=False)
+
+# Flower client
+class FlowerClient(fl.client.NumPyClient):
+    def __init__(self, model, trainloader, testloader):
+        self.model = model
+        self.trainloader = trainloader
+        self.testloader = testloader
+
+    def get_parameters(self):
+        return [val.cpu().numpy() for val in self.model.parameters()]
+
+    def set_parameters(self, parameters):
+        for val, param in zip(parameters, self.model.parameters()):
+            param.data = torch.tensor(val)
+
+    def fit(self, parameters, config):
+        self.set_parameters(parameters)
+        self.model.train()
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
+        for epoch in range(1):  # train for 1 epoch
+            for images, labels in self.trainloader:
+                optimizer.zero_grad()
+                outputs = self.model(images)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+        return self.get_parameters(), len(self.trainloader.dataset), {}
+
+    def evaluate(self, parameters, config):
+        self.set_parameters(parameters)
+        self.model.eval()
+        criterion = nn.CrossEntropyLoss()
+        loss = 0
+        correct = 0
+        with torch.no_grad():
+            for images, labels in self.testloader:
+                outputs = self.model(images)
+                loss += criterion(outputs, labels).item()
+                pred = outputs.argmax(dim=1, keepdim=True)
+                correct += pred.eq(labels.view_as(pred)).sum().item()
+        accuracy = correct / len(self.testloader.dataset)
+        return float(loss), len(self.testloader.dataset), {"accuracy": float(accuracy)}
+
+# Start Flower client
+model = Net()
+client = FlowerClient(model, trainloader, testloader)
+fl.client.start_numpy_client(server_address="localhost:8080", client=client)
+
+
+
+
+
+
+
+
+import flwr as fl
+
+def main():
+    # Start Flower server
+    fl.server.start_server(config={"num_rounds": 3})
+
+if __name__ == "__main__":
+    main()
+
+
+import flwr as fl
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torchvision.transforms as transforms
+import torchvision.datasets as datasets
+from torch.utils.data import DataLoader
+from torchvision.models import resnet18
+
+# 모델 정의
+class LeNet(nn.Module):
+    def __init__(self):
+        super(LeNet, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x):
+        x = self.pool(torch.relu(self.conv1(x)))
+        x = self.pool(torch.relu(self.conv2(x)))
+        x = x.view(-1, 16 * 5 * 5)
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+# 데이터 로드
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+])
+
+trainset = datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
+trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
+testset = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
+testloader = DataLoader(testset, batch_size=32, shuffle=False)
+
+# Flower 클라이언트
+class FlowerClient(fl.client.NumPyClient):
+    def __init__(self, model, trainloader, testloader):
+        self.model = model
+        self.trainloader = trainloader
+        self.testloader = testloader
+
+    def get_parameters(self):
+        return [val.cpu().numpy() for val in self.model.parameters()]
+
+    def set_parameters(self, parameters):
+        for val, param in zip(parameters, self.model.parameters()):
+            param.data = torch.tensor(val)
+
+    def fit(self, parameters, config):
+        self.set_parameters(parameters)
+        self.model.train()
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
+        for epoch in range(1):  # train for 1 epoch
+            for images, labels in self.trainloader:
+                optimizer.zero_grad()
+                outputs = self.model(images)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+        return self.get_parameters(), len(self.trainloader.dataset), {}
+
+    def evaluate(self, parameters, config):
+        self.set_parameters(parameters)
+        self.model.eval()
+        criterion = nn.CrossEntropyLoss()
+        loss = 0
+        correct = 0
+        with torch.no_grad():
+            for images, labels in self.testloader:
+                outputs = self.model(images)
+                loss += criterion(outputs, labels).item()
+                pred = outputs.argmax(dim=1, keepdim=True)
+                correct += pred.eq(labels.view_as(pred)).sum().item()
+        accuracy = correct / len(self.testloader.dataset)
+        return float(loss), len(self.testloader.dataset), {"accuracy": float(accuracy)}
+
+# Start Flower client with ResNet model
+resnet_model = resnet18(pretrained=False, num_classes=10)
+client = FlowerClient(resnet_model, trainloader, testloader)
+fl.client.start_numpy_client(server_address="localhost:8080", client=client)
+
+# Start Flower client with LeNet model
+lenet_model = LeNet()
+client = FlowerClient(lenet_model, trainloader, testloader)
+fl.client.start_numpy_client(server_address="localhost:8080", client=client)
+
+
+
+
+
+
+
+#
+wireless
+
+import flwr as fl
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torchvision.transforms as transforms
+import torchvision.datasets as datasets
+from torch.utils.data import DataLoader
+from torchvision.models import resnet18
+import psutil
+import time
+
+# 모델 정의
+class LeNet(nn.Module):
+    def __init__(self):
+        super(LeNet, self).__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
+
+    def forward(self, x):
+        x = self.pool(torch.relu(self.conv1(x)))
+        x = self.pool(torch.relu(self.conv2(x)))
+        x = x.view(-1, 16 * 5 * 5)
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+# 데이터 로드
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+])
+
+trainset = datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
+trainloader = DataLoader(trainset, batch_size=32, shuffle=True)
+testset = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
+testloader = DataLoader(testset, batch_size=32, shuffle=False)
+
+# 네트워크 사용 정보를 로깅하는 함수
+def log_network_usage(log_file):
+    net_io = psutil.net_io_counters()
+    with open(log_file, 'a') as f:
+        f.write(f"{time.time()},{net_io.bytes_sent},{net_io.bytes_recv}\n")
+
+# Flower 클라이언트
+class FlowerClient(fl.client.NumPyClient):
+    def __init__(self, model, trainloader, testloader, log_file):
+        self.model = model
+        self.trainloader = trainloader
+        self.testloader = testloader
+        self.log_file = log_file
+
+    def get_parameters(self):
+        return [val.cpu().numpy() for val in self.model.parameters()]
+
+    def set_parameters(self, parameters):
+        for val, param in zip(parameters, self.model.parameters()):
+            param.data = torch.tensor(val)
+
+    def fit(self, parameters, config):
+        self.set_parameters(parameters)
+        self.model.train()
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
+        for epoch in range(1):  # train for 1 epoch
+            for images, labels in self.trainloader:
+                optimizer.zero_grad()
+                outputs = self.model(images)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+        # 로그 작성
+        log_network_usage(self.log_file)
+        return self.get_parameters(), len(self.trainloader.dataset), {}
+
+    def evaluate(self, parameters, config):
+        self.set_parameters(parameters)
+        self.model.eval()
+        criterion = nn.CrossEntropyLoss()
+        loss = 0
+        correct = 0
+        with torch.no_grad():
+            for images, labels in self.testloader:
+                outputs = self.model(images)
+                loss += criterion(outputs, labels).item()
+                pred = outputs.argmax(dim=1, keepdim=True)
+                correct += pred.eq(labels.view_as(pred)).sum().item()
+        accuracy = correct / len(self.testloader.dataset)
+        # 로그 작성
+        log_network_usage(self.log_file)
+        return float(loss), len(self.testloader.dataset), {"accuracy": float(accuracy)}
+
+# 모델 선택 및 로그 파일 설정
+model_choice = 'resnet'  # or 'lenet'
+log_file = 'network_usage.log'
+
+# 모델 초기화
+if model_choice == 'resnet':
+    model = resnet18(pretrained=False, num_classes=10)
+elif model_choice == 'lenet':
+    model = LeNet()
+else:
+    raise ValueError("Invalid model choice")
+
+# Flower 클라이언트 시작
+client = FlowerClient(model, trainloader, testloader, log_file)
+fl.client.start_numpy_client(server_address="localhost:8080", client=client)
+
+
+
+
+
+
