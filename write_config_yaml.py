@@ -12,14 +12,19 @@ data = {
         'ssh_key': 'rpi3b_plus',
         'interface': 'wlan0'
     },
+    'RPi3B+_b': {
+        'host': '192.168.0.22',
+        'ssh_key': 'rpi3b_plus',
+        'interface': 'wlan0'
+    },
     'RPi4B': {
         'host': '192.168.0.15',
-        'ssh_key': 'rpi4b',
+        'ssh_key': 'rpi3b_plus',
         'interface': 'wlan0'
     },
     'RPi5': {
         'host': '192.168.0.19',
-        'ssh_key': 'rpi5',
+        'ssh_key': 'rpi3b_plus',
         'interface': 'wlan0'
     }
 }
