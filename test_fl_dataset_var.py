@@ -288,6 +288,10 @@ with open(filename, 'wb') as handle:
     pickle.dump(measurements_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 logger.info(f"The measurement data is saved as {filename}.")
 
+
+
+
+
 dataset = ['CIFAR']
 
 client_cmd = "python3.10 ./FLOWER_embedded_devices/client_pytorch.py --cid=$client_id --server_address=$server_address --mnist"
