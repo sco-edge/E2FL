@@ -97,8 +97,9 @@ def get_ip_address():
         return None
 
 
+# https://psutil.readthedocs.io/en/latest/
 def log_network_usage(log_file):
-    net_io = psutil.net_io_counters()
+    net_io = psutil.net_io_counters(pernic=True)
     with open(log_file, 'a') as f:
         f.write(f"{time.time()},{net_io.bytes_sent},{net_io.bytes_recv}\n")
 
