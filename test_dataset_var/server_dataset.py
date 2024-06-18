@@ -102,70 +102,6 @@ def change_WiFi_interface_client(client_ssh, interf = 'wlan0', channel = 11, rat
     
     return True
 
-def kill_running_iperf3_server():
-    result = subprocess.run(['ps', 'aux'], stdout=subprocess.PIPE, text=True)
-    process_list = result.stdout.splitlines()
-
-    # Look for iperf3 server process
-    for process in process_list:
-        if 'iperf3 -s' in process:
-            # Extract process ID
-            parts = process.split()
-            pid = parts[1]
-            
-            # Kill the iperf3 server process
-            try:
-                subprocess.run(['kill', '-9', pid], check=True)
-                logger.info(f"iperf3 server process (PID: {pid}) has been terminated.")
-            except subprocess.CalledProcessError as e:
-                logger.error(f"Failed to terminate iperf3 server process (PID: {pid}): {e}")
-                exit(1)
-
-def start_iperf3_server(server_ip, port=5201):
-    """Start a iperf3 server at a server A asynchronously."""
-    kill_running_iperf3_server()
-    logger.info(f"Kill existing iperf3 server process and wait.")
-    time.sleep(10)
-    # Start iperf3 server. (Waitting at 5201 port)
-    return subprocess.run(['iperf3', '-s', '--bind', str(server_ip), '-p', str(port)],
-                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    #subprocess.Popen(['iperf3', '-s', '--bind', str(server_ip), '-p', str(port)], 
-    #                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-def run_iperf3_client(client_SSH, server_ip, duration = 10, server_port = 5201):
-    """Run a iperf3 client at a edge device B to send data to server A."""
-    try:
-        # Run iperf3 client command.
-        command = 'iperf3 -c '+str(server_ip)+' -p '+str(server_port)+' -t '+str(duration)
-        output = client_SSH.send(command) # exec_command
-        time.sleep(2)
-    
-        # Receive the output
-        output = client_SSH.recv(65535).decode() # 65535 is the maximum bytes that can read by recv() method.
-        
-        if 'error' in output.lower() or 'command not found' in output.lower():
-            logger.error("Error detected in the command output.")
-            return False
-        else:
-            logger.info("iperf3 executed successfully.")
-            logger.info("===============(Terminal Output START)===============")
-            logger.info(output)
-            logger.info("===============(Terminal Output  END )===============")
-
-        '''
-        # Print the results.
-        for line in stdout.read().splitlines():
-            logger.info('client_SSH:')
-            logger.info(line.decode('utf-8'))
-        for line in stderr.read().splitlines():
-            logger.error(line.decode('utf-8'))
-            return False
-        '''
-    except:
-        logger.error("run_iperf3_client failed.")
-        return False
-    return True
-
 def get_client_SSH(client_ip, wait_time):
     # Wait for boot up
     print(f"Wait {wait_time} seconds for the edge device to boot.")
@@ -207,7 +143,6 @@ def get_client_SSH(client_ip, wait_time):
     client_shell = client_SSH.invoke_shell()
 
     return client_shell
-
 
 # FL; define metric aggregation function
 def weighted_average(metrics: List[Tuple[int, Metrics]]):
@@ -253,8 +188,7 @@ node_A_name = 'rpi3B+'
 node_A_mode = "PyMonsoon"
 client_ssh_id = 'pi'
 ssh_port = 22
-iperf3_server_port = 5203
-iperf3_duration = 10
+
 
 # FL parameters
 FL_num_clients = 4
@@ -314,16 +248,6 @@ client_shells = []
 for c_ip in [client_ip1, client_ip2, client_ip3, client_ip4]:
     client_shells.append(get_client_SSH(client_ip = c_ip, wait_time = _UPTIME_RPI3B))
 
-# Start the FL server.
-try:
-    fl_server(server_address=server_ip, \
-              num_clients=FL_num_clients, sample_frac=FL_sample_frac, round=FL_round)
-    logger.info("Start FL server.")
-    # Wait for server to start fl properly.
-    time.sleep(5)
-except Exception as e:
-    logger.error('FL is failed: ', e)
-    exit(1)
 
 # Prepare a bucket to store the results.
 measurements_dict = []
@@ -340,13 +264,15 @@ for rate in WiFi_rates:
     rpi3B.startSampling(numSamples = node_A_numSamples) # it will take measurements every 200us
     logger.info('Start power monitor.')
 
+    '''
     # run fl client to client_shells
     for cid in range(0,5):
-        client_cmd = "python3.10 ./client_dataset.py --cid={cid} --server_address={server_ip} --mnist"
+        client_cmd = "python3.10 ./client_dataset.py --cid={cid} --server_address={server_ip} --dataset=cifar10"
         output = client_shells[cid].send(client_cmd)
         time.sleep(2)
-    
+    '''
 
+    '''
     output = client_shells[0].recv_exit_status() #recv(65535).decode()
     if 'error' in output.lower() or 'command not found' in output.lower():
         logger.error("Error detected in the command output.")
@@ -356,6 +282,17 @@ for rate in WiFi_rates:
         logger.info("===============(Terminal Output START)===============")
         logger.info(output)
         logger.info("===============(Terminal Output  END )===============")
+    '''
+    # Start the FL server.
+    try:
+        fl_server(server_address=server_ip, \
+                num_clients=FL_num_clients, sample_frac=FL_sample_frac, round=FL_round)
+        logger.info("Start FL server.")
+        # Wait for server to start fl properly.
+        time.sleep(5)
+    except Exception as e:
+        logger.error('FL is failed: ', e)
+        exit(1)
 
     # End power monitoring.
     rpi3B.stopSampling()
@@ -371,9 +308,6 @@ for rate in WiFi_rates:
 for client_SSH in client_shells:
     client_SSH.close()
 
-# Terminate the iperf3 server process.
-# server_process.terminate()
-# logger.info("Close the iperf3 serveer.")
 
 # Save the data.
 current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')

@@ -18,6 +18,7 @@ from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader
 from torchvision.models import resnet18, mobilenet_v3_small
 from torchvision.transforms import Compose, Normalize, ToTensor
+from torchvision.datasets import CIFAR10
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
@@ -42,9 +43,9 @@ parser.add_argument(
 parser.add_argument(
     "--dataset",
     type=str,
-    default='MNIST',
-    help="\{MNIST, CIFAR10\}",
-)
+    default='cifar10',
+    help="\{mnist, cifar10, fashion_mnist, sasha/dog-food, 'zh-plus/tiny-imagenet\}",
+) # the currently tested dataset are ['mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet']
 parser.add_argument(
     "--Model",
     type=str,
@@ -52,12 +53,8 @@ parser.add_argument(
     help="\{ResNet20, LSTM, ResNet34, VGG16, VGG19\}",
 )
 '''
-parser.add_argument(
-    "--mnist",
-    action="store_true",
-    help="If you use Raspberry Pi Zero clients (which just have 512MB or RAM) use "
-    "MNIST",
-)
+
+
 '''
 warnings.filterwarnings("ignore", category=UserWarning)
 NUM_CLIENTS = 50
@@ -98,10 +95,11 @@ def get_ip_address():
 
 
 # https://psutil.readthedocs.io/en/latest/
-def log_network_usage(log_file):
+# https://stackoverflow.com/questions/75983163/what-exactly-does-psutil-net-io-counters-byte-recv-mean
+def log_network_usage(log_file, interf):
     net_io = psutil.net_io_counters(pernic=True)
     with open(log_file, 'a') as f:
-        f.write(f"{time.time()},{net_io.bytes_sent},{net_io.bytes_recv}\n")
+        f.write(f"{time.time()},{net_io[interf].bytes_sent},{net_io[interf].bytes_recv}\n")
 
 
 class Net(nn.Module):
@@ -123,7 +121,6 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         return self.fc3(x)
-
 class LeNet(nn.Module):
     def __init__(self):
         super(LeNet, self).__init__()
@@ -142,7 +139,6 @@ class LeNet(nn.Module):
         x = torch.relu(self.fc2(x))
         x = self.fc3(x)
         return x
-
 def train(net, trainloader, optimizer, epochs, device):
     """Train the model on the training set."""
     criterion = torch.nn.CrossEntropyLoss()
@@ -170,12 +166,32 @@ def test(net, testloader, device):
     return loss, accuracy
 
 def prepare_dataset(dataset):
-    """Get MNIST/CIFAR-10 and return client partitions and global testset."""
-    if dataset == 'MNIST':
+    """
+    Get MNIST/CIFAR-10 and return client partitions and global testset.
+    https://flower.ai/docs/baselines/
+    https://flower.ai/docs/framework/tutorial-quickstart-pytorch.html
+    https://flower.ai/docs/datasets/ref-api/flwr_datasets.FederatedDataset.html#flwr_datasets.FederatedDataset.load_partition
+    """
+    if dataset == 'mnist':
         fds = FederatedDataset(dataset="mnist", partitioners={"train": NUM_CLIENTS})
         img_key = "image"
         norm = Normalize((0.1307,), (0.3081,))
-    else:#dataset == 'CIFAR10':
+    elif dataset == 'fashion_mnist':
+        '''
+        interrupted by custom code [y/N] message
+        '''
+        fds = FederatedDataset(dataset="fashion_mnist", partitioners={"train": NUM_CLIENTS})
+        img_key = "image"
+        norm = Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    elif dataset == 'sasha/dog-food':
+        fds = FederatedDataset(dataset="sasha/dog-food", partitioners={"train": NUM_CLIENTS})
+        img_key = "image"
+        norm = Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    elif dataset == 'zh-plus/tiny-imagenet':
+        fds = FederatedDataset(dataset="zh-plus/tiny-imagenet", partitioners={"train": NUM_CLIENTS})
+        img_key = "image"
+        norm = Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    else: # dataset == 'cifar10'
         fds = FederatedDataset(dataset="cifar10", partitioners={"train": NUM_CLIENTS})
         img_key = "img"
         norm = Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -209,7 +225,7 @@ class FlowerClient(fl.client.NumPyClient):
         self.trainset = trainset
         self.valset = valset
         # Instantiate model
-        if dataset == 'MNIST':
+        if dataset == 'mnist':
             self.model = Net()
         else:
             self.model = mobilenet_v3_small(num_classes=10)
@@ -285,11 +301,12 @@ def main():
     server_cmd = "python3.10 ./FLOWER_embedded_devices/server.py --rounds $round --min_num_clients $num_clients --sample_fraction $sample_frac"
 
     '''
-
     args = parser.parse_args()
     print(args)
 
     assert args.cid < NUM_CLIENTS
+
+    DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     # default parameters
     root_path = os.path.abspath(os.getcwd())+'/'
@@ -312,6 +329,7 @@ def main():
     time_records.append(time.time())
     logger.info([f'Wi-Fi start: {time.time()}'])
 
+    log_network_usage(f"log_{args.cid}.log", 'wlan0')
     # Start Flower client setting its associated data partition
     fl.client.start_client(
         server_address=args.server_address,
