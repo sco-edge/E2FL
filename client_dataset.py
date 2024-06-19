@@ -92,11 +92,9 @@ def get_ip_address():
 
 # https://psutil.readthedocs.io/en/latest/
 # https://stackoverflow.com/questions/75983163/what-exactly-does-psutil-net-io-counters-byte-recv-mean
-def log_network_usage(log_file, interf):
-    net_io = psutil.net_io_counters(pernic=True)
-    with open(log_file, 'a') as f:
-        f.write(f"{time.time()},{net_io[interf].bytes_sent},{net_io[interf].bytes_recv}\n")
-
+def get_network_usage(interf):
+    net_io = psutil.net_io_counters()
+    return {"bytes_sent": net_io[interf].bytes_sent, "bytes_recv": net_io[interf].bytes_recv}
 
 class Net(nn.Module):
     """Model (simple CNN adapted from 'PyTorch: A 60 Minute Blitz')."""
@@ -318,14 +316,13 @@ def main():
     logger.addHandler(ch)
 
     # Prepare a bucket to store the results.
-    measurements_dict = []
-    time_records = []
+    usage_record = []
 
     # Log the start time.
-    time_records.append(time.time())
-    logger.info([f'Wi-Fi start: {time.time()}'])
+    start_time = time.time()
+    start_net = get_network_usage('wlan0')
+    logger.info([f'Wi-Fi start: {start_time}'])
 
-    log_network_usage(f"log_{args.cid}.log", 'wlan0')
     # Start Flower client setting its associated data partition
     fl.client.start_client(
         server_address=args.server_address,
@@ -335,21 +332,22 @@ def main():
     )
 
     # Log the end time.
-    time_records.append(time.time())
-    logger.info([f'Wi-Fi end: {time.time()}'])
+    end_time = time.time()
+    end_net = get_network_usage()
+    logger.info([f'Wi-Fi end: {end_time}'])
 
-    measurements_dict.append({'time': time_records})
+    usage_record["execution_time"] = end_time - start_time
+    usage_record["bytes_sent"] = end_net["bytes_sent"] - start_net["bytes_sent"]
+    usage_record["bytes_recv"] = end_net["bytes_recv"] - start_net["bytes_recv"]
 
 
     # Save the data.
     current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     filename = f"data_{args.cid}_{current_time}.pickle"
     with open(filename, 'wb') as handle:
-        pickle.dump(measurements_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(usage_record, handle, protocol=pickle.HIGHEST_PROTOCOL)
     logger.info(f"The measurement data is saved as {filename}.")
 
 if __name__ == "__main__":
     main()
-
-
 
