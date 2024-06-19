@@ -157,7 +157,7 @@ else:
 
 # set client_SSH
 client_shells = []
-for c_ip in [client_ip1, client_ip2, client_ip3, client_ip4]:
+for c_ip in [client_ip1]:#, client_ip2, client_ip3, client_ip4]:
     client_shells.append(get_client_SSH(client_ip = c_ip, wait_time = _UPTIME_RPI3B))
 
 
