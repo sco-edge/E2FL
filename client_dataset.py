@@ -340,7 +340,7 @@ def main():
 
     # Log the end time.
     end_time = time.time()
-    end_net = get_network_usage()
+    end_net = get_network_usage('wlan0')
     logger.info([f'Wi-Fi end: {end_time}'])
 
     usage_record["execution_time"] = end_time - start_time
