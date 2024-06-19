@@ -106,9 +106,6 @@ node_A_mode = "PyMonsoon"
 client_ssh_id = 'pi'
 ssh_port = 22
 
-args = parser.parse_args()
-print(args)
-
 
 # Set up logger
 logger = logging.getLogger("test")
