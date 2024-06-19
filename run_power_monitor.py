@@ -7,6 +7,7 @@ import paramiko, yaml
 import re
 import argparse
 from typing import List, Tuple
+import asyncio
 
 import argparse 
 from typing import List, Tuple
@@ -99,6 +100,10 @@ def get_client_SSH(client_ip, wait_time):
 
     return client_shell
 
+async def start_powermon(rpi3B):
+    rpi3B.startSampling(numSamples = node_A_numSamples) # it will take measurements every 200us
+    
+
 # default parameters
 root_path = os.path.abspath(os.getcwd())+'/'
 node_A_name = 'rpi3B+'
@@ -172,18 +177,18 @@ for rate in WiFi_rates:
     # Log the start time.
     time_records.append(time.time())
 
-    input_string = input("Press Enter to start power monitoring")
+    input_string = input("Press Enter to start power monitoring\n")
 
     # Start power monitoring.
-    rpi3B.startSampling(numSamples = node_A_numSamples) # it will take measurements every 200us
     logger.info(f'Start the power monitor.{input_string}')
+    task1 = asyncio.create_task(start_powermon(rpi3B))
 
     input_string = input("Press Enter to stop power monitoring")
 
     # End power monitoring.
+    logger.info(f'Stop the power monitor.{input_string}')
     rpi3B.stopSampling()
     samples = rpi3B.getSamples()
-    logger.info(f'Stop the power monitor.{input_string}')
 
     # Log the end time.
     time_records.append(time.time())
