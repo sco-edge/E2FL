@@ -323,7 +323,7 @@ def main():
     logger.addHandler(ch)
 
     # Prepare a bucket to store the results.
-    usage_record = []
+    usage_record = {}
 
     # Log the start time.
     start_time = time.time()
