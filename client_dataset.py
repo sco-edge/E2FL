@@ -1,8 +1,6 @@
 from log import WrlsEnv
 from datetime import datetime
 import subprocess, os, logging, time, socket, pickle
-import paramiko, yaml
-import re
 import psutil
 import argparse
 import warnings
