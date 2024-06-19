@@ -180,14 +180,14 @@ for rate in WiFi_rates:
     input_string = input("Press Enter to start power monitoring\n")
 
     # Start power monitoring.
-    logger.info(f'Start the power monitor.{input_string}')
+    logger.info('Start the power monitor.')
     rpi3B.startSampling(numSamples = node_A_numSamples) # it will take measurements every 200us
     #task1 = asyncio.create_task(start_powermon(rpi3B))
 
     input_string = input("Press Enter to stop power monitoring")
 
     # End power monitoring.
-    logger.info(f'Stop the power monitor.{input_string}')
+    logger.info('Stop the power monitor.')
     rpi3B.stopSampling()
     samples = rpi3B.getSamples()
 

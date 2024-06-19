@@ -171,6 +171,8 @@ def fl_server(server_address, num_clients=4, sample_frac=1.0, round=3):
         fraction_fit=sample_frac,
         fraction_evaluate=sample_frac,
         min_fit_clients=num_clients,
+        min_available_clients=num_clients,
+        min_evaulate_clients=num_clients,
         on_fit_config_fn=fit_config,
         evaluate_metrics_aggregation_fn=weighted_average,
     )
