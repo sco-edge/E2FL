@@ -126,7 +126,7 @@ node_A_triggerBool = True
 node_A_numSamples = sampleEngine.triggers.SAMPLECOUNT_INFINITE
 node_A_thld_high = 100
 node_A_thld_low = 10
-node_A_CSVbool = False #True
+node_A_CSVbool = True
 node_A_CSVname = "default"
 rpi3B = Monitor.PowerMon(   node = node_A_name,
                             vout = node_A_vout,
