@@ -239,7 +239,7 @@ WiFi_rates = [1] #[1, 2, 5.5, 11, 6, 9, 12, 18, 24, 36, 48, 54]
 
 # Start the FL server.
 try:
-    fl_server(server_address=args.server_ip, \
+    fl_server(server_address=args.server_address, \
             num_clients=args.min_num_clients, sample_frac=args.sample_fraction, round=args.rounds)
     logger.info("Start FL server.")
     # Wait for server to start fl properly.
