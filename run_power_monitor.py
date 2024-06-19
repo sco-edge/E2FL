@@ -171,7 +171,7 @@ measurements_dict = []
 
 WiFi_rates = [1] #[1, 2, 5.5, 11, 6, 9, 12, 18, 24, 36, 48, 54]
 
-for rate in WiFi_rates:
+while True:
     time_records = []
 
     # Log the start time.
@@ -184,30 +184,35 @@ for rate in WiFi_rates:
     rpi3B.startSampling(numSamples = node_A_numSamples) # it will take measurements every 200us
     #task1 = asyncio.create_task(start_powermon(rpi3B))
 
-    input_string = input("Press Enter to stop power monitoring")
+    input_string = input("Press Enter to stop power monitoring\{Q: quit\}: ")
 
     # End power monitoring.
     logger.info('Stop the power monitor.')
     rpi3B.stopSampling()
     samples = rpi3B.getSamples()
 
-    # Log the end time.
-    time_records.append(time.time())
-    logger.info([f'Wi-Fi end(rate: {rate})',time.time()])
+    # Save the data.
+    current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    filename = f"power_measure_{current_time}.pickle"
+    with open(filename, 'wb') as handle:
+        pickle.dump(samples, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    logger.info(f"The measurement data is saved as {filename}.")
 
-    measurements_dict.append({'rate': rate, 'time': time_records, 'power': samples})
+    if 'Q' in input_string:
+        logger.info("Power Monitoring is closed.")
+        break
+
+    # Log the end time.
+    #time_records.append(time.time())
+    #logger.info([f'Wi-Fi end(rate: {rate})',time.time()])
+
+    #measurements_dict.append({'rate': rate, 'time': time_records, 'power': samples})
 
 # Close the SSH connection.
 for client_SSH in client_shells:
     client_SSH.close()
 
 
-# Save the data.
-current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-filename = f"data_{current_time}.pickle"
-with open(filename, 'wb') as handle:
-    pickle.dump(measurements_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
-logger.info(f"The measurement data is saved as {filename}.")
 
 
 
