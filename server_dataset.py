@@ -170,6 +170,7 @@ def fit_config(server_round: int):
 def fl_server(server_address, num_clients=4, sample_frac=1.0, round=3):
     # Define strategy
     strategy = fl.server.strategy.FedAvg(
+        server_address = server_address,
         fraction_fit=sample_frac,
         fraction_evaluate=sample_frac,
         min_fit_clients=num_clients,
@@ -189,7 +190,8 @@ node_A_name = 'rpi3B+'
 node_A_mode = "PyMonsoon"
 client_ssh_id = 'pi'
 ssh_port = 22
-
+args = parser.parse_args()
+print(args)
 
 # FL parameters
 FL_num_clients = 4
@@ -288,8 +290,8 @@ for rate in WiFi_rates:
     '''
     # Start the FL server.
     try:
-        fl_server(server_address=server_ip, \
-                num_clients=FL_num_clients, sample_frac=FL_sample_frac, round=FL_round)
+        fl_server(server_address=args.server_ip, \
+                num_clients=args.min_num_clients, sample_frac=args.sample_fraction, round=args.rounds)
         logger.info("Start FL server.")
         # Wait for server to start fl properly.
         time.sleep(5)
