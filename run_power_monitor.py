@@ -172,18 +172,18 @@ for rate in WiFi_rates:
     # Log the start time.
     time_records.append(time.time())
 
-    input("Press Enter to start power monitoring")
+    input_string = input("Press Enter to start power monitoring")
 
     # Start power monitoring.
     rpi3B.startSampling(numSamples = node_A_numSamples) # it will take measurements every 200us
-    logger.info('Start the power monitor.')
+    logger.info(f'Start the power monitor.{input_string}')
 
-    input("Press Enter to stop power monitoring")
+    input_string = input("Press Enter to stop power monitoring")
 
     # End power monitoring.
     rpi3B.stopSampling()
     samples = rpi3B.getSamples()
-    logger.info('Stop the power monitor.')
+    logger.info(f'Stop the power monitor.{input_string}')
 
     # Log the end time.
     time_records.append(time.time())
