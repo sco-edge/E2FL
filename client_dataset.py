@@ -343,7 +343,7 @@ def main():
 
     # Save the data.
     current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    filename = f"data_{current_time}.pickle"
+    filename = f"data_{args.cid}_{current_time}.pickle"
     with open(filename, 'wb') as handle:
         pickle.dump(measurements_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
     logger.info(f"The measurement data is saved as {filename}.")
