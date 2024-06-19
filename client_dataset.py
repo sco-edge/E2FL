@@ -93,8 +93,15 @@ def get_ip_address():
 # https://psutil.readthedocs.io/en/latest/
 # https://stackoverflow.com/questions/75983163/what-exactly-does-psutil-net-io-counters-byte-recv-mean
 def get_network_usage(interf):
-    net_io = psutil.net_io_counters()
+    net_io = psutil.net_io_counters(pernic=True)
     return {"bytes_sent": net_io[interf].bytes_sent, "bytes_recv": net_io[interf].bytes_recv}
+
+def log_network_usage(log_file, interf):
+    net_io = psutil.net_io_counters(pernic=True)
+    return net_io
+    #with open(log_file, 'a') as f:
+    #    f.write(f"{time.time()},{net_io[interf].bytes_sent},{net_io[interf].bytes_recv}\n")
+
 
 class Net(nn.Module):
     """Model (simple CNN adapted from 'PyTorch: A 60 Minute Blitz')."""
