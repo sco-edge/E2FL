@@ -2,14 +2,18 @@ RPi3B+:
   host: 192.168.0.14
   interface: wlan0
   ssh_key: rpi3b_plus
+RPi3B+_b:
+  host: 192.168.0.22
+  interface: wlan0
+  ssh_key: rpi3b_plus
 RPi4B:
   host: 192.168.0.15
   interface: wlan0
-  ssh_key: rpi4b
+  ssh_key: rpi3b_plus
 RPi5:
   host: 192.168.0.19
   interface: wlan0
-  ssh_key: rpi5
+  ssh_key: rpi3b_plus
 server:
   host: 192.168.0.17
   interface: wlx30b5c212273b
