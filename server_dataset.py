@@ -168,7 +168,6 @@ def fit_config(server_round: int):
 def fl_server(server_address, num_clients=4, sample_frac=1.0, round=3):
     # Define strategy
     strategy = fl.server.strategy.FedAvg(
-        server_address = server_address,
         fraction_fit=sample_frac,
         fraction_evaluate=sample_frac,
         min_fit_clients=num_clients,
