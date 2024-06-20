@@ -327,6 +327,8 @@ def main():
     ch.setLevel(logging.DEBUG)
     ch.setFormatter(CustomFormatter())
     logger.addHandler(ch)
+    current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{args.cid}_{args.dataset}_{current_time}.txt")
 
     # Prepare a bucket to store the results.
     usage_record = {}
@@ -355,7 +357,7 @@ def main():
 
 
     # Save the data.
-    current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    
     filename = f"data_{args.cid}_{current_time}.pickle"
     with open(filename, 'wb') as handle:
         pickle.dump(usage_record, handle, protocol=pickle.HIGHEST_PROTOCOL)
