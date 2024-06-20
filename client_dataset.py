@@ -37,6 +37,12 @@ parser.add_argument(
     help="Client id. Should be an integer between 0 and NUM_CLIENTS",
 )
 parser.add_argument(
+    "--interface",
+    type=int,
+    default="wlan0"
+    help="Wi-Fi Interface",
+)
+parser.add_argument(
     "--dataset",
     type=str,
     default='cifar10',
@@ -327,7 +333,7 @@ def main():
 
     # Log the start time.
     start_time = time.time()
-    start_net = get_network_usage('wlan0')
+    start_net = get_network_usage(args.interface)
     logger.info([f'Wi-Fi start: {start_time}'])
 
     # Start Flower client setting its associated data partition
@@ -340,7 +346,7 @@ def main():
 
     # Log the end time.
     end_time = time.time()
-    end_net = get_network_usage('wlan0')
+    end_net = get_network_usage(args.interface)
     logger.info([f'Wi-Fi end: {end_time}'])
 
     usage_record["execution_time"] = end_time - start_time

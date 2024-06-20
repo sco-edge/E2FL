@@ -69,6 +69,7 @@ def get_client_SSH(client_ip, wait_time):
 
     # ssh -i {rsa} {USER}@{IP_ADDRESS}
     try_count = 0
+    time.sleep(150)
     start_time = time.time()
     while 1:
         print(f'{try_count} try ...')
