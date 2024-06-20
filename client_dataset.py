@@ -39,7 +39,7 @@ parser.add_argument(
 parser.add_argument(
     "--interface",
     type=int,
-    default="wlan0"
+    default="wlan0",
     help="Wi-Fi Interface",
 )
 parser.add_argument(
