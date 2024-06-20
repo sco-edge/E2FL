@@ -122,7 +122,7 @@ logger.addHandler(ch)
 
 # Set up Power Monitor
 node_A_vout = 5.0
-node_A_triggerBool = True
+node_A_triggerBool = False
 node_A_numSamples = sampleEngine.triggers.SAMPLECOUNT_INFINITE
 node_A_thld_high = 100
 node_A_thld_low = 10
