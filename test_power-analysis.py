@@ -55,8 +55,6 @@ def load_and_process_data(file_path):
     
     return data
 
-
-
 def calculate_energy_per_time(file_path):
     # Load the data
     data = pd.read_csv(file_path)
@@ -71,27 +69,27 @@ def calculate_energy_per_time(file_path):
     return data
 
 def calculate_mean_std(data, label):
-    avg_power = data['Power(mW)'].mean()
-    std_power = data['Power(mW)'].std()
-    total_energy = (data['Power(mW)'] * (data['Time(ms)'].diff().fillna(0) / 1000)).sum()  # Total energy in mJ
+    avg_power = (data['Power(mW)'].to_numpy()).mean()
+    std_power = (data['Power(mW)'].to_numpy()).std()
+    total_energy = (data['Power(mW)'].to_numpy() * ((data['Time(ms)'].to_numpy()).diff().fillna(0) / 1000)).sum()  # Total energy in mJ
     
     print(f'{label} - Average Power Consumption: {avg_power:.2f} mW, Std Dev: {std_power:.2f} mW, Total Energy: {total_energy:.2f} mJ')
     
     return avg_power, std_power, total_energy 
 
 def calculate_mean_sum(data):
-    avg_power = data['Power(mW)'].mean()
-    total_energy = data['Energy(mJ)'].sum()
+    avg_power = (data['Power(mW)'].to_numpy()).mean()
+    total_energy = (data['Energy(mJ)'].to_numpy()).sum()
     
     return avg_power, total_energy
 
 def calculate_cumulative_energy(data):
     # Calculate the energy for each time interval (Energy = Power * Time interval)
-    data['Time_diff(s)'] = data['Time(ms)'].diff().fillna(0) / 1000  # Convert ms to seconds
-    data['Energy(mJ)'] = data['Power(mW)'] * data['Time_diff(s)']  # Energy in millijoules
+    data['Time_diff(s)'] = (data['Time(ms)'].to_numpy()).diff().fillna(0) / 1000  # Convert ms to seconds
+    data['Energy(mJ)'] = data['Power(mW)'].to_numpy() * data['Time_diff(s)'].to_numpy()  # Energy in millijoules
     
     # Calculate cumulative energy
-    data['Cumulative_Energy(mJ)'] = data['Energy(mJ)'].cumsum()
+    data['Cumulative_Energy(mJ)'] = (data['Energy(mJ)'].to_numpy()).cumsum()
     
     return data
 
@@ -99,10 +97,10 @@ def plot_power_consumption(data1, data2, label1, label2):
     plt.figure(figsize=(12, 6))
     
     # Plot the power consumption for the first dataset
-    plt.plot(data1['Time(ms)'], data1['Power(mW)'], label=label1)
+    plt.plot(data1['Time(ms)'].to_numpy(), data1['Power(mW)'].to_numpy(), label=label1)
     
     # Plot the power consumption for the second dataset
-    plt.plot(data2['Time(ms)'], data2['Power(mW)'], label=label2)
+    plt.plot(data2['Time(ms)'].to_numpy(), data2['Power(mW)'].to_numpy(), label=label2)
     
     # Labeling the plot
     plt.xlabel('Time (ms)')
@@ -148,10 +146,10 @@ def plot_cumulative_energy(data1, data2, label1, label2):
     plt.figure(figsize=(12, 6))
     
     # Plot the cumulative energy for the first dataset
-    plt.plot(data1['Time(ms)'], data1['Cumulative_Energy(mJ)'], label=label1)
+    plt.plot(data1['Time(ms)'].to_numpy(), data1['Cumulative_Energy(mJ)'], label=label1)
     
     # Plot the cumulative energy for the second dataset
-    plt.plot(data2['Time(ms)'], data2['Cumulative_Energy(mJ)'], label=label2)
+    plt.plot(data2['Time(ms)'].to_numpy(), data2['Cumulative_Energy(mJ)'], label=label2)
     
     # Labeling the plot
     plt.xlabel('Time (ms)')
@@ -175,8 +173,8 @@ def plot_boxplot(data1, data2, label1, label2):
 
 def plot_density(data1, data2, label1, label2):
     plt.figure(figsize=(10, 6))
-    sns.kdeplot(data1['Energy(mJ)'], label=label1, fill=True, alpha=0.5)
-    sns.kdeplot(data2['Energy(mJ)'], label=label2, fill=True, alpha=0.5)
+    sns.kdeplot(data1['Energy(mJ)'].to_numpy(), label=label1, fill=True, alpha=0.5)
+    sns.kdeplot(data2['Energy(mJ)'].to_numpy(), label=label2, fill=True, alpha=0.5)
     plt.title('Energy Consumption Density')
     plt.xlabel('Energy (mJ)')
     plt.ylabel('Density')
@@ -188,7 +186,7 @@ def plot_3d_scatter(data1, data2, label1, label2):
     ax = fig.add_subplot(121, projection='3d')
     
     # 3D scatter plot for the first dataset
-    ax.scatter(data1['Time(ms)'], data1['Power(mW)'], data1['Cumulative_Energy(mJ)'], label=label1)
+    ax.scatter(data1['Time(ms)'].to_numpy(), data1['Power(mW)'].to_numpy(), data1['Cumulative_Energy(mJ)'].to_numpy(), label=label1)
     ax.set_xlabel('Time (ms)')
     ax.set_ylabel('Power (mW)')
     ax.set_zlabel('Cumulative Energy (mJ)')
@@ -197,7 +195,7 @@ def plot_3d_scatter(data1, data2, label1, label2):
     ax2 = fig.add_subplot(122, projection='3d')
     
     # 3D scatter plot for the second dataset
-    ax2.scatter(data2['Time(ms)'], data2['Power(mW)'], data2['Cumulative_Energy(mJ)'], label=label2, color='orange')
+    ax2.scatter(data2['Time(ms)'].to_numpy(), data2['Power(mW)'].to_numpy(), data2['Cumulative_Energy(mJ)'].to_numpy(), label=label2, color='orange')
     ax2.set_xlabel('Time (ms)')
     ax2.set_ylabel('Power (mW)')
     ax2.set_zlabel('Cumulative Energy (mJ)')
@@ -210,7 +208,7 @@ def plot_3d_line(data1, data2, label1, label2):
     ax = fig.add_subplot(121, projection='3d')
     
     # 3D line plot for the first dataset
-    ax.plot(data1['Time(ms)'], data1['Power(mW)'], data1['Cumulative_Energy(mmkdirJ)'], label=label1)
+    ax.plot(data1['Time(ms)'].to_numpy(), data1['Power(mW)'].to_numpy(), data1['Cumulative_Energy(mmkdirJ)'].to_numpy(), label=label1)
     ax.set_xlabel('Time (ms)')
     ax.set_ylabel('Power (mW)')
     ax.set_zlabel('Cumulative Energy (mJ)')
@@ -219,7 +217,7 @@ def plot_3d_line(data1, data2, label1, label2):
     ax2 = fig.add_subplot(122, projection='3d')
     
     # 3D line plot for the second dataset
-    ax2.plot(data2['Time(ms)'], data2['Power(mW)'], data2['Cumulative_Energy(mJ)'], label=label2, color='orange')
+    ax2.plot(data2['Time(ms)'].to_numpy(), data2['Power(mW)'].to_numpy(), data2['Cumulative_Energy(mJ)'].to_numpy(), label=label2, color='orange')
     ax2.set_xlabel('Time (ms)')
     ax2.set_ylabel('Power (mW)')
     ax2.set_zlabel('Cumulative Energy (mJ)')
