@@ -51,12 +51,12 @@ def load_and_process_data(file_path):
     #data = pd.read_csv(file_path)
     with open(file_path, 'rb') as file:
         data = pickle.load(file)
+        
     #  [timestamp, main, usb, aux, mainVolts, usbVolts]
     output = {}
     output['Time(ms)'] = np.array(data[0])
     output['USB(mA)'] = np.array(data[2])
     output['USB Voltage(V)'] = np.array(data[5])
-
 
     # Calculate power consumption (Power = USB Current * USB Voltage)
     output['Power(mW)'] = output['USB(mA)'] * output['USB Voltage(V)']
@@ -81,6 +81,7 @@ def calculate_energy_per_time(file_path):
     output['Time_diff(s)'] = np.nan_to_num(output['Time(ms)']) / 1000  # Convert ms to seconds
     output['Energy(mJ)'] = output['Power(mW)'] * output['Time_diff(s)']  # Energy in millijoules
     
+    print(f'output: {output.shape}')
     return output
 
 def calculate_mean_std(data, label):
