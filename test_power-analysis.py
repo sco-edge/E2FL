@@ -110,7 +110,7 @@ def plot_power_consumption(data1, data2, label1, label2):
     plt.title('Power Consumption Over Time')
     plt.legend()
     plt.grid(True)
-    fig.savefig('./fig/plot_power_consumption.png')
+    plt.savefig('./fig/plot_power_consumption.png')
 
 def plot_comparison_bar_graph(stats1, stats2, labels):
     # Unpack statistics
@@ -142,7 +142,7 @@ def plot_comparison_bar_graph(stats1, stats2, labels):
     plt.title('Total Energy Consumption')
     
     plt.tight_layout()
-    fig.savefig('./fig/plot_comparison_bar_graph.png')
+    plt.savefig('./fig/plot_comparison_bar_graph.png')
 
 def plot_cumulative_energy(data1, data2, label1, label2):
     plt.figure(figsize=(12, 6))
@@ -159,7 +159,7 @@ def plot_cumulative_energy(data1, data2, label1, label2):
     plt.title('Cumulative Energy Consumption Over Time')
     plt.legend()
     plt.grid(True)
-    fig.savefig('./fig/plot_cumulative_energy.png')
+    plt.savefig('./fig/plot_cumulative_energy.png')
 
 def plot_boxplot(data1, data2, label1, label2):
     # Combine data for box plot
@@ -171,7 +171,7 @@ def plot_boxplot(data1, data2, label1, label2):
     sns.boxplot(x='Dataset', y='Energy(mJ)', data=combined_data)
     plt.title('Energy Consumption Distribution')
     plt.ylabel('Energy (mJ)')
-    fig.savefig('./fig/plot_boxplot.png')
+    plt.savefig('./fig/plot_boxplot.png')
 
 def plot_density(data1, data2, label1, label2):
     plt.figure(figsize=(10, 6))
@@ -181,7 +181,7 @@ def plot_density(data1, data2, label1, label2):
     plt.xlabel('Energy (mJ)')
     plt.ylabel('Density')
     plt.legend()
-    fig.savefig('./fig/plot_density.png')
+    plt.savefig('./fig/plot_density.png')
 
 def plot_3d_scatter(data1, data2, label1, label2):
     fig = plt.figure(figsize=(14, 8))
@@ -203,7 +203,7 @@ def plot_3d_scatter(data1, data2, label1, label2):
     ax2.set_zlabel('Cumulative Energy (mJ)')
     ax2.set_title(label2)
     
-    fig.savefig('./fig/plot_3d_scatter.png')
+    plt.savefig('./fig/plot_3d_scatter.png')
 
 def plot_3d_line(data1, data2, label1, label2):
     fig = plt.figure(figsize=(14, 8))
@@ -225,7 +225,7 @@ def plot_3d_line(data1, data2, label1, label2):
     ax2.set_zlabel('Cumulative Energy (mJ)')
     ax2.set_title(label2)
     
-    fig.savefig('./fig/plot_3d_line.png')
+    plt.savefig('./fig/plot_3d_line.png')
 
 
 def plot_comparison_bar_chart(stats1, stats2, labels):
@@ -256,7 +256,7 @@ def plot_comparison_bar_chart(stats1, stats2, labels):
     ax[1].set_xticklabels(labels)
 
     plt.tight_layout()
-    fig.savefig('./fig/plot_comparison_bar_chart.png')
+    plt.savefig('./fig/plot_comparison_bar_chart.png')
 
 if __name__ == "__main__":
     
@@ -401,4 +401,4 @@ if __name__ == "__main__":
     axes[1].grid(True)
 
     plt.tight_layout()
-    fig.savefig('./fig/plot_networkIO_difference.png')
+    plt.savefig('./fig/plot_networkIO_difference.png')
