@@ -53,9 +53,9 @@ def load_and_process_data(file_path):
         data = pickle.load(file)
     #  [timestamp, main, usb, aux, mainVolts, usbVolts]
     output = {}
-    output['Time(ms)'] = data[0]
-    output['USB(mA)'] = data[2]
-    output['USB Voltage(V)'] = data[5]
+    output['Time(ms)'] = np.array(data[0])
+    output['USB(mA)'] = np.array(data[2])
+    output['USB Voltage(V)'] = np.array(data[5])
 
 
     # Calculate power consumption (Power = USB Current * USB Voltage)
@@ -70,9 +70,9 @@ def calculate_energy_per_time(file_path):
         data = pickle.load(file)
     #  [timestamp, main, usb, aux, mainVolts, usbVolts]
     output = {}
-    output['Time(ms)'] = data[0]
-    output['USB(mA)'] = data[2]
-    output['USB Voltage(V)'] = data[5]
+    output['Time(ms)'] = np.array(data[0])
+    output['USB(mA)'] = np.array(data[2])
+    output['USB Voltage(V)'] = np.array(data[5])
 
     # Calculate power consumption (Power = USB Current * USB Voltage)
     output['Power(mW)'] = output['USB(mA)'] * output['USB Voltage(V)']
@@ -84,8 +84,8 @@ def calculate_energy_per_time(file_path):
     return output
 
 def calculate_mean_std(data, label):
-    power_array = data['Power(mW)'].to_numpy()
-    time_diff = np.diff(data['Time(ms)'].to_numpy(), prepend=data['Time(ms)'].iloc[0]) / 1000  # Convert ms to seconds and match shapes
+    power_array = data['Power(mW)']
+    time_diff = np.diff(data['Time(ms)'], prepend=data['Time(ms)'].iloc[0]) / 1000  # Convert ms to seconds and match shapes
     
     avg_power = power_array.mean()
     std_power = power_array.std()
@@ -96,18 +96,18 @@ def calculate_mean_std(data, label):
     return avg_power, std_power, total_energy  
 
 def calculate_mean_sum(data):
-    avg_power = (data['Power(mW)'].to_numpy()).mean()
-    total_energy = (data['Energy(mJ)'].to_numpy()).sum()
+    avg_power = (data['Power(mW)']).mean()
+    total_energy = (data['Energy(mJ)']).sum()
     
     return avg_power, total_energy
 
 def calculate_cumulative_energy(data):
     # Calculate the energy for each time interval (Energy = Power * Time interval)
-    time_diff = np.diff(data['Time(ms)'].to_numpy(), prepend=0) / 1000  # Convert ms to seconds
+    time_diff = np.diff(data['Time(ms)'], prepend=0) / 1000  # Convert ms to seconds
     data['Time_diff(s)'] = time_diff
     
     # Calculate energy
-    energy = data['Power(mW)'].to_numpy() * data['Time_diff(s)']  # Energy in millijoules
+    energy = data['Power(mW)'] * data['Time_diff(s)']  # Energy in millijoules
     data['Energy(mJ)'] = energy
     
     # Calculate cumulative energy
@@ -120,10 +120,10 @@ def plot_power_consumption(data1, data2, label1, label2):
     plt.figure(figsize=(12, 6))
     
     # Plot the power consumption for the first dataset
-    plt.plot(data1['Time(ms)'].to_numpy(), data1['Power(mW)'].to_numpy(), label=label1)
+    plt.plot(data1['Time(ms)'], data1['Power(mW)'], label=label1)
     
     # Plot the power consumption for the second dataset
-    plt.plot(data2['Time(ms)'].to_numpy(), data2['Power(mW)'].to_numpy(), label=label2)
+    plt.plot(data2['Time(ms)'], data2['Power(mW)'], label=label2)
     
     # Labeling the plot
     plt.xlabel('Time (ms)')
@@ -169,10 +169,10 @@ def plot_cumulative_energy(data1, data2, label1, label2):
     plt.figure(figsize=(12, 6))
     
     # Plot the cumulative energy for the first dataset
-    plt.plot(data1['Time(ms)'].to_numpy(), data1['Cumulative_Energy(mJ)'], label=label1)
+    plt.plot(data1['Time(ms)'], data1['Cumulative_Energy(mJ)'], label=label1)
     
     # Plot the cumulative energy for the second dataset
-    plt.plot(data2['Time(ms)'].to_numpy(), data2['Cumulative_Energy(mJ)'], label=label2)
+    plt.plot(data2['Time(ms)'], data2['Cumulative_Energy(mJ)'], label=label2)
     
     # Labeling the plot
     plt.xlabel('Time (ms)')
@@ -196,8 +196,8 @@ def plot_boxplot(data1, data2, label1, label2):
 
 def plot_density(data1, data2, label1, label2):
     plt.figure(figsize=(10, 6))
-    sns.kdeplot(data1['Energy(mJ)'].to_numpy(), label=label1, fill=True, alpha=0.5)
-    sns.kdeplot(data2['Energy(mJ)'].to_numpy(), label=label2, fill=True, alpha=0.5)
+    sns.kdeplot(data1['Energy(mJ)'], label=label1, fill=True, alpha=0.5)
+    sns.kdeplot(data2['Energy(mJ)'], label=label2, fill=True, alpha=0.5)
     plt.title('Energy Consumption Density')
     plt.xlabel('Energy (mJ)')
     plt.ylabel('Density')
@@ -209,7 +209,7 @@ def plot_3d_scatter(data1, data2, label1, label2):
     ax = fig.add_subplot(121, projection='3d')
     
     # 3D scatter plot for the first dataset
-    ax.scatter(data1['Time(ms)'].to_numpy(), data1['Power(mW)'].to_numpy(), data1['Cumulative_Energy(mJ)'].to_numpy(), label=label1)
+    ax.scatter(data1['Time(ms)'], data1['Power(mW)'], data1['Cumulative_Energy(mJ)'], label=label1)
     ax.set_xlabel('Time (ms)')
     ax.set_ylabel('Power (mW)')
     ax.set_zlabel('Cumulative Energy (mJ)')
@@ -218,7 +218,7 @@ def plot_3d_scatter(data1, data2, label1, label2):
     ax2 = fig.add_subplot(122, projection='3d')
     
     # 3D scatter plot for the second dataset
-    ax2.scatter(data2['Time(ms)'].to_numpy(), data2['Power(mW)'].to_numpy(), data2['Cumulative_Energy(mJ)'].to_numpy(), label=label2, color='orange')
+    ax2.scatter(data2['Time(ms)'], data2['Power(mW)'], data2['Cumulative_Energy(mJ)'], label=label2, color='orange')
     ax2.set_xlabel('Time (ms)')
     ax2.set_ylabel('Power (mW)')
     ax2.set_zlabel('Cumulative Energy (mJ)')
@@ -231,7 +231,7 @@ def plot_3d_line(data1, data2, label1, label2):
     ax = fig.add_subplot(121, projection='3d')
     
     # 3D line plot for the first dataset
-    ax.plot(data1['Time(ms)'].to_numpy(), data1['Power(mW)'].to_numpy(), data1['Cumulative_Energy(mmkdirJ)'].to_numpy(), label=label1)
+    ax.plot(data1['Time(ms)'], data1['Power(mW)'], data1['Cumulative_Energy(mmkdirJ)'], label=label1)
     ax.set_xlabel('Time (ms)')
     ax.set_ylabel('Power (mW)')
     ax.set_zlabel('Cumulative Energy (mJ)')
@@ -240,7 +240,7 @@ def plot_3d_line(data1, data2, label1, label2):
     ax2 = fig.add_subplot(122, projection='3d')
     
     # 3D line plot for the second dataset
-    ax2.plot(data2['Time(ms)'].to_numpy(), data2['Power(mW)'].to_numpy(), data2['Cumulative_Energy(mJ)'].to_numpy(), label=label2, color='orange')
+    ax2.plot(data2['Time(ms)'], data2['Power(mW)'], data2['Cumulative_Energy(mJ)'], label=label2, color='orange')
     ax2.set_xlabel('Time (ms)')
     ax2.set_ylabel('Power (mW)')
     ax2.set_zlabel('Cumulative Energy (mJ)')
