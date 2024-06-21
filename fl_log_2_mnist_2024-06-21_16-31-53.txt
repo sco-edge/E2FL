@@ -1,0 +1,6 @@
+myFlowerExperiment | INFO flwr 2024-06-21 16:31:54,109 | grpc.py:52 | Opened insecure gRPC connection (no certificates were passed)
+myFlowerExperiment | DEBUG flwr 2024-06-21 16:31:54,115 | connection.py:55 | ChannelConnectivity.IDLE
+myFlowerExperiment | DEBUG flwr 2024-06-21 16:31:54,117 | connection.py:55 | ChannelConnectivity.CONNECTING
+myFlowerExperiment | DEBUG flwr 2024-06-21 16:31:54,121 | connection.py:55 | ChannelConnectivity.READY
+myFlowerExperiment | DEBUG flwr 2024-06-21 16:33:47,393 | connection.py:220 | gRPC channel closed
+myFlowerExperiment | INFO flwr 2024-06-21 16:33:47,393 | app.py:398 | Disconnect and shut down
