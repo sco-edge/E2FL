@@ -61,7 +61,7 @@ def load_and_process_data(file_path):
     # Calculate power consumption (Power = USB Current * USB Voltage)
     output['Power(mW)'] = output['USB(mA)'] * output['USB Voltage(V)']
     
-    print(f'output: {output.shape}')
+    print(f"output: {len(output['Time(ms)'])}, {len(output['USB(mA)'])}, {len(output['USB Voltage(V)'])}, {len(output['Power(mW)'])}")
     return output
 
 def calculate_energy_per_time(file_path):
