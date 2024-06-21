@@ -61,6 +61,7 @@ def load_and_process_data(file_path):
     # Calculate power consumption (Power = USB Current * USB Voltage)
     output['Power(mW)'] = output['USB(mA)'] * output['USB Voltage(V)']
     
+    print(f'output: {output.shape}')
     return output
 
 def calculate_energy_per_time(file_path):
@@ -81,7 +82,6 @@ def calculate_energy_per_time(file_path):
     output['Time_diff(s)'] = np.nan_to_num(output['Time(ms)']) / 1000  # Convert ms to seconds
     output['Energy(mJ)'] = output['Power(mW)'] * output['Time_diff(s)']  # Energy in millijoules
     
-    print(f'output: {output.shape}')
     return output
 
 def calculate_mean_std(data, label):
