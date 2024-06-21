@@ -210,7 +210,7 @@ def plot_3d_line(data1, data2, label1, label2):
     ax = fig.add_subplot(121, projection='3d')
     
     # 3D line plot for the first dataset
-    ax.plot(data1['Time(ms)'], data1['Power(mW)'], data1['Cumulative_Energy(mJ)'], label=label1)
+    ax.plot(data1['Time(ms)'], data1['Power(mW)'], data1['Cumulative_Energy(mmkdirJ)'], label=label1)
     ax.set_xlabel('Time (ms)')
     ax.set_ylabel('Power (mW)')
     ax.set_zlabel('Cumulative Energy (mJ)')
@@ -285,10 +285,10 @@ if __name__ == "__main__":
     data2 = calculate_cumulative_energy(data2)
 
     # Plot 3D scatter plot
-    plot_3d_scatter(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
+    #plot_3d_scatter(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
 
     # Plot 3D line plot
-    plot_3d_line(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
+    #plot_3d_line(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
 
     # Plot and compare the cumulative energy consumption
     plot_cumulative_energy(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
