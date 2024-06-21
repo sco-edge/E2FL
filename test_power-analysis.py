@@ -350,7 +350,7 @@ if __name__ == "__main__":
         latest_complete_network_stats.append(data)
 
     # Creating a DataFrame for the latest complete datasets comparison
-    latest_complete_comparison_df = pd.DataFrame(latest_complete_network_stats, index=[f"RPi {i+3}" for i in range(len(latest_complete_network_stats))])
+    latest_complete_comparison_df = pd.DataFrame(latest_complete_network_stats, index=[f"Client {i+1}" for i in range(len(latest_complete_network_stats))])
 
     # Plotting the network I/O data for the latest complete datasets
     latest_complete_comparison_df[['bytes_sent', 'bytes_recv']].plot(kind='bar', figsize=(14, 8))
