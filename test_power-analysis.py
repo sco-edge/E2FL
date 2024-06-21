@@ -63,7 +63,7 @@ def calculate_energy_per_time(file_path):
     data['Power(mW)'] = data['USB(mA)'] * data['USB Voltage(V)']
     
     # Calculate the energy for each time interval (Energy = Power * Time interval)
-    data['Time_diff(s)'] = np.nan_to_num(np.diff(data['Time(ms)'])) / 1000  # Convert ms to seconds
+    data['Time_diff(s)'] = np.nan_to_num(data['Time(ms)']) / 1000  # Convert ms to seconds
     data['Energy(mJ)'] = data['Power(mW)'] * data['Time_diff(s)']  # Energy in millijoules
     
     return data
