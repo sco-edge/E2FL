@@ -298,10 +298,10 @@ if __name__ == "__main__":
 
     # Load the new set of datasets for the latest comparison
     latest_complete_file_paths = [
-        "/mnt/data/data_0_2024-06-20_16-41-13.pickle",
-        "/mnt/data/data_1_2024-06-20_16-41-13.pickle",
-        "/mnt/data/data_2_2024-06-20_16-41-13.pickle",
-        "/mnt/data/data_3_2024-06-20_16-41-13.pickle"
+        "./data_0_2024-06-20_16-41-13.pickle",
+        "./data_1_2024-06-20_16-41-13.pickle",
+        "./data_2_2024-06-20_16-41-13.pickle",
+        "./data_3_2024-06-20_16-41-13.pickle"
     ]
 
     latest_complete_data_frames = []
