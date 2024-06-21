@@ -46,7 +46,7 @@ params = {'figure.figsize': (cm2inch(24), cm2inch(12)),
     }
 
 
-def load_and_process_data(file_path):
+def load_and_process_data(file_path, amount):
     # Load the data
     #data = pd.read_csv(file_path)
     with open(file_path, 'rb') as file:
@@ -54,26 +54,37 @@ def load_and_process_data(file_path):
         
     #  [timestamp, main, usb, aux, mainVolts, usbVolts]
     output = {}
-    output['Time(ms)'] = np.array(data[0])
-    output['USB(mA)'] = np.array(data[2])
-    output['USB Voltage(V)'] = np.array(data[5])
+    if amount != -1:
+        output['Time(ms)'] = np.array(data[0])
+        output['USB(mA)'] = np.array(data[2])
+        output['USB Voltage(V)'] = np.array(data[5])
+    else:
+        output['Time(ms)'] = np.array(data[0:14100000])
+        output['USB(mA)'] = np.array(data[2:14100000])
+        output['USB Voltage(V)'] = np.array(data[5:14100000])
 
-    # Calculate power consumption (Power = USB Current * USB Voltage)
+        # Calculate power consumption (Power = USB Current * USB Voltage)
     output['Power(mW)'] = output['USB(mA)'] * output['USB Voltage(V)']
     
     print(f"output: {len(output['Time(ms)'])}, {len(output['USB(mA)'])}, {len(output['USB Voltage(V)'])}, {len(output['Power(mW)'])}")
     return output
 
-def calculate_energy_per_time(file_path):
+def calculate_energy_per_time(file_path, amount):
     # Load the data
     #data = pd.read_csv(file_path)
     with open(file_path, 'rb') as file:
         data = pickle.load(file)
+        
     #  [timestamp, main, usb, aux, mainVolts, usbVolts]
     output = {}
-    output['Time(ms)'] = np.array(data[0])
-    output['USB(mA)'] = np.array(data[2])
-    output['USB Voltage(V)'] = np.array(data[5])
+    if amount != -1:
+        output['Time(ms)'] = np.array(data[0])
+        output['USB(mA)'] = np.array(data[2])
+        output['USB Voltage(V)'] = np.array(data[5])
+    else:
+        output['Time(ms)'] = np.array(data[0:14100000])
+        output['USB(mA)'] = np.array(data[2:14100000])
+        output['USB Voltage(V)'] = np.array(data[5:14100000])
 
     # Calculate power consumption (Power = USB Current * USB Voltage)
     output['Power(mW)'] = output['USB(mA)'] * output['USB Voltage(V)']
@@ -286,8 +297,8 @@ if __name__ == "__main__":
     plt.tight_layout()
 
     # Load and process the datasets
-    data1 = load_and_process_data(args.file_path1)
-    data2 = load_and_process_data(args.file_path2)
+    data1 = load_and_process_data(args.file_path1, 14100000)
+    data2 = load_and_process_data(args.file_path2, -1)
 
     # Calculate statistics for both datasets
     stats1 = calculate_mean_std(data1, 'CIFAR-10')
@@ -351,8 +362,8 @@ if __name__ == "__main__":
     plt.savefig('./fig/networkIO.png')
 
     # Load and process the datasets
-    data1 = calculate_energy_per_time(args.file_path1)
-    data2 = calculate_energy_per_time(args.file_path2)
+    data1 = calculate_energy_per_time(args.file_path1, 14100000)
+    data2 = calculate_energy_per_time(args.file_path2, -1)
 
     # Calculate statistics for both datasets
     stats1 = calculate_mean_sum(data1)
