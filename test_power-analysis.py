@@ -40,6 +40,46 @@ def load_and_process_data(file_path):
     
     return data
 
+
+
+def calculate_energy_per_time(file_path):
+    # Load the data
+    data = pd.read_csv(file_path)
+    
+    # Calculate power consumption (Power = USB Current * USB Voltage)
+    data['Power(mW)'] = data['USB(mA)'] * data['USB Voltage(V)']
+    
+    # Calculate the energy for each time interval (Energy = Power * Time interval)
+    data['Time_diff(s)'] = data['Time(ms)'].diff().fillna(0) / 1000  # Convert ms to seconds
+    data['Energy(mJ)'] = data['Power(mW)'] * data['Time_diff(s)']  # Energy in millijoules
+    
+    return data
+
+def calculate_mean_std(data, label):
+    avg_power = data['Power(mW)'].mean()
+    std_power = data['Power(mW)'].std()
+    total_energy = (data['Power(mW)'] * (data['Time(ms)'].diff().fillna(0) / 1000)).sum()  # Total energy in mJ
+    
+    print(f'{label} - Average Power Consumption: {avg_power:.2f} mW, Std Dev: {std_power:.2f} mW, Total Energy: {total_energy:.2f} mJ')
+    
+    return avg_power, std_power, total_energy 
+
+def calculate_mean_sum(data):
+    avg_power = data['Power(mW)'].mean()
+    total_energy = data['Energy(mJ)'].sum()
+    
+    return avg_power, total_energy
+
+def calculate_cumulative_energy(data):
+    # Calculate the energy for each time interval (Energy = Power * Time interval)
+    data['Time_diff(s)'] = data['Time(ms)'].diff().fillna(0) / 1000  # Convert ms to seconds
+    data['Energy(mJ)'] = data['Power(mW)'] * data['Time_diff(s)']  # Energy in millijoules
+    
+    # Calculate cumulative energy
+    data['Cumulative_Energy(mJ)'] = data['Energy(mJ)'].cumsum()
+    
+    return data
+
 def plot_power_consumption(data1, data2, label1, label2):
     plt.figure(figsize=(12, 6))
     
@@ -55,16 +95,7 @@ def plot_power_consumption(data1, data2, label1, label2):
     plt.title('Power Consumption Over Time')
     plt.legend()
     plt.grid(True)
-    plt.show()
-
-def calculate_statistics(data, label):
-    avg_power = data['Power(mW)'].mean()
-    std_power = data['Power(mW)'].std()
-    total_energy = (data['Power(mW)'] * (data['Time(ms)'].diff().fillna(0) / 1000)).sum()  # Total energy in mJ
-    
-    print(f'{label} - Average Power Consumption: {avg_power:.2f} mW, Std Dev: {std_power:.2f} mW, Total Energy: {total_energy:.2f} mJ')
-    
-    return avg_power, std_power, total_energy
+    fig.savefig('./fig/plot_power_consumption.png')
 
 def plot_comparison_bar_graph(stats1, stats2, labels):
     # Unpack statistics
@@ -96,19 +127,7 @@ def plot_comparison_bar_graph(stats1, stats2, labels):
     plt.title('Total Energy Consumption')
     
     plt.tight_layout()
-    plt.show()
-
-
-
-def calculate_cumulative_energy(data):
-    # Calculate the energy for each time interval (Energy = Power * Time interval)
-    data['Time_diff(s)'] = data['Time(ms)'].diff().fillna(0) / 1000  # Convert ms to seconds
-    data['Energy(mJ)'] = data['Power(mW)'] * data['Time_diff(s)']  # Energy in millijoules
-    
-    # Calculate cumulative energy
-    data['Cumulative_Energy(mJ)'] = data['Energy(mJ)'].cumsum()
-    
-    return data
+    fig.savefig('./fig/plot_comparison_bar_graph.png')
 
 def plot_cumulative_energy(data1, data2, label1, label2):
     plt.figure(figsize=(12, 6))
@@ -125,7 +144,7 @@ def plot_cumulative_energy(data1, data2, label1, label2):
     plt.title('Cumulative Energy Consumption Over Time')
     plt.legend()
     plt.grid(True)
-    plt.show()
+    fig.savefig('./fig/plot_cumulative_energy.png')
 
 def plot_boxplot(data1, data2, label1, label2):
     # Combine data for box plot
@@ -137,7 +156,7 @@ def plot_boxplot(data1, data2, label1, label2):
     sns.boxplot(x='Dataset', y='Energy(mJ)', data=combined_data)
     plt.title('Energy Consumption Distribution')
     plt.ylabel('Energy (mJ)')
-    plt.show()
+    fig.savefig('./fig/plot_boxplot.png')
 
 def plot_density(data1, data2, label1, label2):
     plt.figure(figsize=(10, 6))
@@ -147,7 +166,7 @@ def plot_density(data1, data2, label1, label2):
     plt.xlabel('Energy (mJ)')
     plt.ylabel('Density')
     plt.legend()
-    plt.show()
+    fig.savefig('./fig/plot_density.png')
 
 def plot_3d_scatter(data1, data2, label1, label2):
     fig = plt.figure(figsize=(14, 8))
@@ -169,7 +188,7 @@ def plot_3d_scatter(data1, data2, label1, label2):
     ax2.set_zlabel('Cumulative Energy (mJ)')
     ax2.set_title(label2)
     
-    plt.show()
+    fig.savefig('./fig/plot_3d_scatter.png')
 
 def plot_3d_line(data1, data2, label1, label2):
     fig = plt.figure(figsize=(14, 8))
@@ -191,7 +210,38 @@ def plot_3d_line(data1, data2, label1, label2):
     ax2.set_zlabel('Cumulative Energy (mJ)')
     ax2.set_title(label2)
     
-    plt.show()
+    fig.savefig('./fig/plot_3d_line.png')
+
+
+def plot_comparison_bar_chart(stats1, stats2, labels):
+    avg_power1, total_energy1 = stats1
+    avg_power2, total_energy2 = stats2
+    
+    labels = [f'{labels[0]}', f'{labels[1]}']
+    avg_powers = [avg_power1, avg_power2]
+    total_energies = [total_energy1, total_energy2]
+    
+    x = np.arange(len(labels))  # the label locations
+    width = 0.35  # the width of the bars
+
+    fig, ax = plt.subplots(1, 2, figsize=(14, 6))
+
+    # Bar plot for average power consumption
+    ax[0].bar(x - width/2, avg_powers, width, label='Avg Power (mW)', color='b')
+    ax[0].set_ylabel('Avg Power (mW)')
+    ax[0].set_title('Average Power Consumption')
+    ax[0].set_xticks(x)
+    ax[0].set_xticklabels(labels)
+
+    # Bar plot for total energy consumption
+    ax[1].bar(x + width/2, total_energies, width, label='Total Energy (mJ)', color='r')
+    ax[1].set_ylabel('Total Energy (mJ)')
+    ax[1].set_title('Total Energy Consumption')
+    ax[1].set_xticks(x)
+    ax[1].set_xticklabels(labels)
+
+    plt.tight_layout()
+    fig.savefig('./fig/plot_comparison_bar_chart.png')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Compare energy consumption between two datasets.")
@@ -199,14 +249,16 @@ if __name__ == "__main__":
     parser.add_argument('file_path2', type=str, help="Path to the second dataset file")
     
     args = parser.parse_args()
+    plt.rcParams.update(params)
+    plt.tight_layout()
 
     # Load and process the datasets
     data1 = load_and_process_data(args.file_path1)
     data2 = load_and_process_data(args.file_path2)
 
     # Calculate statistics for both datasets
-    stats1 = calculate_statistics(data1, 'Dataset 1 (CIFAR10)')
-    stats2 = calculate_statistics(data2, 'Dataset 2 (Another Dataset)')
+    stats1 = calculate_mean_std(data1, 'Dataset 1 (CIFAR10)')
+    stats2 = calculate_mean_std(data2, 'Dataset 2 (Another Dataset)')
 
     # Plot and compare the power consumption
     plot_power_consumption(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
@@ -228,6 +280,9 @@ if __name__ == "__main__":
 
     # Plot and compare the cumulative energy consumption
     plot_cumulative_energy(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
+
+
+
 
     # Load the new set of datasets for the latest comparison
     latest_complete_file_paths = [
@@ -260,22 +315,33 @@ if __name__ == "__main__":
     plt.title('Network I/O Usage Comparison Among Different FL Datasets (Latest Complete Set)')
     plt.legend(['Bytes Sent', 'Bytes Received'])
     plt.grid(True)
-    plt.show()
+    plt.savefig('./fig/networkIO.png')
+
+    # Load and process the datasets
+    data1 = calculate_energy_per_time(args.file_path1)
+    data2 = calculate_energy_per_time(args.file_path2)
+
+    # Calculate statistics for both datasets
+    stats1 = calculate_mean_sum(data1)
+    stats2 = calculate_mean_sum(data2)
+
+    # Plot comparison bar chart
+    plot_comparison_bar_chart(stats1, stats2, ['Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)'])
 
 
     # Load the dataset paths for comparison
     dataset_paths_1 = [
-        "/mnt/data/data_0_2024-06-20_15-10-29.pickle",
-        "/mnt/data/data_1_2024-06-20_15-10-29.pickle",
-        "/mnt/data/data_2_2024-06-20_15-10-29.pickle",
-        "/mnt/data/data_3_2024-06-20_15-10-29.pickle"
+        "./data_0_2024-06-20_15-10-29.pickle",
+        "./data_1_2024-06-20_15-10-29.pickle",
+        "./data_2_2024-06-20_15-10-29.pickle",
+        "./data_3_2024-06-20_15-10-29.pickle"
     ]
 
     dataset_paths_2 = [
-        "/mnt/data/data_0_2024-06-20_16-41-13.pickle",
-        "/mnt/data/data_1_2024-06-20_16-41-13.pickle",
-        "/mnt/data/data_2_2024-06-20_16-41-13.pickle",
-        "/mnt/data/data_3_2024-06-20_16-41-13.pickle"
+        "./data_0_2024-06-20_16-41-13.pickle",
+        "./data_1_2024-06-20_16-41-13.pickle",
+        "./data_2_2024-06-20_16-41-13.pickle",
+        "./data_3_2024-06-20_16-41-13.pickle"
     ]
 
     data_frames_1 = []
@@ -323,9 +389,4 @@ if __name__ == "__main__":
     axes[1].grid(True)
 
     plt.tight_layout()
-    plt.show()
-
-    
-
-
-
+    fig.savefig('./fig/plot_networkIO_difference.png')
