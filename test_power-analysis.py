@@ -59,9 +59,9 @@ def load_and_process_data(file_path, amount):
         output['USB(mA)'] = np.array(data[2])
         output['USB Voltage(V)'] = np.array(data[5])
     else:
-        output['Time(ms)'] = np.array(data[0:14100000])
-        output['USB(mA)'] = np.array(data[2:14100000])
-        output['USB Voltage(V)'] = np.array(data[5:14100000])
+        output['Time(ms)'] = np.array(data[0][:14100000])
+        output['USB(mA)'] = np.array(data[2][:14100000])
+        output['USB Voltage(V)'] = np.array(data[5][:14100000])
 
         # Calculate power consumption (Power = USB Current * USB Voltage)
     output['Power(mW)'] = output['USB(mA)'] * output['USB Voltage(V)']
@@ -74,7 +74,7 @@ def calculate_energy_per_time(file_path, amount):
     #data = pd.read_csv(file_path)
     with open(file_path, 'rb') as file:
         data = pickle.load(file)
-        
+
     #  [timestamp, main, usb, aux, mainVolts, usbVolts]
     output = {}
     if amount != -1:
@@ -82,9 +82,9 @@ def calculate_energy_per_time(file_path, amount):
         output['USB(mA)'] = np.array(data[2])
         output['USB Voltage(V)'] = np.array(data[5])
     else:
-        output['Time(ms)'] = np.array(data[0:14100000])
-        output['USB(mA)'] = np.array(data[2:14100000])
-        output['USB Voltage(V)'] = np.array(data[5:14100000])
+        output['Time(ms)'] = np.array(data[0][:14100000])
+        output['USB(mA)'] = np.array(data[2][:14100000])
+        output['USB Voltage(V)'] = np.array(data[5][:14100000])
 
     # Calculate power consumption (Power = USB Current * USB Voltage)
     output['Power(mW)'] = output['USB(mA)'] * output['USB Voltage(V)']
