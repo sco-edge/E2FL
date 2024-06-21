@@ -48,25 +48,40 @@ params = {'figure.figsize': (cm2inch(24), cm2inch(12)),
 
 def load_and_process_data(file_path):
     # Load the data
-    data = pd.read_csv(file_path)
-    
+    #data = pd.read_csv(file_path)
+    with open(file_path, 'rb') as file:
+        data = pickle.load(file)
+    #  [timestamp, main, usb, aux, mainVolts, usbVolts]
+    output = {}
+    output['Time(ms)'] = data[0]
+    output['USB(mA)'] = data[2]
+    output['USB Voltage(V)'] = data[5]
+
+
     # Calculate power consumption (Power = USB Current * USB Voltage)
-    data['Power(mW)'] = data['USB(mA)'] * data['USB Voltage(V)']
+    output['Power(mW)'] = output['USB(mA)'] * output['USB Voltage(V)']
     
-    return data
+    return output
 
 def calculate_energy_per_time(file_path):
     # Load the data
-    data = pd.read_csv(file_path)
-    
+    #data = pd.read_csv(file_path)
+    with open(file_path, 'rb') as file:
+        data = pickle.load(file)
+    #  [timestamp, main, usb, aux, mainVolts, usbVolts]
+    output = {}
+    output['Time(ms)'] = data[0]
+    output['USB(mA)'] = data[2]
+    output['USB Voltage(V)'] = data[5]
+
     # Calculate power consumption (Power = USB Current * USB Voltage)
-    data['Power(mW)'] = data['USB(mA)'] * data['USB Voltage(V)']
+    output['Power(mW)'] = output['USB(mA)'] * output['USB Voltage(V)']
     
     # Calculate the energy for each time interval (Energy = Power * Time interval)
-    data['Time_diff(s)'] = np.nan_to_num(data['Time(ms)']) / 1000  # Convert ms to seconds
-    data['Energy(mJ)'] = data['Power(mW)'] * data['Time_diff(s)']  # Energy in millijoules
+    output['Time_diff(s)'] = np.nan_to_num(output['Time(ms)']) / 1000  # Convert ms to seconds
+    output['Energy(mJ)'] = output['Power(mW)'] * output['Time_diff(s)']  # Energy in millijoules
     
-    return data
+    return output
 
 def calculate_mean_std(data, label):
     power_array = data['Power(mW)'].to_numpy()
