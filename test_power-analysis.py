@@ -275,14 +275,14 @@ if __name__ == "__main__":
     data2 = load_and_process_data(args.file_path2)
 
     # Calculate statistics for both datasets
-    stats1 = calculate_mean_std(data1, 'Dataset 1 (CIFAR10)')
-    stats2 = calculate_mean_std(data2, 'Dataset 2 (Another Dataset)')
+    stats1 = calculate_mean_std(data1, 'CIFAR-10')
+    stats2 = calculate_mean_std(data2, 'MNIST')
 
     # Plot and compare the power consumption
-    plot_power_consumption(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
+    plot_power_consumption(data1, data2, 'CIFAR-10', 'MNIST')
 
     # Plot comparison bar graph for average power, std deviation, and total energy
-    plot_comparison_bar_graph(stats1, stats2, ['Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)'])
+    plot_comparison_bar_graph(stats1, stats2, ['CIFAR-10', 'MNIST'])
 
 
 
@@ -291,13 +291,13 @@ if __name__ == "__main__":
     data2 = calculate_cumulative_energy(data2)
 
     # Plot 3D scatter plot
-    #plot_3d_scatter(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
+    #plot_3d_scatter(data1, data2, 'CIFAR-10', 'MNIST')
 
     # Plot 3D line plot
-    #plot_3d_line(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
+    #plot_3d_line(data1, data2, 'CIFAR-10', 'MNIST')
 
     # Plot and compare the cumulative energy consumption
-    plot_cumulative_energy(data1, data2, 'Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)')
+    plot_cumulative_energy(data1, data2, 'CIFAR-10', 'MNIST')
 
 
 
@@ -344,7 +344,7 @@ if __name__ == "__main__":
     stats2 = calculate_mean_sum(data2)
 
     # Plot comparison bar chart
-    plot_comparison_bar_chart(stats1, stats2, ['Dataset 1 (CIFAR10)', 'Dataset 2 (Another Dataset)'])
+    plot_comparison_bar_chart(stats1, stats2, ['CIFAR-10', 'MNIST'])
 
 
     # Load the dataset paths for comparison
