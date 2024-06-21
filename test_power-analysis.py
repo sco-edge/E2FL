@@ -88,13 +88,18 @@ def calculate_mean_sum(data):
 
 def calculate_cumulative_energy(data):
     # Calculate the energy for each time interval (Energy = Power * Time interval)
-    data['Time_diff(s)'] = np.nan_to_num(np.diff(data['Time(ms)'].to_numpy())) / 1000  # Convert ms to seconds
-    data['Energy(mJ)'] = np.dot(data['Power(mW)'].to_numpy(), data['Time_diff(s)'])  # Energy in millijoules
+    time_diff = np.diff(data['Time(ms)'].to_numpy(), prepend=0) / 1000  # Convert ms to seconds
+    data['Time_diff(s)'] = time_diff
+    
+    # Calculate energy
+    energy = data['Power(mW)'].to_numpy() * data['Time_diff(s)']  # Energy in millijoules
+    data['Energy(mJ)'] = energy
     
     # Calculate cumulative energy
-    data['Cumulative_Energy(mJ)'] = (data['Energy(mJ)'].to_numpy()).cumsum()
+    data['Cumulative_Energy(mJ)'] = data['Energy(mJ)'].cumsum()
     
     return data
+
 
 def plot_power_consumption(data1, data2, label1, label2):
     plt.figure(figsize=(12, 6))
