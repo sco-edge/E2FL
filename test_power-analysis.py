@@ -63,7 +63,7 @@ def calculate_energy_per_time(file_path):
     data['Power(mW)'] = data['USB(mA)'] * data['USB Voltage(V)']
     
     # Calculate the energy for each time interval (Energy = Power * Time interval)
-    data['Time_diff(s)'] = np.diff(data['Time(ms)']).fillna(0) / 1000  # Convert ms to seconds
+    data['Time_diff(s)'] = np.nan_to_num(np.diff(data['Time(ms)'])) / 1000  # Convert ms to seconds
     data['Energy(mJ)'] = data['Power(mW)'] * data['Time_diff(s)']  # Energy in millijoules
     
     return data
@@ -71,7 +71,7 @@ def calculate_energy_per_time(file_path):
 def calculate_mean_std(data, label):
     avg_power = (data['Power(mW)'].to_numpy()).mean()
     std_power = (data['Power(mW)'].to_numpy()).std()
-    total_energy = (data['Power(mW)'].to_numpy() * (np.diff(data['Time(ms)'].to_numpy()).fillna(0) / 1000)).sum()  # Total energy in mJ
+    total_energy = (data['Power(mW)'].to_numpy() * np.nan_to_num((np.diff(data['Time(ms)'].to_numpy())) / 1000)).sum()  # Total energy in mJ
     
     print(f'{label} - Average Power Consumption: {avg_power:.2f} mW, Std Dev: {std_power:.2f} mW, Total Energy: {total_energy:.2f} mJ')
     
@@ -85,7 +85,7 @@ def calculate_mean_sum(data):
 
 def calculate_cumulative_energy(data):
     # Calculate the energy for each time interval (Energy = Power * Time interval)
-    data['Time_diff(s)'] = np.diff(data['Time(ms)'].to_numpy()).fillna(0) / 1000  # Convert ms to seconds
+    data['Time_diff(s)'] = np.nan_to_num(np.diff(data['Time(ms)'].to_numpy())) / 1000  # Convert ms to seconds
     data['Energy(mJ)'] = data['Power(mW)'].to_numpy() * data['Time_diff(s)'].to_numpy()  # Energy in millijoules
     
     # Calculate cumulative energy
