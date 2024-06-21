@@ -7,6 +7,21 @@ import argparse
 import pickle
 
 
+parser = argparse.ArgumentParser(description="Flower Embedded devices")
+parser.add_argument(
+    "--file_path1",
+    type=str,
+    requred=True,
+    help="Path to the first dataset file",
+)
+parser.add_argument(
+    "--file_path2",
+    type=str,
+    required=True,
+    help="Path to the second dataset file"
+)
+    
+
 def cm2inch(value):
     	return value/2.54
 
@@ -244,9 +259,6 @@ def plot_comparison_bar_chart(stats1, stats2, labels):
     fig.savefig('./fig/plot_comparison_bar_chart.png')
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Compare energy consumption between two datasets.")
-    parser.add_argument('file_path1', type=str, help="Path to the first dataset file")
-    parser.add_argument('file_path2', type=str, help="Path to the second dataset file")
     
     args = parser.parse_args()
     plt.rcParams.update(params)
