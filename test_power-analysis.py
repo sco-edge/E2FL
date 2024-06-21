@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(description="Flower Embedded devices")
 parser.add_argument(
     "--file_path1",
     type=str,
-    requred=True,
+    required=True,
     help="Path to the first dataset file",
 )
 parser.add_argument(
