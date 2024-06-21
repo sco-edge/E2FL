@@ -86,11 +86,10 @@ def calculate_energy_per_time(file_path):
 
 def calculate_mean_std(data, label):
     power_array = data['Power(mW)']
-    time_diff = np.diff(data['Time(ms)'], prepend=data['Time(ms)']) / 1000  # Convert ms to seconds and match shapes
     
     avg_power = power_array.mean()
     std_power = power_array.std()
-    total_energy = np.dot(power_array, time_diff)  # Total energy in mJ
+    total_energy = power_array.sum()  # Total energy in mJ
     
     print(f'{label} - Average Power Consumption: {avg_power:.2f} mW, Std Dev: {std_power:.2f} mW, Total Energy: {total_energy:.2f} mJ')
     
