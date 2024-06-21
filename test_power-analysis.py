@@ -85,7 +85,7 @@ def calculate_energy_per_time(file_path):
 
 def calculate_mean_std(data, label):
     power_array = data['Power(mW)']
-    time_diff = np.diff(data['Time(ms)'], prepend=data['Time(ms)'].iloc[0]) / 1000  # Convert ms to seconds and match shapes
+    time_diff = np.diff(data['Time(ms)'], prepend=data['Time(ms)']) / 1000  # Convert ms to seconds and match shapes
     
     avg_power = power_array.mean()
     std_power = power_array.std()
