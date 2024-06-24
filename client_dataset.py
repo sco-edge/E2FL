@@ -49,11 +49,12 @@ parser.add_argument(
     help="\{mnist, cifar10, fashion_mnist, sasha/dog-food, 'zh-plus/tiny-imagenet\}",
 ) # the currently tested dataset are ['mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet']
 parser.add_argument(
-    "--Model",
+    "--model",
     type=str,
-    default='ResNet20',
-    help="\{ResNet20, LSTM, ResNet34, VGG16, VGG19\}",
+    default='Net',
+    help="\{resnet18, resnext50, resnet50, vgg16, alexnet, convnext_tiny, squeezenet1, densenet161, inception_v3, googlenet, shufflenet_v2, mobilenet_v2, mnasnet1\}",
 )
+
 
 # Set up logger
 logger = logging.getLogger("test")
@@ -235,31 +236,45 @@ class FlowerClient(fl.client.NumPyClient):
     """A FlowerClient that trains a MobileNetV3 model for CIFAR-10 or a much smaller CNN
     for MNIST."""
 
-    def __init__(self, trainset, valset, dataset):
+    def __init__(self, trainset, valset, model):
         self.trainset = trainset
         self.valset = valset
         # Instantiate model
-        if dataset == 'mnist':
-            self.model = Net()
-        else:
-            self.model = models.mobilenet_v3_small(num_classes=10)
+        #if dataset == 'mnist':
+        #    self.model = Net()
+        #else:
+        #    self.model = models.mobilenet_v3_small(num_classes=10)
         
         # https://pytorch.org/vision/main/models.html
         # https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
-        # self.model = models.resnet18()
-        # self.model = models.resnext50_32x4d()
-        # self.model = models.wide_resnet50_2()
-        # self.model = models.vgg16()
-
-        # self.model = models.alexnet()
-        # self.model = models.convnext_tiny()
-        # self.model = models.squeezenet1_0()
-        # self.model = models.densenet161()
-        # self.model = models.inception_v3()
-        # self.model = models.googlenet()
-        # self.model = models.shufflenet_v2_x1_0()
-        # self.model = models.mobilenet_v2()
-        # self.model = models.mnasnet1_0()
+        if model == 'resnet18':
+            self.model = models.resnet18()
+        elif model == 'resnext50':
+            self.model = models.resnext50_32x4d()
+        elif model == 'resnet50':
+            self.model = models.wide_resnet50_2()
+        elif model == 'vgg16':
+            self.model = models.vgg16()
+        elif model == 'alexnet':
+            self.model = models.alexnet()
+        elif model == 'convnext_tiny':
+            self.model = models.convnext_tiny()
+        elif model == 'squeezenet1':
+            self.model = models.squeezenet1_0()
+        elif model == 'densenet161':
+            self.model = models.densenet161()
+        elif model == 'inception_v3':
+            self.model = models.inception_v3()
+        elif model == 'googlenet':
+            self.model = models.googlenet()
+        elif model == 'shufflenet_v2':
+            self.model = models.shufflenet_v2_x1_0()
+        elif model == 'mobilenet_v2':
+            self.model = models.mobilenet_v2()
+        elif model == 'mnasnet1':
+            self.model = models.mnasnet1_0()
+        else: #default:
+            self.model = Net()
         
         # Determine device
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -400,7 +415,7 @@ def main():
     fl.client.start_client(
         server_address=args.server_address,
         client=FlowerClient(
-            trainset=trainsets[args.cid], valset=valsets[args.cid], dataset=arg_dataset
+            trainset=trainsets[args.cid], valset=valsets[args.cid], model=args.model
         ).to_client(),
     )
 
