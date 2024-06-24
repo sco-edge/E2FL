@@ -12,7 +12,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader
-from torchvision.models import resnet18, mobilenet_v3_small
+import torchvision.models as models #import resnet18, mobilenet_v3_small
 from torchvision.transforms import Compose, Normalize, ToTensor
 from torchvision.datasets import CIFAR10
 import torch.nn as nn
@@ -242,7 +242,25 @@ class FlowerClient(fl.client.NumPyClient):
         if dataset == 'mnist':
             self.model = Net()
         else:
-            self.model = mobilenet_v3_small(num_classes=10)
+            self.model = models.mobilenet_v3_small(num_classes=10)
+        
+        # https://pytorch.org/vision/main/models.html
+        # https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
+        # self.model = models.resnet18()
+        # self.model = models.resnext50_32x4d()
+        # self.model = models.wide_resnet50_2()
+        # self.model = models.vgg16()
+
+        # self.model = models.alexnet()
+        # self.model = models.convnext_tiny()
+        # self.model = models.squeezenet1_0()
+        # self.model = models.densenet161()
+        # self.model = models.inception_v3()
+        # self.model = models.googlenet()
+        # self.model = models.shufflenet_v2_x1_0()
+        # self.model = models.mobilenet_v2()
+        # self.model = models.mnasnet1_0()
+        
         # Determine device
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.model.to(self.device)  # send model to device
