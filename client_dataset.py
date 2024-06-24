@@ -62,6 +62,7 @@ ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 ch.setFormatter(CustomFormatter())
 logger.addHandler(ch)
+start_net, end_net, wlan_interf = 0, 0, 'wlan0'
 
 '''
 
@@ -263,6 +264,12 @@ class FlowerClient(fl.client.NumPyClient):
     def fit(self, parameters, config):
         logger.info("Client sampled for fit()")
 
+        global wlan_interf, start_net, end_net
+        end_net = get_network_usage(wlan_interf)
+        net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
+        net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
+        logger.info([f'Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
+
         self.set_parameters(parameters)
         # Read hyperparameters from config set by the server
         batch, epochs = config["batch_size"], config["epochs"]
@@ -280,7 +287,7 @@ class FlowerClient(fl.client.NumPyClient):
         train(self.model, trainloader, optimizer, epochs=epochs, device=self.device)
         
         end_time = time.time()
-
+        start_net = get_network_usage(wlan_interf)
         computation_time = end_time - start_time
         logging.info(f"Computation pahse completed in {computation_time} seconds.")
 
@@ -289,23 +296,28 @@ class FlowerClient(fl.client.NumPyClient):
 
     def evaluate(self, parameters, config):
         logger.info("Client sampled for evaluate()")
+
+        global wlan_interf, start_net, end_net
+        end_net = get_network_usage(wlan_interf)
+        net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
+        net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
+        logger.info([f'Computation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
+        
+
         self.set_parameters(parameters)
         # Construct dataloader
         valloader = DataLoader(self.valset, batch_size=64)
 
         start_time = time.time()
-        start_net = get_network_usage(args.interface)
+        
 
         # Evaluate
         loss, accuracy = test(self.model, valloader, device=self.device)
 
         end_time = time.time()
-        end_net = get_network_usage(args.interface)
-
+        start_net = get_network_usage(wlan_interf)
         computation_time = end_time - start_time
         logging.info(f"Evaluation pahse completed in {computation_time} seconds.")
-    
-        logger.info([f'Wi-Fi end: {end_time}'])
 
         # Return statistics
         return float(loss), len(valloader.dataset), {"accuracy": float(accuracy)}
@@ -353,7 +365,9 @@ def main():
     root_path = os.path.abspath(os.getcwd())+'/'
     arg_dataset = args.dataset
     trainsets, valsets, _ = prepare_dataset(arg_dataset)
-    
+    global wlan_interf, start_net, end_net
+    wlan_interf = args.interface
+    start_net = get_network_usage(wlan_interf)
     
 
     # Prepare a bucket to store the results.
@@ -372,10 +386,11 @@ def main():
         ).to_client(),
     )
 
-    # Log the end time.
-    end_time = time.time()
-    end_net = get_network_usage(args.interface)
-    logger.info([f'Wi-Fi end: {end_time}'])
+    # Log the network IO
+    end_net = get_network_usage(wlan_interf)
+    net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
+    net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
+    logger.info([f'Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
 
     '''
     usage_record["execution_time"] = end_time - start_time
