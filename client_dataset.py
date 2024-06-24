@@ -292,8 +292,21 @@ class FlowerClient(fl.client.NumPyClient):
         self.set_parameters(parameters)
         # Construct dataloader
         valloader = DataLoader(self.valset, batch_size=64)
+
+        start_time = time.time()
+        start_net = get_network_usage(args.interface)
+
         # Evaluate
         loss, accuracy = test(self.model, valloader, device=self.device)
+
+        end_time = time.time()
+        end_net = get_network_usage(args.interface)
+
+        computation_time = end_time - start_time
+        logging.info(f"Evaluation pahse completed in {computation_time} seconds.")
+    
+        logger.info([f'Wi-Fi end: {end_time}'])
+
         # Return statistics
         return float(loss), len(valloader.dataset), {"accuracy": float(accuracy)}
 
@@ -364,6 +377,7 @@ def main():
     end_net = get_network_usage(args.interface)
     logger.info([f'Wi-Fi end: {end_time}'])
 
+    '''
     usage_record["execution_time"] = end_time - start_time
     usage_record["bytes_sent"] = end_net["bytes_sent"] - start_net["bytes_sent"]
     usage_record["bytes_recv"] = end_net["bytes_recv"] - start_net["bytes_recv"]
@@ -375,6 +389,7 @@ def main():
     with open(filename, 'wb') as handle:
         pickle.dump(usage_record, handle, protocol=pickle.HIGHEST_PROTOCOL)
     logger.info(f"The measurement data is saved as {filename}.")
+    '''
 
 if __name__ == "__main__":
     main()
