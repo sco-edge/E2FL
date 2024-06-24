@@ -120,7 +120,7 @@ def get_network_usage(interf):
 class Net(nn.Module):
     """Model (simple CNN adapted from 'PyTorch: A 60 Minute Blitz')."""
 
-    def __init__(self) -> None:
+    def __init__(self):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(1, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
@@ -136,6 +136,7 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         return self.fc3(x)
+    
 class LeNet(nn.Module):
     def __init__(self):
         super(LeNet, self).__init__()
@@ -154,6 +155,7 @@ class LeNet(nn.Module):
         x = torch.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+    
 def train(net, trainloader, optimizer, epochs, device):
     """Train the model on the training set."""
     criterion = torch.nn.CrossEntropyLoss()
