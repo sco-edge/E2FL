@@ -54,6 +54,15 @@ parser.add_argument(
     default='ResNet20',
     help="\{ResNet20, LSTM, ResNet34, VGG16, VGG19\}",
 )
+
+# Set up logger
+logger = logging.getLogger("test")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+logger.addHandler(ch)
+
 '''
 
 
@@ -97,17 +106,14 @@ def get_ip_address():
 
 
 # https://psutil.readthedocs.io/en/latest/
+# https://psutil.readthedocs.io/en/latest/index.html#process-class
 # https://stackoverflow.com/questions/75983163/what-exactly-does-psutil-net-io-counters-byte-recv-mean
+# https://github.com/giampaolo/psutil/blob/master/scripts/nettop.py
 def get_network_usage(interf):
-    net_io = psutil.net_io_counters(pernic=True)
+    p = psutil.Process()
+    net_io = p.net_io_counters(pernic=True)
+    #net_io = psutil.net_io_counters(pernic=True)
     return {"bytes_sent": net_io[interf].bytes_sent, "bytes_recv": net_io[interf].bytes_recv}
-
-def log_network_usage(log_file, interf):
-    net_io = psutil.net_io_counters(pernic=True)
-    return net_io
-    #with open(log_file, 'a') as f:
-    #    f.write(f"{time.time()},{net_io[interf].bytes_sent},{net_io[interf].bytes_recv}\n")
-
 
 class Net(nn.Module):
     """Model (simple CNN adapted from 'PyTorch: A 60 Minute Blitz')."""
@@ -255,7 +261,8 @@ class FlowerClient(fl.client.NumPyClient):
         return [val.cpu().numpy() for _, val in self.model.state_dict().items()]
 
     def fit(self, parameters, config):
-        print("Client sampled for fit()")
+        logger.info("Client sampled for fit()")
+
         self.set_parameters(parameters)
         # Read hyperparameters from config set by the server
         batch, epochs = config["batch_size"], config["epochs"]
@@ -265,13 +272,23 @@ class FlowerClient(fl.client.NumPyClient):
         # Define optimizer
         #   momentum: after step calculation, we keep the inertia of SGD to deal with fast training speed and local minima problems.
         optimizer = torch.optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
+        
+        logger.info("Computation phase started")
+        start_time = time.time()
+        
         # Train
         train(self.model, trainloader, optimizer, epochs=epochs, device=self.device)
+        
+        end_time = time.time()
+
+        computation_time = end_time - start_time
+        logging.info(f"Computation pahse completed in {computation_time} seconds.")
+
         # Return local model and statistics
         return self.get_parameters({}), len(trainloader.dataset), {}
 
     def evaluate(self, parameters, config):
-        print("Client sampled for evaluate()")
+        logger.info("Client sampled for evaluate()")
         self.set_parameters(parameters)
         # Construct dataloader
         valloader = DataLoader(self.valset, batch_size=64)
@@ -308,8 +325,12 @@ def main():
     server_cmd = "python3.10 ./FLOWER_embedded_devices/server.py --rounds $round --min_num_clients $num_clients --sample_fraction $sample_frac"
 
     '''
+    
     args = parser.parse_args()
     print(args)
+    current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    logging.basicConfig(filename=f"fl_info_{args.cid}_{args.dataset}_{current_time}.txt")
+    fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{args.cid}_{args.dataset}_{current_time}.txt")
 
     assert args.cid < NUM_CLIENTS
 
@@ -319,16 +340,8 @@ def main():
     root_path = os.path.abspath(os.getcwd())+'/'
     arg_dataset = args.dataset
     trainsets, valsets, _ = prepare_dataset(arg_dataset)
-
-    # Set up logger
-    logger = logging.getLogger("test")
-    logger.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    ch.setFormatter(CustomFormatter())
-    logger.addHandler(ch)
-    current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{args.cid}_{args.dataset}_{current_time}.txt")
+    
+    
 
     # Prepare a bucket to store the results.
     usage_record = {}
