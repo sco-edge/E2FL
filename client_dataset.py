@@ -264,10 +264,28 @@ class FlowerClient(fl.client.NumPyClient):
             self.model = vgg16
         elif model == 'vgg16':
             self.model = models.vgg16(pretrained=False)
+        elif model == 'alexnet' and dataset == 'mnist':
+            # Pretrained AlexNet model
+            alexnet = models.alexnet(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            alexnet.features[0] = nn.Conv2d(1, 64, kernel_size=11, stride=4, padding=2, bias=False)
+            self.model = alexnet
         elif model == 'alexnet':
             self.model = models.alexnet(pretrained=False)
+        elif model == 'convnext_tiny' and dataset == 'mnist':
+            # Create a ConvNeXt Tiny model
+            convnext_tiny = models.convnext_tiny(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            convnext_tiny.stem[0] = nn.Conv2d(1, 96, kernel_size=4, stride=4, padding=0)
+            self.model = convnext_tiny
         elif model == 'convnext_tiny':
             self.model = models.convnext_tiny(pretrained=False)
+        elif model == 'squeezenet1' and dataset == 'mnist':
+            # Pretrained SqueezeNet1 model
+            squeezenet = models.squeezenet1_0(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            squeezenet.features[0] = nn.Conv2d(1, 96, kernel_size=7, stride=2, padding=3, bias=False)
+            self.model = squeezenet
         elif model == 'squeezenet1':
             self.model = models.squeezenet1_0(pretrained=False)
         elif model == 'densenet121' and dataset == 'mnist':
