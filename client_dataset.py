@@ -54,25 +54,6 @@ parser.add_argument(
     default='Net',
     help="\{resnet18, resnext50, resnet50, vgg16, alexnet, convnext_tiny, squeezenet1, densenet161, inception_v3, googlenet, shufflenet_v2, mobilenet_v2, mnasnet1\}",
 )
-
-
-# Set up logger
-logger = logging.getLogger("test")
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-ch.setFormatter(CustomFormatter())
-logger.addHandler(ch)
-start_net, end_net, wlan_interf = 0, 0, 'wlan0'
-
-'''
-
-
-'''
-warnings.filterwarnings("ignore", category=UserWarning)
-NUM_CLIENTS = 50
-
-
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
 class CustomFormatter(logging.Formatter):
@@ -96,6 +77,25 @@ class CustomFormatter(logging.Formatter):
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
+
+# Set up logger
+logger = logging.getLogger("test")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+logger.addHandler(ch)
+start_net, end_net, wlan_interf = 0, 0, 'wlan0'
+
+'''
+
+
+'''
+warnings.filterwarnings("ignore", category=UserWarning)
+NUM_CLIENTS = 50
+
+
+
 
 def get_ip_address():
     try:
