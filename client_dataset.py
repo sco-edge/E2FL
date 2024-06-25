@@ -233,7 +233,7 @@ class FlowerClient(fl.client.NumPyClient):
     """A FlowerClient that trains a MobileNetV3 model for CIFAR-10 or a much smaller CNN
     for MNIST."""
 
-    def __init__(self, trainset, valset, model):
+    def __init__(self, trainset, valset, model, start_net, end_net):
         self.trainset = trainset
         self.valset = valset
         # Instantiate model
@@ -277,6 +277,9 @@ class FlowerClient(fl.client.NumPyClient):
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.model.to(self.device)  # send model to device
 
+        self.start_net = start_net
+        self.end_net = end_net
+
     def set_parameters(self, params):
         """Set model weights from a list of NumPy ndarrays."""
         params_dict = zip(self.model.state_dict().keys(), params)
@@ -294,10 +297,13 @@ class FlowerClient(fl.client.NumPyClient):
     def fit(self, parameters, config):
         logger.info("Client sampled for fit()")
 
+        start_time = time.time()
+        logger.info([f'Wi-Fi end: {start_time}'])
+
         #global wlan_interf, start_net, end_net
-        end_net = get_network_usage(wlan_interf)
-        net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
-        net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
+        self.end_net = get_network_usage(wlan_interf)
+        net_usage_sent = self.end_net["bytes_sent"] - self.start_net["bytes_sent"]
+        net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
         logger.info([f'Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
 
         self.set_parameters(parameters)
@@ -317,9 +323,10 @@ class FlowerClient(fl.client.NumPyClient):
         train(self.model, trainloader, optimizer, epochs=epochs, device=self.device)
         
         end_time = time.time()
-        start_net = get_network_usage(wlan_interf)
+        self.start_net = get_network_usage(wlan_interf)
         computation_time = end_time - start_time
-        logging.info(f"Computation pahse completed in {computation_time} seconds.")
+        logger.info(f"Computation pahse completed in {computation_time} seconds.")
+        logger.info([f'Wi-Fi start: {end_time}'])
 
         # Return local model and statistics
         return self.get_parameters({}), len(trainloader.dataset), {}
@@ -327,10 +334,13 @@ class FlowerClient(fl.client.NumPyClient):
     def evaluate(self, parameters, config):
         logger.info("Client sampled for evaluate()")
 
+        start_time = time.time()
+        logger.info([f'Wi-Fi end: {start_time}'])
+
         #global wlan_interf, start_net, end_net
-        end_net = get_network_usage(wlan_interf)
-        net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
-        net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
+        self.end_net = get_network_usage(wlan_interf)
+        net_usage_sent = self.end_net["bytes_sent"] - self.start_net["bytes_sent"]
+        net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
         logger.info([f'Computation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
         
 
@@ -344,11 +354,13 @@ class FlowerClient(fl.client.NumPyClient):
         # Evaluate
         loss, accuracy = test(self.model, valloader, device=self.device)
 
+        global start_net
         end_time = time.time()
-        start_net = get_network_usage(wlan_interf)
+        self.start_net = get_network_usage(wlan_interf)
         computation_time = end_time - start_time
-        logging.info(f"Evaluation pahse completed in {computation_time} seconds.")
+        logger.info(f"Evaluation pahse completed in {computation_time} seconds.")
 
+        logger.info([f'Wi-Fi start: {end_time}'])
         # Return statistics
         return float(loss), len(valloader.dataset), {"accuracy": float(accuracy)}
 
@@ -403,18 +415,16 @@ def main():
     # Prepare a bucket to store the results.
     usage_record = {}
 
-    # Log the start time.
-    start_time = time.time()
-    start_net = get_network_usage(args.interface)
-    logger.info([f'Wi-Fi start: {start_time}'])
-
     # Start Flower client setting its associated data partition
     fl.client.start_client(
         server_address=args.server_address,
         client=FlowerClient(
-            trainset=trainsets[args.cid], valset=valsets[args.cid], model=args.model
+            trainset=trainsets[args.cid], valset=valsets[args.cid], model=args.model, start_net=start_net, end_net=end_net
         ).to_client(),
     )
+
+    end_time = time.time()
+    logger.info([f'Wi-Fi end: {end_time}'])
 
     # Log the network IO
     end_net = get_network_usage(wlan_interf)
