@@ -233,7 +233,7 @@ class FlowerClient(fl.client.NumPyClient):
     """A FlowerClient that trains a MobileNetV3 model for CIFAR-10 or a much smaller CNN
     for MNIST."""
 
-    def __init__(self, trainset, valset, model, start_net, end_net):
+    def __init__(self, trainset, valset, dataset, model, start_net, end_net):
         self.trainset = trainset
         self.valset = valset
         # Instantiate model
@@ -244,32 +244,84 @@ class FlowerClient(fl.client.NumPyClient):
         
         # https://pytorch.org/vision/main/models.html
         # https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
-        if model == 'resnet18':
-            self.model = models.resnet18()
+        if model == 'resnet18' and dataset == 'mnist':
+            resnet18 = models.resnet18(pretrained=False)
+        elif model == 'resnet18':
+            # Pretrained ResNet model
+            resnet18 = models.resnet18(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            resnet18.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            self.model = resnet18
         elif model == 'resnext50':
-            self.model = models.resnext50_32x4d()
+            self.model = models.resnext50_32x4d(pretrained=False)
         elif model == 'resnet50':
-            self.model = models.wide_resnet50_2()
+            self.model = models.wide_resnet50_2(pretrained=False)
+        elif model == 'vgg16' and dataset == 'mnist':
+            # Pretrained VGG model
+            vgg16 = models.vgg16(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            vgg16.features[0] = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
+            self.model = vgg16
         elif model == 'vgg16':
-            self.model = models.vgg16()
+            self.model = models.vgg16(pretrained=False)
         elif model == 'alexnet':
-            self.model = models.alexnet()
+            self.model = models.alexnet(pretrained=False)
         elif model == 'convnext_tiny':
-            self.model = models.convnext_tiny()
+            self.model = models.convnext_tiny(pretrained=False)
         elif model == 'squeezenet1':
-            self.model = models.squeezenet1_0()
+            self.model = models.squeezenet1_0(pretrained=False)
+        elif model == 'densenet121' and dataset == 'mnist':
+            # Pretrained DenseNet model
+            densenet = models.densenet121(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            densenet.features.conv0 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            self.model = densenet
+        elif model == 'densenet121':
+            self.model = models.densenet121(pretrained=False)
         elif model == 'densenet161':
-            self.model = models.densenet161()
+            self.model = models.densenet161(pretrained=False)
+        elif model == 'inception_v3' and dataset == 'mnist':
+            # Pretrained Inception V3 model
+            inception_v3 = models.inception_v3(pretrained=False, aux_logits=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            inception_v3.Conv2d_1a_3x3.conv = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=0, bias=False)
+            self.model = inception_v3
         elif model == 'inception_v3':
-            self.model = models.inception_v3()
+            self.model = models.inception_v3(pretrained=False)
+        elif model == 'googlenet' and dataset == 'mnist':
+            # Pretrained GoogleNet model
+            googlenet = models.googlenet(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            googlenet.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            self.model = googlenet
         elif model == 'googlenet':
-            self.model = models.googlenet()
+            self.model = models.googlenet(pretrained=False)
+        elif model == 'shufflenet_v2' and dataset == 'mnist':
+            # Pretrained ShuffleNet V2 model
+            shufflenet_v2 = models.shufflenet_v2_x1_0(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            shufflenet_v2.conv1[0] = nn.Conv2d(1, 24, kernel_size=3, stride=2, padding=1, bias=False)
+            self.model = shufflenet_v2
         elif model == 'shufflenet_v2':
-            self.model = models.shufflenet_v2_x1_0()
+            self.model = models.shufflenet_v2_x1_0(pretrained=False)
+        elif model == 'mobilenet_v2' and dataset == 'mnist':
+            # Pretrained MobileNet V2 model
+            mobilenet_v2 = models.mobilenet_v2(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            mobilenet_v2.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
+            self.model = mobilenet_v2
         elif model == 'mobilenet_v2':
-            self.model = models.mobilenet_v2()
+            self.model = models.mobilenet_v2(pretrained=False)
+        elif model == 'mnasnet1' and dataset == 'mnist':
+            # Pretrained MNASNet model
+            mnasnet = models.mnasnet1_0(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            mnasnet.layers[0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
+            self.model = mnasnet
         elif model == 'mnasnet1':
-            self.model = models.mnasnet1_0()
+            self.model = models.mnasnet1_0(pretrained=False)
+        elif model == 'lenet':
+            self.model = LeNet()
         else: #default:
             self.model = Net()
         
@@ -419,7 +471,7 @@ def main():
     fl.client.start_client(
         server_address=args.server_address,
         client=FlowerClient(
-            trainset=trainsets[args.cid], valset=valsets[args.cid], model=args.model, start_net=start_net, end_net=end_net
+            trainset=trainsets[args.cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
         ).to_client(),
     )
 
