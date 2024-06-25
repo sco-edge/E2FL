@@ -246,12 +246,12 @@ class FlowerClient(fl.client.NumPyClient):
         # https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
         if model == 'resnet18' and dataset == 'mnist':
             resnet18 = models.resnet18(pretrained=False)
-        elif model == 'resnet18':
-            # Pretrained ResNet model
-            resnet18 = models.resnet18(pretrained=False)
             # Modify the first convolutional layer to accept 1 channel input
             resnet18.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
             self.model = resnet18
+        elif model == 'resnet18':
+            # Pretrained ResNet model
+            self.model = models.resnet18(pretrained=False)
         elif model == 'resnext50':
             self.model = models.resnext50_32x4d(pretrained=False)
         elif model == 'resnet50':
