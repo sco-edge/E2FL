@@ -1,6 +1,7 @@
 from log import WrlsEnv
 from datetime import datetime
 import subprocess, os, logging, time, socket, pickle
+# from log.NetLogger import *
 import psutil
 import argparse
 import warnings
@@ -95,7 +96,10 @@ warnings.filterwarnings("ignore", category=UserWarning)
 NUM_CLIENTS = 50
 
 
-
+def get_network_usage(interf):
+    net_io = psutil.net_io_counters(pernic=True)
+    #net_io = psutil.net_io_counters(pernic=True)
+    return {"bytes_sent": net_io[interf].bytes_sent, "bytes_recv": net_io[interf].bytes_recv}
 
 def get_ip_address():
     try:
@@ -107,15 +111,6 @@ def get_ip_address():
         return None
 
 
-# https://psutil.readthedocs.io/en/latest/
-# https://psutil.readthedocs.io/en/latest/index.html#process-class
-# https://stackoverflow.com/questions/75983163/what-exactly-does-psutil-net-io-counters-byte-recv-mean
-# https://github.com/giampaolo/psutil/blob/master/scripts/nettop.py
-def get_network_usage(interf):
-    p = psutil.Process()
-    net_io = p.net_io_counters(pernic=True)
-    #net_io = psutil.net_io_counters(pernic=True)
-    return {"bytes_sent": net_io[interf].bytes_sent, "bytes_recv": net_io[interf].bytes_recv}
 
 class Net(nn.Module):
     """Model (simple CNN adapted from 'PyTorch: A 60 Minute Blitz')."""
@@ -299,7 +294,7 @@ class FlowerClient(fl.client.NumPyClient):
     def fit(self, parameters, config):
         logger.info("Client sampled for fit()")
 
-        global wlan_interf, start_net, end_net
+        #global wlan_interf, start_net, end_net
         end_net = get_network_usage(wlan_interf)
         net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
         net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
@@ -332,7 +327,7 @@ class FlowerClient(fl.client.NumPyClient):
     def evaluate(self, parameters, config):
         logger.info("Client sampled for evaluate()")
 
-        global wlan_interf, start_net, end_net
+        #global wlan_interf, start_net, end_net
         end_net = get_network_usage(wlan_interf)
         net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
         net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
