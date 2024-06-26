@@ -285,6 +285,7 @@ class FlowerClient(fl.client.NumPyClient):
             squeezenet = models.squeezenet1_0(pretrained=False)
             # Modify the first convolutional layer to accept 1 channel input
             squeezenet.features[0] = nn.Conv2d(1, 96, kernel_size=7, stride=2, padding=3, bias=False)
+            squeezenet.classifier[1] = nn.Conv2d(512, 10, kernel_size=1)
             self.model = squeezenet
         elif model == 'squeezenet1':
             self.model = models.squeezenet1_0(pretrained=False)
@@ -319,6 +320,7 @@ class FlowerClient(fl.client.NumPyClient):
             shufflenet_v2 = models.shufflenet_v2_x1_0(pretrained=False)
             # Modify the first convolutional layer to accept 1 channel input
             shufflenet_v2.conv1[0] = nn.Conv2d(1, 24, kernel_size=3, stride=2, padding=1, bias=False)
+            shufflenet_v2.fc = nn.Linear(1024, 10)
             self.model = shufflenet_v2
         elif model == 'shufflenet_v2':
             self.model = models.shufflenet_v2_x1_0(pretrained=False)
@@ -327,6 +329,7 @@ class FlowerClient(fl.client.NumPyClient):
             mobilenet_v2 = models.mobilenet_v2(pretrained=False)
             # Modify the first convolutional layer to accept 1 channel input
             mobilenet_v2.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
+            mobilenet_v2.classifier[1] = nn.Linear(model.last_channel, 10)
             self.model = mobilenet_v2
         elif model == 'mobilenet_v2':
             self.model = models.mobilenet_v2(pretrained=False)
