@@ -329,7 +329,7 @@ class FlowerClient(fl.client.NumPyClient):
             mobilenet_v2 = models.mobilenet_v2(pretrained=False)
             # Modify the first convolutional layer to accept 1 channel input
             mobilenet_v2.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
-            mobilenet_v2.classifier[1] = nn.Linear(model.last_channel, 10)
+            mobilenet_v2.classifier[1] = nn.Linear(mobilenet_v2.last_channel, 10)
             self.model = mobilenet_v2
         elif model == 'mobilenet_v2':
             self.model = models.mobilenet_v2(pretrained=False)
