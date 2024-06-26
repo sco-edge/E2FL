@@ -330,6 +330,8 @@ class FlowerClient(fl.client.NumPyClient):
             self.model = mobilenet_v2
         elif model == 'mobilenet_v2':
             self.model = models.mobilenet_v2(pretrained=False)
+        elif model == 'mobilenet_v3_small':
+            self.model = models.mobilenet_v3_small(pretrained=False)
         elif model == 'mnasnet1' and dataset == 'mnist':
             # Pretrained MNASNet model
             mnasnet = models.mnasnet1_0(pretrained=False)
