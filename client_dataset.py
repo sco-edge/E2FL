@@ -333,6 +333,11 @@ class FlowerClient(fl.client.NumPyClient):
             self.model = mobilenet_v2
         elif model == 'mobilenet_v2':
             self.model = models.mobilenet_v2(pretrained=False)
+        elif model == 'mobilenet_v3_small' and dataset == 'mnist':
+            mobilenet_v3 = models.mobilenet_v3_small(pretrained=False)
+            mobilenet_v3.features[0][0] = nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1, bias=False)
+            mobilenet_v3.classifier[3] = nn.Linear(mobilenet_v3.classifier[3].in_features, 10)
+            self.model = mobilenet_v3
         elif model == 'mobilenet_v3_small':
             self.model = models.mobilenet_v3_small(pretrained=False)
         elif model == 'mnasnet1' and dataset == 'mnist':
