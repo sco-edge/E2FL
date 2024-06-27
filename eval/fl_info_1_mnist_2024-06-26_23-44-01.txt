@@ -1,0 +1,61 @@
+DEBUG:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.CONNECTING
+DEBUG:flwr:ChannelConnectivity.READY
+INFO:flwr:
+INFO:flwr:Received: train message b2eb4564-88a5-4ed5-bcb5-00e3b2dec557
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719413066.26082']
+INFO:test:['Evaluation phase (wlan0): [sent: 108328, recv: 5356408]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 1158.6633660793304 seconds.
+INFO:test:['Wi-Fi start: 1719414225.1326478']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message 1d0b6aba-edef-4bfe-86e6-cf5c7bddb920
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719414239.1241236']
+INFO:test:['Computation phase (wlan0): [sent: 5536682, recv: 5452799]']
+INFO:test:Evaluation pahse completed in 13.792389631271362 seconds.
+INFO:test:['Wi-Fi start: 1719414253.1068969']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: train message e6fb5dca-d66d-4165-96c7-8057206fc06f
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719414260.1856651']
+INFO:test:['Evaluation phase (wlan0): [sent: 109169, recv: 5349446]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 1159.4486780166626 seconds.
+INFO:test:['Wi-Fi start: 1719415419.8284209']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message dc956944-0f08-4142-b1d2-a24c41f5d239
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719415432.135684']
+INFO:test:['Computation phase (wlan0): [sent: 5542769, recv: 5420246]']
+INFO:test:Evaluation pahse completed in 12.79549241065979 seconds.
+INFO:test:['Wi-Fi start: 1719415445.1161816']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: train message 1e60e381-c108-40f9-a881-bda331bd0172
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719415453.214639']
+INFO:test:['Evaluation phase (wlan0): [sent: 96919, recv: 5350077]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 1161.0757117271423 seconds.
+INFO:test:['Wi-Fi start: 1719416614.4905262']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message 3c503873-1e05-47e5-b3cb-72f72a57bd4a
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719416628.5285664']
+INFO:test:['Computation phase (wlan0): [sent: 5514036, recv: 5396728]']
+INFO:test:Evaluation pahse completed in 12.246240615844727 seconds.
+INFO:test:['Wi-Fi start: 1719416640.979144']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: reconnect message 04a7fce7-aec1-4302-949b-7555d380e14d
+DEBUG:flwr:gRPC channel closed
+INFO:flwr:Disconnect and shut down
+INFO:test:['Wi-Fi end: 1719416641.1667247']
+INFO:test:['Evaluation phase (wlan0): [sent: 17072695, recv: 32421030]']

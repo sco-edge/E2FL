@@ -1,0 +1,41 @@
+INFO:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.CONNECTING
+DEBUG:flwr:ChannelConnectivity.READY
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719389246.6444626']
+INFO:test:['Evaluation phase (wlan0): [sent: 116432, recv: 9458456]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 1097.3653213977814 seconds.
+INFO:test:['Wi-Fi start: 1719390344.0586967']
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719392088.7757201']
+INFO:test:['Computation phase (wlan0): [sent: 9772753, recv: 9585202]']
+INFO:test:Evaluation pahse completed in 7.5886070728302 seconds.
+INFO:test:['Wi-Fi start: 1719392096.4092019']
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719392129.9341302']
+INFO:test:['Evaluation phase (wlan0): [sent: 96713, recv: 9454246]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 969.9605832099915 seconds.
+INFO:test:['Wi-Fi start: 1719393099.9421213']
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719394983.0252628']
+INFO:test:['Computation phase (wlan0): [sent: 9655718, recv: 9607288]']
+INFO:test:Evaluation pahse completed in 6.9548420906066895 seconds.
+INFO:test:['Wi-Fi start: 1719394990.0248983']
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719395024.1636648']
+INFO:test:['Evaluation phase (wlan0): [sent: 128217, recv: 9453044]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 1040.3425905704498 seconds.
+INFO:test:['Wi-Fi start: 1719396064.5537739']
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719397865.4788957']
+INFO:test:['Computation phase (wlan0): [sent: 9884188, recv: 9578348]']
+INFO:test:Evaluation pahse completed in 7.454727411270142 seconds.
+INFO:test:['Wi-Fi start: 1719397872.978697']
+DEBUG:flwr:gRPC channel closed
+INFO:flwr:Disconnect and shut down
+INFO:test:['Wi-Fi end: 1719397893.718548']
+INFO:test:['Evaluation phase (wlan0): [sent: 29817396, recv: 57181603]']
