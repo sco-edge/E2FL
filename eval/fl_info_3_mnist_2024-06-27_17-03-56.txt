@@ -1,0 +1,17 @@
+DEBUG:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.CONNECTING
+DEBUG:flwr:ChannelConnectivity.READY
+INFO:flwr:
+INFO:flwr:Received: get_parameters message 2408510c-de87-4391-bdc3-1f8055abf6e9
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: train message 0880c707-e672-4668-af6c-de8a2eac091d
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719475500.1721766']
+INFO:test:['Evaluation phase (wlp1s0): [sent: 220, recv: 553]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 290.5265221595764 seconds.
+INFO:test:['Wi-Fi start: 1719475790.7306893']
+INFO:flwr:Sent reply
+DEBUG:flwr:gRPC channel closed

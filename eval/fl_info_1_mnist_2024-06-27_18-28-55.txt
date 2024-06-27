@@ -1,0 +1,27 @@
+DEBUG:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.CONNECTING
+DEBUG:flwr:ChannelConnectivity.READY
+INFO:flwr:
+INFO:flwr:Received: train message 1405f3fd-a4f3-48fd-92e7-e00d90be2d88
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719480563.580325']
+INFO:test:['Evaluation phase (wlan0): [sent: 64651, recv: 3043783]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 213.6817033290863 seconds.
+INFO:test:['Wi-Fi start: 1719480777.3166444']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message a732bf03-733f-440f-9ae2-13fc54717fee
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719480795.8086858']
+INFO:test:['Computation phase (wlan0): [sent: 3128420, recv: 3082804]']
+INFO:test:Evaluation pahse completed in 3.082343578338623 seconds.
+INFO:test:['Wi-Fi start: 1719480798.9399135']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: reconnect message 28434aa8-5531-450c-981b-982c421350eb
+DEBUG:flwr:gRPC channel closed
+INFO:flwr:Disconnect and shut down
+INFO:test:['Wi-Fi end: 1719480798.991915']
+INFO:test:['Evaluation phase (wlan0): [sent: 3247204, recv: 6142590]']
