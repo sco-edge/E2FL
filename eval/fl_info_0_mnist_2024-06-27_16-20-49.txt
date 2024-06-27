@@ -1,0 +1,8 @@
+INFO:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.CONNECTING
+DEBUG:flwr:ChannelConnectivity.READY
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719472884.663396']
+INFO:test:['Evaluation phase (wlan0): [sent: 126878, recv: 9458671]']
+INFO:test:Computation phase started
