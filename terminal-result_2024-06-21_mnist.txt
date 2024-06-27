@@ -1,4 +1,1 @@
-Namespace(server_address='192.168.0.17:8080', rounds=3, sample_fraction=1.0, min_num_clients=4)
-The IP address of the server is: 192.168.0.17
-The IP address of the client is: 192.168.0.14, 192.168.0.22, 192.168.0.15, 192.168.0.19
-The ID of the client is: pi
+python3.10 server_dataset.py --server_address=192.168.0.17:8080 --rounds=3 --min_num_clients=4
