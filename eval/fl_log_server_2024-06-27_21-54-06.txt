@@ -1,0 +1,20 @@
+myFlowerExperiment | INFO flwr 2024-06-27 21:54:06,511 | app.py:150 | Starting Flower server, config: num_rounds=1, no round_timeout
+myFlowerExperiment | INFO flwr 2024-06-27 21:54:06,517 | app.py:163 | Flower ECE: gRPC server running (1 rounds), SSL is disabled
+myFlowerExperiment | INFO flwr 2024-06-27 21:54:06,517 | server.py:92 | [INIT]
+myFlowerExperiment | INFO flwr 2024-06-27 21:54:06,517 | server.py:279 | Requesting initial parameters from one random client
+myFlowerExperiment | INFO flwr 2024-06-27 21:54:30,887 | server.py:285 | Received initial parameters from one random client
+myFlowerExperiment | INFO flwr 2024-06-27 21:54:30,888 | server.py:94 | Evaluating initial global parameters
+myFlowerExperiment | INFO flwr 2024-06-27 21:54:30,888 | server.py:110 | 
+myFlowerExperiment | INFO flwr 2024-06-27 21:54:30,888 | server.py:111 | [ROUND 1]
+myFlowerExperiment | INFO flwr 2024-06-27 21:54:56,313 | server.py:224 | configure_fit: strategy sampled 3 clients (out of 3)
+myFlowerExperiment | INFO flwr 2024-06-27 22:12:42,229 | server.py:238 | aggregate_fit: received 3 results and 0 failures
+myFlowerExperiment | WARNING flwr 2024-06-27 22:12:42,279 | fedavg.py:252 | No fit_metrics_aggregation_fn provided
+myFlowerExperiment | INFO flwr 2024-06-27 22:12:42,279 | server.py:176 | configure_evaluate: strategy sampled 3 clients (out of 3)
+myFlowerExperiment | INFO flwr 2024-06-27 22:13:02,714 | server.py:190 | aggregate_evaluate: received 3 results and 0 failures
+myFlowerExperiment | INFO flwr 2024-06-27 22:13:02,714 | server.py:487 | 
+myFlowerExperiment | INFO flwr 2024-06-27 22:13:02,714 | server.py:488 | [SUMMARY]
+myFlowerExperiment | INFO flwr 2024-06-27 22:13:02,715 | server.py:489 | Run finished 1 rounds in 1111.83s
+myFlowerExperiment | INFO flwr 2024-06-27 22:13:02,715 | server.py:492 | History (loss, distributed):
+myFlowerExperiment | INFO flwr 2024-06-27 22:13:02,715 | server.py:494 | 	'\tround 1: 2.136801799138387\n'History (metrics, distributed, evaluate):
+myFlowerExperiment | INFO flwr 2024-06-27 22:13:02,715 | server.py:494 | 	{'accuracy': [(1, 0.6694444444444444)]}
+myFlowerExperiment | INFO flwr 2024-06-27 22:13:02,715 | server.py:495 | 
