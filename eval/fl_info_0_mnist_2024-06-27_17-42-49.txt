@@ -1,0 +1,19 @@
+INFO:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.CONNECTING
+DEBUG:flwr:ChannelConnectivity.READY
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719477801.8734663']
+INFO:test:['Evaluation phase (wlan0): [sent: 88339, recv: 6422372]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 1093.2260525226593 seconds.
+INFO:test:['Wi-Fi start: 1719478895.3216639']
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719478910.1657853']
+INFO:test:['Computation phase (wlan0): [sent: 6626480, recv: 10091415]']
+INFO:test:Evaluation pahse completed in 15.467632293701172 seconds.
+INFO:test:['Wi-Fi start: 1719478925.783715']
+DEBUG:flwr:gRPC channel closed
+INFO:flwr:Disconnect and shut down
+INFO:test:['Wi-Fi end: 1719478925.9245856']
+INFO:test:['Evaluation phase (wlan0): [sent: 6891928, recv: 22095339]']
