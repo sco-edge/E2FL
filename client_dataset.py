@@ -475,6 +475,8 @@ def main():
     
     args = parser.parse_args()
     print(args)
+    pid = psutil.Process().ppid()
+    print(f"PPID: {pid")
     current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     logging.basicConfig(filename=f"fl_info_{args.cid}_{args.dataset}_{current_time}.txt")
     fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{args.cid}_{args.dataset}_{current_time}.txt")
