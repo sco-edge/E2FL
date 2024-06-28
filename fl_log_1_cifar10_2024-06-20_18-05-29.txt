@@ -1,8 +1,0 @@
-myFlowerExperiment | DEBUG flwr 2024-06-20 18:05:30,113 | grpc.py:53 | Opened insecure gRPC connection (no certificates were passed)
-myFlowerExperiment | DEBUG flwr 2024-06-20 18:05:30,126 | connection.py:57 | ChannelConnectivity.IDLE
-myFlowerExperiment | DEBUG flwr 2024-06-20 18:05:30,129 | connection.py:57 | ChannelConnectivity.READY
-myFlowerExperiment | INFO flwr 2024-06-20 18:06:02,944 | app.py:338 | 
-myFlowerExperiment | INFO flwr 2024-06-20 18:06:02,946 | app.py:346 | Received: train message 3cba953e-bac8-4d5e-bad4-e1d6a36c1e9e
-myFlowerExperiment | INFO flwr 2024-06-20 18:20:38,705 | app.py:420 | Sent reply
-myFlowerExperiment | DEBUG flwr 2024-06-20 18:46:15,047 | connection.py:237 | gRPC channel closed
-myFlowerExperiment | INFO flwr 2024-06-20 18:46:15,048 | app.py:431 | Disconnect and shut down
