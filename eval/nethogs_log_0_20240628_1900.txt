@@ -1,0 +1,764 @@
+Adding local address: 192.168.0.14
+Adding local address: fe80::ba27:ebff:fe15:2600
+Ethernet link detected
+
+Refreshing:
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0324219	0.0335938
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0972656	0.100781
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.29375	0.258203
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.466016	0.369531
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.676562	0.5875
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.657812	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.558594	0.507812
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.689453	0.675781
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.498437	0.598047
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0460938	0.0335938
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0460938	0.0335938
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0460938	0.0335938
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0460938	0.0335938
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0574219	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.0273438	0.0144531
+sshd: pi@pts/1/1129/1000	0.0835937	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.365625	1.42617
+sshd: pi@pts/1/1129/1000	0.0835937	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.807031	3.25703
+sshd: pi@pts/1/1129/1000	0.0835937	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.999414	4.79453
+sshd: pi@pts/1/1129/1000	0.0835937	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.34668	6.21562
+sshd: pi@pts/1/1129/1000	0.0835937	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.67598	7.6168
+sshd: pi@pts/1/1129/1000	0.0964844	0.0359375
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.2959	5.91875
+sshd: pi@pts/1/1129/1000	0.0128906	0.0253906
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.42773	5.66758
+sshd: pi@pts/1/1129/1000	0.126563	0.0359375
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.33691	5.70098
+sshd: pi@pts/1/1129/1000	0.126563	0.0359375
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.42441	5.84531
+sshd: pi@pts/1/1129/1000	0.113672	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.70938	6.33789
+sshd: pi@pts/1/1129/1000	0.113672	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.70938	6.33789
+sshd: pi@pts/1/1129/1000	0.113672	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.70938	6.33789
+sshd: pi@pts/1/1129/1000	0.113672	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.70938	6.33789
+sshd: pi@pts/1/1129/1000	0.113672	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.70938	6.33789
+sshd: pi@pts/1/1129/1000	0.113672	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.70938	6.33789
+sshd: pi@pts/1/1129/1000	0.113672	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.70938	6.33789
+sshd: pi@pts/1/1129/1000	0.113672	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.70938	6.33789
+sshd: pi@pts/1/1129/1000	0.113672	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	1.70938	6.33789
+sshd: pi@pts/1/1129/1000	0.113672	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.156055	0.0779297
+sshd: pi@pts/1/1129/1000	0.122266	0.0210938
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.55	1.23203
+sshd: pi@pts/1/1129/1000	0.122266	0.0210938
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.588672	1.37324
+sshd: pi@pts/1/1129/1000	0.122266	0.0210938
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.588672	1.37324
+sshd: pi@pts/1/1129/1000	0.122266	0.0210938
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.588672	1.37324
+sshd: pi@pts/1/1129/1000	0.122266	0.0210938
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.588672	1.37324
+sshd: pi@pts/1/1129/1000	0.122266	0.0210938
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.588672	1.37324
+sshd: pi@pts/1/1129/1000	0.122266	0.0210938
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.588672	1.37324
+sshd: pi@pts/1/1129/1000	0.122266	0.0210938
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.588672	1.37324
+sshd: pi@pts/1/1129/1000	0.122266	0.0210938
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.588672	1.37324
+sshd: pi@pts/1/1129/1000	0.122266	0.0210938
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.25332	13.6152
+sshd: pi@pts/1/1129/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.614258	36.616
+sshd: pi@pts/1/1129/1000	0.190234	0.0316406
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.614258	36.616
+sshd: pi@pts/1/1129/1000	0.460938	0.0949219
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.614258	36.616
+sshd: pi@pts/1/1129/1000	0.747266	0.179297
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.614258	36.616
+sshd: pi@pts/1/1129/1000	1.08164	0.263672
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.614258	36.616
+sshd: pi@pts/1/1129/1000	1.39609	0.3375
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.3168	0.341797
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.65313	0.415625
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.46289	0.394141
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.55781	0.394141
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.88359	0.467969
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.58359	0.389844
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.86992	0.463672
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.41562	0.326953
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.39805	0.3375
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.72187	0.411328
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.48047	0.379297
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.54297	0.389844
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.5543	0.389844
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	2.01172	0.463672
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.95859	0.463672
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.47187	0.3375
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.40937	0.326953
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.25703	0.326953
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.58398	0.400781
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.44922	0.379297
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.8043	0.453125
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.8793	0.453125
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	36.8566	19.4111
+sshd: pi@pts/1/1129/1000	1.65352	0.36875
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	37.4854	61.9162
+sshd: pi@pts/1/1129/1000	1.61992	0.295312
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	37.6658	73.9539
+sshd: pi@pts/1/1129/1000	1.72578	0.305859
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	37.6658	73.9539
+sshd: pi@pts/1/1129/1000	2.01211	0.390234
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.886523	60.4568
+sshd: pi@pts/1/1129/1000	1.51836	0.316406
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.180469	12.3334
+sshd: pi@pts/1/1129/1000	1.47148	0.400391
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.37305	0.379297
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.43242	0.379297
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.79727	0.478516
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.48242	0.352344
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.95547	0.436719
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.55664	0.362891
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.84609	0.436719
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.49531	0.379297
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.38164	0.36875
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.40234	0.36875
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.49727	0.379297
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.85547	0.453125
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.5332	0.326953
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.975	0.411328
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.57617	0.3375
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.53477	0.389844
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.42109	0.389844
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.33867	0.379297
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.40742	0.379297
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.4543	0.379297
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.48945	0.326953
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	1.59687	0.3375
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	37.1145	37.3824
+sshd: pi@pts/1/1129/1000	1.71914	0.3375
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	37.6625	38.6303
+sshd: pi@pts/1/1129/1000	1.69219	0.358203
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	37.7012	38.7586
+sshd: pi@pts/1/1129/1000	1.69219	0.358203
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	37.7012	38.7586
+sshd: pi@pts/1/1129/1000	1.69219	0.358203
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	37.7012	38.7586
+sshd: pi@pts/1/1129/1000	1.69219	0.358203
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.331641	1.28086
+sshd: pi@pts/1/1129/1000	0.0554687	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.331641	1.28086
+sshd: pi@pts/1/1129/1000	0.0554687	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.331641	1.28086
+sshd: pi@pts/1/1129/1000	0.0554687	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.331641	1.28086
+sshd: pi@pts/1/1129/1000	0.0554687	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+python3.10/1301/1000	0.331641	1.28086
+sshd: pi@pts/1/1129/1000	0.0554687	0.0105469
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0683594	0.0359375
+python3.10/1301/1000	0.0257812	0.0128906
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.0230469	0.0230469
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.184375	0.26875
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
+
+Refreshing:
+sshd: pi@pts/1/1129/1000	0.253516	0.369531
+python3.10/1301/1000	0	0
+unknown TCP/0/0	0	0
