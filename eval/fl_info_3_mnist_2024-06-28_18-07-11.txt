@@ -1,0 +1,47 @@
+DEBUG:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.CONNECTING
+DEBUG:flwr:ChannelConnectivity.READY
+INFO:flwr:
+INFO:flwr:Received: get_parameters message e7e541d8-7acd-4fee-9125-40d51a35d30e
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: train message dfa28ed7-9476-4a6f-bdcd-8d7e8c55c6b5
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719565691.7331934']
+INFO:test:['Evaluation phase (wlp1s0): [sent: 220, recv: 625]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 265.2370445728302 seconds.
+INFO:test:['Wi-Fi start: 1719565956.9926705']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message 1739aa4a-4e9e-4c68-ab0a-dec4649a67b6
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719566916.6079605']
+INFO:test:['Computation phase (wlp1s0): [sent: 420, recv: 16906]']
+INFO:test:Evaluation pahse completed in 1.9861857891082764 seconds.
+INFO:test:['Wi-Fi start: 1719566918.6235633']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: train message eb850738-00b6-4161-96b4-32f84f079ad0
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719566938.320541']
+INFO:test:['Evaluation phase (wlp1s0): [sent: 62, recv: 246]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 314.44684171676636 seconds.
+INFO:test:['Wi-Fi start: 1719567252.7987797']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message 061fc5e4-cbbe-4bbb-a633-7ce69acddd0e
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719568163.3637776']
+INFO:test:['Computation phase (wlp1s0): [sent: 198, recv: 13567]']
+INFO:test:Evaluation pahse completed in 1.8665752410888672 seconds.
+INFO:test:['Wi-Fi start: 1719568165.253731']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: reconnect message 2df36657-74e8-4a90-9c58-5ddf68790a2c
+DEBUG:flwr:gRPC channel closed
+INFO:flwr:Disconnect and shut down
+INFO:test:['Wi-Fi end: 1719568181.0999143']
+INFO:test:['Evaluation phase (wlp1s0): [sent: 2452, recv: 70225]']
