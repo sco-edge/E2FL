@@ -1,0 +1,44 @@
+DEBUG:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.CONNECTING
+DEBUG:flwr:ChannelConnectivity.READY
+INFO:flwr:
+INFO:flwr:Received: train message d689c7d0-1f01-4197-a916-243e524c8cd9
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719568668.4270122']
+INFO:test:['Evaluation phase (wlan0): [sent: 6149, recv: 186274]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 27.022768259048462 seconds.
+INFO:test:['Wi-Fi start: 1719568695.4671779']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message 0e58b3fb-33d9-4a2a-a04e-1df2833ddbdf
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719568696.1569839']
+INFO:test:['Computation phase (wlan0): [sent: 192620, recv: 188602]']
+INFO:test:Evaluation pahse completed in 0.5027422904968262 seconds.
+INFO:test:['Wi-Fi start: 1719568696.6700804']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: train message 3c926eaf-e28a-4758-a5e9-0152faf8c818
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719568697.0624583']
+INFO:test:['Evaluation phase (wlan0): [sent: 5507, recv: 186132]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 26.030377864837646 seconds.
+INFO:test:['Wi-Fi start: 1719568723.106103']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message d8350a36-1c41-4213-af98-02e0e734498c
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719568723.8950043']
+INFO:test:['Computation phase (wlan0): [sent: 192634, recv: 189018]']
+INFO:test:Evaluation pahse completed in 0.510840654373169 seconds.
+INFO:test:['Wi-Fi start: 1719568724.4158318']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: reconnect message 652c8be2-e60a-4224-858f-ba800434da08
+DEBUG:flwr:gRPC channel closed
+INFO:flwr:Disconnect and shut down
+INFO:test:['Wi-Fi end: 1719568724.5692332']
+INFO:test:['Evaluation phase (wlan0): [sent: 501628, recv: 774108]']

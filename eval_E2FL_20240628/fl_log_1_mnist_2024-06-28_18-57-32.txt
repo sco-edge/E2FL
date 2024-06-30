@@ -1,0 +1,20 @@
+myFlowerExperiment | DEBUG flwr 2024-06-28 18:57:47,946 | grpc.py:53 | Opened insecure gRPC connection (no certificates were passed)
+myFlowerExperiment | DEBUG flwr 2024-06-28 18:57:47,967 | connection.py:57 | ChannelConnectivity.IDLE
+myFlowerExperiment | DEBUG flwr 2024-06-28 18:57:47,972 | connection.py:57 | ChannelConnectivity.CONNECTING
+myFlowerExperiment | DEBUG flwr 2024-06-28 18:57:48,016 | connection.py:57 | ChannelConnectivity.READY
+myFlowerExperiment | INFO flwr 2024-06-28 18:57:48,404 | app.py:338 | 
+myFlowerExperiment | INFO flwr 2024-06-28 18:57:48,407 | app.py:346 | Received: train message d689c7d0-1f01-4197-a916-243e524c8cd9
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:15,483 | app.py:420 | Sent reply
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:16,141 | app.py:338 | 
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:16,142 | app.py:346 | Received: evaluate message 0e58b3fb-33d9-4a2a-a04e-1df2833ddbdf
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:16,676 | app.py:420 | Sent reply
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:17,045 | app.py:338 | 
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:17,047 | app.py:346 | Received: train message 3c926eaf-e28a-4758-a5e9-0152faf8c818
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:43,120 | app.py:420 | Sent reply
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:43,869 | app.py:338 | 
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:43,880 | app.py:346 | Received: evaluate message d8350a36-1c41-4213-af98-02e0e734498c
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:44,422 | app.py:420 | Sent reply
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:44,540 | app.py:338 | 
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:44,541 | app.py:346 | Received: reconnect message 652c8be2-e60a-4224-858f-ba800434da08
+myFlowerExperiment | DEBUG flwr 2024-06-28 18:58:44,557 | connection.py:237 | gRPC channel closed
+myFlowerExperiment | INFO flwr 2024-06-28 18:58:44,558 | app.py:431 | Disconnect and shut down

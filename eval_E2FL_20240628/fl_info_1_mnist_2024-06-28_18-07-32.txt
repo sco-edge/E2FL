@@ -1,0 +1,44 @@
+DEBUG:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.CONNECTING
+DEBUG:flwr:ChannelConnectivity.READY
+INFO:flwr:
+INFO:flwr:Received: train message ece33563-1715-4d36-8939-55a6ceceeaea
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719565693.1543524']
+INFO:test:['Evaluation phase (wlan0): [sent: 132832, recv: 5356551]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 1186.9226534366608 seconds.
+INFO:test:['Wi-Fi start: 1719566880.2828207']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message bea422c2-61fb-4897-9f03-389f1f9d4da1
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719566916.9649715']
+INFO:test:['Computation phase (wlan0): [sent: 5510588, recv: 5436151]']
+INFO:test:Evaluation pahse completed in 13.378000020980835 seconds.
+INFO:test:['Wi-Fi start: 1719566930.5404904']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: train message 74eeef64-ec8a-4a25-b408-06889774daa1
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719566940.4072']
+INFO:test:['Evaluation phase (wlan0): [sent: 110827, recv: 5353129]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 1178.9408798217773 seconds.
+INFO:test:['Wi-Fi start: 1719568119.5482717']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message 8869e761-94b0-4471-b0b9-a93de0b4c8de
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719568168.5655909']
+INFO:test:['Computation phase (wlan0): [sent: 5636066, recv: 5436065]']
+INFO:test:Evaluation pahse completed in 12.218918085098267 seconds.
+INFO:test:['Wi-Fi start: 1719568180.973329']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: reconnect message 37892eb8-44bd-447e-a7b5-3991b4cc671a
+DEBUG:flwr:gRPC channel closed
+INFO:flwr:Disconnect and shut down
+INFO:test:['Wi-Fi end: 1719568181.141528']
+INFO:test:['Evaluation phase (wlan0): [sent: 11499174, recv: 21638213]']

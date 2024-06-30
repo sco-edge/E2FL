@@ -1,0 +1,44 @@
+DEBUG:flwr:Opened insecure gRPC connection (no certificates were passed)
+DEBUG:flwr:ChannelConnectivity.IDLE
+DEBUG:flwr:ChannelConnectivity.CONNECTING
+DEBUG:flwr:ChannelConnectivity.READY
+INFO:flwr:
+INFO:flwr:Received: train message e0e8b96c-9b00-44b6-b73f-570bc10ab5e8
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719568668.3272698']
+INFO:test:['Evaluation phase (wlp1s0): [sent: 220, recv: 315]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 4.941416501998901 seconds.
+INFO:test:['Wi-Fi start: 1719568673.2714307']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message a5ee3615-88c4-452d-be74-428fde8c9fc2
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719568696.2673218']
+INFO:test:['Computation phase (wlp1s0): [sent: 0, recv: 204]']
+INFO:test:Evaluation pahse completed in 0.051268577575683594 seconds.
+INFO:test:['Wi-Fi start: 1719568696.3203118']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: train message e3d55e5f-ed10-404e-bb61-44c445176ab3
+INFO:test:Client sampled for fit()
+INFO:test:['Wi-Fi end: 1719568697.0191696']
+INFO:test:['Evaluation phase (wlp1s0): [sent: 0, recv: 162]']
+INFO:test:Computation phase started
+INFO:test:Computation pahse completed in 4.9484124183654785 seconds.
+INFO:test:['Wi-Fi start: 1719568701.9691215']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: evaluate message 29e4e18f-8995-4f41-967a-0b049ad77733
+INFO:test:Client sampled for evaluate()
+INFO:test:['Wi-Fi end: 1719568724.0358927']
+INFO:test:['Computation phase (wlp1s0): [sent: 0, recv: 108]']
+INFO:test:Evaluation pahse completed in 0.07202816009521484 seconds.
+INFO:test:['Wi-Fi start: 1719568724.1096065']
+INFO:flwr:Sent reply
+INFO:flwr:
+INFO:flwr:Received: reconnect message f5e89c33-0f83-455d-8435-381e68041dc7
+DEBUG:flwr:gRPC channel closed
+INFO:flwr:Disconnect and shut down
+INFO:test:['Wi-Fi end: 1719568724.5511804']
+INFO:test:['Evaluation phase (wlp1s0): [sent: 282, recv: 6167]']
