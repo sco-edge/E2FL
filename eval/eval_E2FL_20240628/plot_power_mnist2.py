@@ -64,7 +64,7 @@ for client_id, client_segments in client_data.items():
             print(f'Client {client_id} (Squeezenet) - Power Consumption per Phase: {power_consumption}')
 
 # Example plot to visualize power consumption
-def plot_power_consumption(power_data, start_time, title):
+def plot_power_consumption(power_data, start_time, title, filename):
     plt.figure(figsize=(12, 6))
     plt.plot(power_data['Time(ms)'], power_data['Total Power (mW)'], label='Total Power (mW)')
     plt.axvline(x=start_time, color='r', linestyle='--', label='Start of Computation')
@@ -72,7 +72,8 @@ def plot_power_consumption(power_data, start_time, title):
     plt.ylabel('Power (mW)')
     plt.title(title)
     plt.legend()
-    plt.show()
+    #plt.show()
+    plt.savefig('./'+filename)
 
-plot_power_consumption(power_data_shufflenet, start_time, 'Power Consumption Over Time (Shufflenet)')
-plot_power_consumption(power_data_squeezenet, start_time, 'Power Consumption Over Time (Squeezenet)')
+plot_power_consumption(power_data_shufflenet, start_time, 'Power Consumption Over Time (Shufflenet)', 'plot_p_mnist(shufflenet).png')
+plot_power_consumption(power_data_squeezenet, start_time, 'Power Consumption Over Time (Squeezenet)', 'plot_p_mnist(squeezenet).png')

@@ -2,6 +2,7 @@ import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
+from datetime import datetime, timedelta
 
 # Load power consumption data
 power_data_path = '../../../eval_E2FL/E2FL_20240628_175814.csv'
@@ -50,7 +51,7 @@ for client_id, client_segments in client_data.items():
         print(f'Client {client_id} ({segment_name}) - Power Consumption per Phase: {power_consumption}')
 
 # Example plot to visualize power consumption
-def plot_power_consumption(power_data, start_time):
+def plot_power_consumption(power_data, start_time, filename):
     plt.figure(figsize=(12, 6))
     plt.plot(power_data['Time(ms)'], power_data['Total Power (mW)'], label='Total Power (mW)')
     plt.axvline(x=start_time, color='r', linestyle='--', label='Start of Computation')
@@ -58,6 +59,7 @@ def plot_power_consumption(power_data, start_time):
     plt.ylabel('Power (mW)')
     plt.title('Power Consumption Over Time')
     plt.legend()
-    plt.show()
+    #plt.show()
+    plt.savefig('./'+filename)
 
-plot_power_consumption(power_data, start_time)
+plot_power_consumption(power_data, start_time, 'plot_p_mnist.png')

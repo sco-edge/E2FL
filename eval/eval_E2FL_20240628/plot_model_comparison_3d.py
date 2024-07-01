@@ -36,7 +36,7 @@ def extract_and_compare_data(data, segment_index=0):
     return (communication_after_fit_times, communication_after_evaluate_times, fit_network_usage_nethogs, evaluate_network_usage_nethogs, fit_times, evaluate_times)
 
 # Function to plot 3D graphs
-def plot_3d_comparison(data, title, ylabel):
+def plot_3d_comparison(data, title, ylabel, filename):
     fig = plt.figure(figsize=(12, 8))
     ax = fig.add_subplot(111, projection='3d')
     
@@ -51,10 +51,11 @@ def plot_3d_comparison(data, title, ylabel):
     ax.set_zlabel(ylabel)
     ax.set_title(title)
     plt.legend()
-    plt.show()
+    #plt.show()
+    plt.savefig('./'+filename)
 
 # Function to calculate and plot average values
-def plot_average_values(data1, data2, title, ylabel):
+def plot_average_values(data1, data2, title, ylabel, filename):
     shufflenet_avg = []
     squeezenet_avg = []
     rounds = np.arange(max(len(data1[0]), len(data2[0])))
@@ -74,34 +75,35 @@ def plot_average_values(data1, data2, title, ylabel):
     plt.ylabel(ylabel)
     plt.legend()
     plt.grid(True)
-    plt.show()
+    #plt.show()
+    plt.savefig('./'+filename)
 
 # Extract the data for shufflenet (1800 segment) and squeezenet (1900 segment)
 (communication_after_fit_times_shufflenet, communication_after_evaluate_times_shufflenet, fit_network_usage_nethogs_shufflenet, evaluate_network_usage_nethogs_shufflenet, fit_times_shufflenet, evaluate_times_shufflenet) = extract_and_compare_data(data, segment_index=0)
 (communication_after_fit_times_squeezenet, communication_after_evaluate_times_squeezenet, fit_network_usage_nethogs_squeezenet, evaluate_network_usage_nethogs_squeezenet, fit_times_squeezenet, evaluate_times_squeezenet) = extract_and_compare_data(data, segment_index=1)
 
 # Plot Communication phase time after fit
-plot_3d_comparison(communication_after_fit_times_shufflenet, 'Communication Phase Time After Fit (Shufflenet)', 'Time (s)')
+plot_3d_comparison(communication_after_fit_times_shufflenet, 'Communication Phase Time After Fit (Shufflenet)', 'Time (s)', 'plot_m_c_3d-comm_after_fit(shufflenet).png')
 
 # Plot Communication phase time after evaluate
-plot_3d_comparison(communication_after_evaluate_times_shufflenet, 'Communication Phase Time After Evaluate (Shufflenet)', 'Time (s)')
+plot_3d_comparison(communication_after_evaluate_times_shufflenet, 'Communication Phase Time After Evaluate (Shufflenet)', 'Time (s)', 'plot_m_c_3d-comm_after_eval(shufflenet).png')
 
 # Plot network usage after fit (nethogs)
-plot_3d_comparison(fit_network_usage_nethogs_shufflenet, 'Network Usage After Fit (Shufflenet) - Nethogs', 'Network Usage (nethogs)')
+plot_3d_comparison(fit_network_usage_nethogs_shufflenet, 'Network Usage After Fit (Shufflenet) - Nethogs', 'Network Usage (nethogs)', 'plot_m_c_3d-fit_nethogs(shufflenet).png')
 
 # Plot network usage after evaluate (nethogs)
-plot_3d_comparison(evaluate_network_usage_nethogs_shufflenet, 'Network Usage After Evaluate (Shufflenet) - Nethogs', 'Network Usage (nethogs)')
+plot_3d_comparison(evaluate_network_usage_nethogs_shufflenet, 'Network Usage After Evaluate (Shufflenet) - Nethogs', 'Network Usage (nethogs)', 'plot_m_c_3d-eval_nethogs(shufflenet).png')
 
 # Plot time spent in fit phase
-plot_3d_comparison(fit_times_shufflenet, 'Time Spent in Fit Phase (Shufflenet)', 'Time (s)')
+plot_3d_comparison(fit_times_shufflenet, 'Time Spent in Fit Phase (Shufflenet)', 'Time (s)', 'plot_m_c_3d-fit(shufflenet).png')
 
 # Plot time spent in evaluate phase
-plot_3d_comparison(evaluate_times_shufflenet, 'Time Spent in Evaluate Phase (Shufflenet)', 'Time (s)')
+plot_3d_comparison(evaluate_times_shufflenet, 'Time Spent in Evaluate Phase (Shufflenet)', 'Time (s)', 'plot_m_c_3d-eval(shufflenet).png')
 
 # Plot average values for comparison between Shufflenet and Squeezenet
-plot_average_values(communication_after_fit_times_shufflenet, communication_after_fit_times_squeezenet, 'Average Communication Phase Time After Fit', 'Time (s)')
-plot_average_values(communication_after_evaluate_times_shufflenet, communication_after_evaluate_times_squeezenet, 'Average Communication Phase Time After Evaluate', 'Time (s)')
-plot_average_values(fit_network_usage_nethogs_shufflenet, fit_network_usage_nethogs_squeezenet, 'Average Network Usage After Fit - Nethogs', 'Network Usage (nethogs)')
-plot_average_values(evaluate_network_usage_nethogs_shufflenet, evaluate_network_usage_nethogs_squeezenet, 'Average Network Usage After Evaluate - Nethogs', 'Network Usage (nethogs)')
-plot_average_values(fit_times_shufflenet, fit_times_squeezenet, 'Average Time Spent in Fit Phase', 'Time (s)')
-plot_average_values(evaluate_times_shufflenet, evaluate_times_squeezenet, 'Average Time Spent in Evaluate Phase', 'Time (s)')
+plot_average_values(communication_after_fit_times_shufflenet, communication_after_fit_times_squeezenet, 'Average Communication Phase Time After Fit', 'Time (s)', 'plot_m_c_3d-comm_after_fit_compare.png')
+plot_average_values(communication_after_evaluate_times_shufflenet, communication_after_evaluate_times_squeezenet, 'Average Communication Phase Time After Evaluate', 'Time (s)', 'plot_m_c_3d-comm_after_eval_compare.png')
+plot_average_values(fit_network_usage_nethogs_shufflenet, fit_network_usage_nethogs_squeezenet, 'Average Network Usage After Fit - Nethogs', 'Network Usage (nethogs)', 'plot_m_c_3d-fit_nethogs_compare.png')
+plot_average_values(evaluate_network_usage_nethogs_shufflenet, evaluate_network_usage_nethogs_squeezenet, 'Average Network Usage After Evaluate - Nethogs', 'Network Usage (nethogs)', 'plot_m_c_3d-eval_nethogs_compare.png')
+plot_average_values(fit_times_shufflenet, fit_times_squeezenet, 'Average Time Spent in Fit Phase', 'Time (s)', 'plot_m_c_3d-fit_compare.png')
+plot_average_values(evaluate_times_shufflenet, evaluate_times_squeezenet, 'Average Time Spent in Evaluate Phase', 'Time (s)', 'plot_m_c_3d-eval_compare.png')

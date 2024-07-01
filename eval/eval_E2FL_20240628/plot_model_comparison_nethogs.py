@@ -2,7 +2,7 @@ import pickle
 import matplotlib.pyplot as plt
 
 # Load the updated pickle data file
-file_path = '/mnt/data/updated_client_data.pkl'
+file_path = './updated_client_data.pkl'
 with open(file_path, 'rb') as f:
     data = pickle.load(f)
 
@@ -35,7 +35,7 @@ def extract_and_compare_data(data, segment_index=0):
     return (communication_after_fit_times, communication_after_evaluate_times, fit_network_usage_nethogs, evaluate_network_usage_nethogs, fit_times, evaluate_times)
 
 # Plot the comparisons
-def plot_comparison(data, title, ylabel):
+def plot_comparison(data, title, ylabel, filename):
     plt.figure(figsize=(10, 6))
     for client_id, values in data.items():
         plt.plot(values, label=f'Client {client_id}')
@@ -44,10 +44,11 @@ def plot_comparison(data, title, ylabel):
     plt.ylabel(ylabel)
     plt.legend()
     plt.grid(True)
-    plt.show()
+    #plt.show()
+    plt.savefig('./'+filename)
 
 # Plot network usage comparisons (nethogs)
-def plot_network_usage(data, title):
+def plot_network_usage(data, title, filename):
     plt.figure(figsize=(10, 6))
     for client_id, usages in data.items():
         sent = [usage['sent'] for usage in usages]
@@ -59,25 +60,26 @@ def plot_network_usage(data, title):
     plt.ylabel('Network Usage (nethogs)')
     plt.legend()
     plt.grid(True)
-    plt.show()
+    #plt.show()
+    plt.savefig('./'+filename)
 
 # Extract the data for shufflenet (1800 segment)
 (communication_after_fit_times, communication_after_evaluate_times, fit_network_usage_nethogs, evaluate_network_usage_nethogs, fit_times, evaluate_times) = extract_and_compare_data(data, segment_index=0)
 
 # Plot Communication phase time after fit
-plot_comparison(communication_after_fit_times, 'Communication Phase Time After Fit (Shufflenet)', 'Time (s)')
+plot_comparison(communication_after_fit_times, 'Communication Phase Time After Fit (Shufflenet)', 'Time (s)', 'plot_m_c_n-comm_after_fit.png')
 
 # Plot Communication phase time after evaluate
-plot_comparison(communication_after_evaluate_times, 'Communication Phase Time After Evaluate (Shufflenet)', 'Time (s)')
+plot_comparison(communication_after_evaluate_times, 'Communication Phase Time After Evaluate (Shufflenet)', 'Time (s)', 'plot_m_c_n-comm_after_eval.png')
 
 # Plot network usage after fit (nethogs)
-plot_network_usage(fit_network_usage_nethogs, 'Network Usage After Fit (Shufflenet) - Nethogs')
+plot_network_usage(fit_network_usage_nethogs, 'Network Usage After Fit (Shufflenet) - Nethogs', 'plot_m_c_n-Nethogs_after_fit.png')
 
 # Plot network usage after evaluate (nethogs)
-plot_network_usage(evaluate_network_usage_nethogs, 'Network Usage After Evaluate (Shufflenet) - Nethogs')
+plot_network_usage(evaluate_network_usage_nethogs, 'Network Usage After Evaluate (Shufflenet) - Nethogs', 'plot_m_c_n-Nethogs_after_eval.png')
 
 # Plot time spent in fit phase
-plot_comparison(fit_times, 'Time Spent in Fit Phase (Shufflenet)', 'Time (s)')
+plot_comparison(fit_times, 'Time Spent in Fit Phase (Shufflenet)', 'Time (s)', 'plot_m_c_n-fit_phase(shufflenet).png')
 
 # Plot time spent in evaluate phase
-plot_comparison(evaluate_times, 'Time Spent in Evaluate Phase (Shufflenet)', 'Time (s)')
+plot_comparison(evaluate_times, 'Time Spent in Evaluate Phase (Shufflenet)', 'Time (s)', 'plot_m_c_n-eval_phase(shufflenet).png')
