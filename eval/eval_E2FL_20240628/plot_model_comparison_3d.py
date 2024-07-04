@@ -93,7 +93,7 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     plt.figure(figsize=(10, 6))
     
     bar1 = plt.bar(clients - width/2, shufflenet_avg, width, color = 'b', label='Shufflenet')
-    bar2 = plt.bar(clients + width/2, squeezenet_avg, width, color = 'g', label='Squeezenet')
+    bar2 = plt.bar(clients + width/2, squeezenet_avg, width, color = 'y', label='Squeezenet')
     
     plt.title(title)
     plt.xlabel('Client')
@@ -109,11 +109,11 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     # Adding the values on top of the bars
     for bar in bar1:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment bar.get_width()/4.0
+        plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', fontsize=10)  # va: vertical alignment bar.get_width()/4.0
     
     for bar in bar2:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment bar.get_width()/4.0
+        plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', fontsize=10)  # va: vertical alignment bar.get_width()/4.0
     
     #plt.show()
     plt.savefig('./'+filename)
@@ -141,10 +141,10 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     width = 0.2  # the width of the bars
     plt.figure(figsize=(10, 6))
     
-    bar1 = plt.bar(clients - width, shufflenet_sent_avg, width, color = 'b', label='Sent (Shufflenet)', hatch='//')
-    bar2 = plt.bar(clients, shufflenet_recv_avg, width, color = 'b', label='Recv (Shufflenet)', hatch='\\')
-    bar3 = plt.bar(clients + width, squeezenet_sent_avg, width, color = 'g', label='Sent (Squeezenet)', hatch='//')
-    bar4 = plt.bar(clients + 2 * width, squeezenet_recv_avg, width, color = 'g', label='Recv (Squeezenet)', hatch='\\')
+    bar1 = plt.bar(clients - width, shufflenet_sent_avg, width, color = 'b', label='Sent (Shufflenet)', hatch='+')
+    bar2 = plt.bar(clients, shufflenet_recv_avg, width, color = 'b', label='Recv (Shufflenet)', hatch='x')
+    bar3 = plt.bar(clients + width, squeezenet_sent_avg, width, color = 'y', label='Sent (Squeezenet)', hatch='+')
+    bar4 = plt.bar(clients + 2 * width, squeezenet_recv_avg, width, color = 'y', label='Recv (Squeezenet)', hatch='x')
     
     
     plt.title(title)
@@ -161,7 +161,7 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     # Adding the values on top of the bars
     for bar in bar1 + bar2 + bar3 + bar4:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', ha='center', fontsize='small')
+        plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', ha='center', fontsize=10)
 
     #plt.show()
     plt.savefig('./'+filename)
