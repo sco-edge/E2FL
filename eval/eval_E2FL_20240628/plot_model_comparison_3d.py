@@ -10,12 +10,7 @@ with open(file_path, 'rb') as f:
 # Function to extract and compare data
 def extract_and_compare_data(data, segment_index=0):
     # Initialize dictionaries to hold the comparison data
-    communication_after_fit_times = {}
-    communication_after_evaluate_times = {}
-    fit_network_usage_nethogs = {}
-    evaluate_network_usage_nethogs = {}
-    fit_times = {}
-    evaluate_times = {}
+    communication_after_fit_times, communication_after_evaluate_times, fit_network_usage_nethogs, evaluate_network_usage_nethogs, fit_times, evaluate_time, = {}, {}, {}, {}, {}, {}
 
     # Extract data for shufflenet (1800 segment)
     for client_id, client_data in data.items():
@@ -31,9 +26,9 @@ def extract_and_compare_data(data, segment_index=0):
         
         # Extract computation times
         fit_times[client_id] = client_segment['fit']
-        evaluate_times[client_id] = client_segment['evaluate']
+        evaluate_time[client_id] = client_segment['evaluate']
 
-    return (communication_after_fit_times, communication_after_evaluate_times, fit_network_usage_nethogs, evaluate_network_usage_nethogs, fit_times, evaluate_times)
+    return (communication_after_fit_times, communication_after_evaluate_times, fit_network_usage_nethogs, evaluate_network_usage_nethogs, fit_times, evaluate_time)
 
 # Function to plot 3D graphs
 def plot_3d_comparison(data, title, ylabel, filename):
@@ -81,7 +76,7 @@ def plot_average_values(data1, data2, title, ylabel, filename):
 # Extract the data for shufflenet (1800 segment) and squeezenet (1900 segment)
 (communication_after_fit_times_shufflenet, communication_after_evaluate_times_shufflenet, fit_network_usage_nethogs_shufflenet, evaluate_network_usage_nethogs_shufflenet, fit_times_shufflenet, evaluate_times_shufflenet) = extract_and_compare_data(data, segment_index=0)
 (communication_after_fit_times_squeezenet, communication_after_evaluate_times_squeezenet, fit_network_usage_nethogs_squeezenet, evaluate_network_usage_nethogs_squeezenet, fit_times_squeezenet, evaluate_times_squeezenet) = extract_and_compare_data(data, segment_index=1)
-
+'''
 # Plot Communication phase time after fit
 plot_3d_comparison(communication_after_fit_times_shufflenet, 'Communication Phase Time After Fit (Shufflenet)', 'Time (s)', 'plot_m_c_3d-comm_after_fit(shufflenet).png')
 
@@ -99,7 +94,7 @@ plot_3d_comparison(fit_times_shufflenet, 'Time Spent in Fit Phase (Shufflenet)',
 
 # Plot time spent in evaluate phase
 plot_3d_comparison(evaluate_times_shufflenet, 'Time Spent in Evaluate Phase (Shufflenet)', 'Time (s)', 'plot_m_c_3d-eval(shufflenet).png')
-
+'''
 # Plot average values for comparison between Shufflenet and Squeezenet
 plot_average_values(communication_after_fit_times_shufflenet, communication_after_fit_times_squeezenet, 'Average Communication Phase Time After Fit', 'Time (s)', 'plot_m_c_3d-comm_after_fit_compare.png')
 plot_average_values(communication_after_evaluate_times_shufflenet, communication_after_evaluate_times_squeezenet, 'Average Communication Phase Time After Evaluate', 'Time (s)', 'plot_m_c_3d-comm_after_eval_compare.png')
