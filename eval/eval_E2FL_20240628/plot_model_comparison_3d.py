@@ -62,9 +62,12 @@ def plot_average_values(data1, data2, title, ylabel, filename):
         shufflenet_avg.append(np.mean(shufflenet_values))
         squeezenet_avg.append(np.mean(squeezenet_values))
     
+    width = 0.35  # the width of the bars
     plt.figure(figsize=(10, 6))
-    plt.plot(rounds, shufflenet_avg, label='Shufflenet')
-    plt.plot(rounds, squeezenet_avg, label='Squeezenet')
+    #plt.plot(rounds, shufflenet_avg, label='Shufflenet')
+    #plt.plot(rounds, squeezenet_avg, label='Squeezenet')
+    plt.bar(rounds - width/2, shufflenet_avg, width, label='Shufflenet')
+    plt.bar(rounds + width/2, squeezenet_avg, width, label='Squeezenet')
     plt.title(title)
     plt.xlabel('Round')
     plt.ylabel(ylabel)
@@ -72,6 +75,45 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     plt.grid(True)
     #plt.show()
     plt.savefig('./'+filename)
+
+
+def plot_nethogs(data1, data2, title, ylabel, filename):
+    shufflenet_sent_avg = []
+    shufflenet_recv_avg = []
+    squeezenet_sent_avg = []
+    squeezenet_recv_avg = []
+    rounds = np.arange(max(len(data1[0]), len(data2[0])))
+    
+    for round_num in rounds:
+        shufflenet_sent_values = [data1[client_id][round_num]['sent'] for client_id in data1 if round_num < len(data1[client_id])]
+        shufflenet_recv_values = [data1[client_id][round_num]['recv'] for client_id in data1 if round_num < len(data1[client_id])]
+        squeezenet_sent_values = [data2[client_id][round_num]['sent'] for client_id in data2 if round_num < len(data2[client_id])]
+        squeezenet_recv_values = [data2[client_id][round_num]['recv'] for client_id in data2 if round_num < len(data2[client_id])]
+        
+        shufflenet_sent_avg.append(np.mean(shufflenet_sent_values))
+        shufflenet_recv_avg.append(np.mean(shufflenet_recv_values))
+        squeezenet_sent_avg.append(np.mean(squeezenet_sent_values))
+        squeezenet_recv_avg.append(np.mean(squeezenet_recv_values))
+    
+    width = 0.2  # the width of the bars
+    plt.figure(figsize=(10, 6))
+    
+    plt.bar(rounds - width, shufflenet_sent_avg, width, label='Shufflenet Sent', hatch='//')
+    plt.bar(rounds, shufflenet_recv_avg, width, label='Shufflenet Recv', hatch='.') # \\
+    plt.bar(rounds + width, squeezenet_sent_avg, width, label='Squeezenet Sent', hatch='//')
+    plt.bar(rounds + 2 * width, squeezenet_recv_avg, width, label='Squeezenet Recv', hatch='.')
+    
+    plt.title(title)
+    plt.xlabel('Round')
+    plt.ylabel(ylabel)
+    plt.legend()
+    plt.grid(True)
+    #plt.show()
+    plt.savefig('./'+filename)
+
+# Sample usage
+# plot_nethogs(data1, data2, "Network Usage", "Bytes", "network_usage.png")
+
 
 # Extract the data for shufflenet (1800 segment) and squeezenet (1900 segment)
 (communication_after_fit_times_shufflenet, communication_after_evaluate_times_shufflenet, fit_network_usage_nethogs_shufflenet, evaluate_network_usage_nethogs_shufflenet, fit_times_shufflenet, evaluate_times_shufflenet) = extract_and_compare_data(data, segment_index=0)
@@ -98,7 +140,7 @@ plot_3d_comparison(evaluate_times_shufflenet, 'Time Spent in Evaluate Phase (Shu
 # Plot average values for comparison between Shufflenet and Squeezenet
 plot_average_values(communication_after_fit_times_shufflenet, communication_after_fit_times_squeezenet, 'Average Communication Phase Time After Fit', 'Time (s)', 'plot_m_c_3d-comm_after_fit_compare.png')
 plot_average_values(communication_after_evaluate_times_shufflenet, communication_after_evaluate_times_squeezenet, 'Average Communication Phase Time After Evaluate', 'Time (s)', 'plot_m_c_3d-comm_after_eval_compare.png')
-plot_average_values(fit_network_usage_nethogs_shufflenet, fit_network_usage_nethogs_squeezenet, 'Average Network Usage After Fit - Nethogs', 'Network Usage (nethogs)', 'plot_m_c_3d-fit_nethogs_compare.png')
-plot_average_values(evaluate_network_usage_nethogs_shufflenet, evaluate_network_usage_nethogs_squeezenet, 'Average Network Usage After Evaluate - Nethogs', 'Network Usage (nethogs)', 'plot_m_c_3d-eval_nethogs_compare.png')
 plot_average_values(fit_times_shufflenet, fit_times_squeezenet, 'Average Time Spent in Fit Phase', 'Time (s)', 'plot_m_c_3d-fit_compare.png')
 plot_average_values(evaluate_times_shufflenet, evaluate_times_squeezenet, 'Average Time Spent in Evaluate Phase', 'Time (s)', 'plot_m_c_3d-eval_compare.png')
+plot_nethogs(fit_network_usage_nethogs_shufflenet, fit_network_usage_nethogs_squeezenet, 'Average Network Usage After Fit - Nethogs', 'Network Usage (nethogs)', 'plot_m_c_3d-fit_nethogs_compare.png')
+plot_nethogs(evaluate_network_usage_nethogs_shufflenet, evaluate_network_usage_nethogs_squeezenet, 'Average Network Usage After Evaluate - Nethogs', 'Network Usage (nethogs)', 'plot_m_c_3d-eval_nethogs_compare.png')
