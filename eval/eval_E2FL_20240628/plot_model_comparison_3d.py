@@ -150,8 +150,13 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
     plt.xlabel('Client')
     plt.ylabel(ylabel)
-    plt.legend()
-    plt.grid(True)
+    plt.legend(loc='best')
+    #plt.grid(True)
+
+    # Determine the max value to set the y-axis limit
+    max_value = max(max(shufflenet_sent_avg), max(shufflenet_recv_avg), max(squeezenet_sent_avg), max(squeezenet_recv_avg))
+    plt.ylim(0, max_value * 1.2)  # Increase y-axis limit by 5%
+
     #plt.show()
     plt.savefig('./'+filename)
 
@@ -182,9 +187,9 @@ plot_3d_comparison(fit_times_shufflenet, 'Time Spent in Fit Phase (Shufflenet)',
 plot_3d_comparison(evaluate_times_shufflenet, 'Time Spent in Evaluate Phase (Shufflenet)', 'Time (s)', 'plot_m_c_3d-eval(shufflenet).png')
 '''
 # Plot average values for comparison between Shufflenet and Squeezenet
-plot_average_values(communication_after_fit_times_shufflenet, communication_after_fit_times_squeezenet, 'Average Communication Phase Time After Fit', 'Time (s)', 'plot_m_c_3d-comm_after_fit_compare.png')
-plot_average_values(communication_after_evaluate_times_shufflenet, communication_after_evaluate_times_squeezenet, 'Average Communication Phase Time After Evaluate', 'Time (s)', 'plot_m_c_3d-comm_after_eval_compare.png')
-plot_average_values(fit_times_shufflenet, fit_times_squeezenet, 'Average Time Spent in Fit Phase', 'Time (s)', 'plot_m_c_3d-fit_compare.png')
-plot_average_values(evaluate_times_shufflenet, evaluate_times_squeezenet, 'Average Time Spent in Evaluate Phase', 'Time (s)', 'plot_m_c_3d-eval_compare.png')
+plot_average_values(communication_after_fit_times_shufflenet, communication_after_fit_times_squeezenet, 'Average Communication Phase Time After Fit (Computation Phase)', 'Time (s)', 'plot_m_c_3d-comm_after_fit_compare.png')
+plot_average_values(communication_after_evaluate_times_shufflenet, communication_after_evaluate_times_squeezenet, 'Average Communication Phase Time After Evaluate (Computation Phase)', 'Time (s)', 'plot_m_c_3d-comm_after_eval_compare.png')
+plot_average_values(fit_times_shufflenet, fit_times_squeezenet, 'Average Time Spent in Fit (Computation Phase)', 'Time (s)', 'plot_m_c_3d-fit_compare.png')
+plot_average_values(evaluate_times_shufflenet, evaluate_times_squeezenet, 'Average Time Spent in Evaluate (Computation Phase)', 'Time (s)', 'plot_m_c_3d-eval_compare.png')
 plot_nethogs(fit_network_usage_nethogs_shufflenet, fit_network_usage_nethogs_squeezenet, 'Average Network Usage After Fit - Nethogs', 'Network Usage (byte)', 'plot_m_c_3d-fit_nethogs_compare.png')
 plot_nethogs(evaluate_network_usage_nethogs_shufflenet, evaluate_network_usage_nethogs_squeezenet, 'Average Network Usage After Evaluate - Nethogs', 'Network Usage (byte)', 'plot_m_c_3d-eval_nethogs_compare.png')
