@@ -99,17 +99,17 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     plt.xlabel('Client ID')
     plt.ylabel(ylabel)
     plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
-    plt.legend()
+    plt.legend(loc='best')
     #plt.grid(True)
 
     # Adding the values on top of the bars
     for bar in bar1:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2.0, yval, f'{yval:.2f}', va='bottom')  # va: vertical alignment
+        plt.text(bar.get_x() + bar.get_width()/4.0, yval, f'{yval:.2f}', va='bottom')  # va: vertical alignment
     
     for bar in bar2:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2.0, yval, f'{yval:.2f}', va='bottom')  # va: vertical alignment
+        plt.text(bar.get_x() + bar.get_width()/4.0, yval, f'{yval:.2f}', va='bottom')  # va: vertical alignment
     
     #plt.show()
     plt.savefig('./'+filename)
