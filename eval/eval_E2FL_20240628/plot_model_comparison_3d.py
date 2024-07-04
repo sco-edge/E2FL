@@ -115,7 +115,6 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     plt.xlabel('Client')
     plt.ylabel(ylabel)
     plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
-    plt.legend(loc='best', fontsize=12)
     #plt.grid(True)
     
     # Determine the max value to set the y-axis limit
@@ -131,6 +130,7 @@ def plot_average_values(data1, data2, title, ylabel, filename):
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', fontsize=12)  # va: vertical alignment bar.get_width()/4.0
     
+    plt.legend(loc='best', fontsize=12)
     #plt.show()
     plt.savefig('./'+filename)
 
@@ -167,7 +167,6 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
     plt.xlabel('Client')
     plt.ylabel(ylabel)
-    plt.legend(loc='best', fontsize=12)
     #plt.grid(True)
 
     # Determine the max value to set the y-axis limit
@@ -179,6 +178,7 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', ha='center', fontsize=12)
 
+    plt.legend(loc='best', fontsize=12)
     #plt.show()
     plt.savefig('./'+filename)
 
