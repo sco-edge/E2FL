@@ -157,6 +157,11 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     max_value = max(max(shufflenet_sent_avg), max(shufflenet_recv_avg), max(squeezenet_sent_avg), max(squeezenet_recv_avg))
     plt.ylim(0, max_value * 1.2)  # Increase y-axis limit by 5%
 
+    # Adding the values on top of the bars
+    for bar in bar1 + bar2 + bar3 + bar4:
+        yval = bar.get_height()
+        plt.text(bar.get_x(), yval, f'{yval:.2f}', va='bottom', ha='center', fontsize='small')
+
     #plt.show()
     plt.savefig('./'+filename)
 
