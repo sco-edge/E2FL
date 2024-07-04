@@ -2,6 +2,22 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 
+hatch_labels = {	'Before': '.', \
+                    'After': '\\', \
+                    'A': '\\', \
+                    'B': '////', \
+                    'C': '-', \
+                    'D': 'x', \
+                    'Before_label': '..', \
+                    'After_label': '\\\\', \
+                    'A_label': '\\\\', \
+                    'B_label': '////', \
+                    'C_label': '--', \
+                    'D_label': 'x' \
+                }
+color_labels = ['#CC3311', '#0077BB', '#EE3377', \
+                '#009988', '#33BBEE', '#AA4499', \
+                '#CC3311', '#0077BB'] #'#ff9f11', '#7adf1e'
 def cm2inch(value):
     	return value/2.54
 
@@ -92,8 +108,8 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     width = 0.35  # the width of the bars
     plt.figure(figsize=(10, 6))
     
-    bar1 = plt.bar(clients - width/2, shufflenet_avg, width, color = 'b', label='Shufflenet')
-    bar2 = plt.bar(clients + width/2, squeezenet_avg, width, color = 'y', label='Squeezenet')
+    bar1 = plt.bar(clients - width/2, shufflenet_avg, width, color = color_labels[0], label='Shufflenet')
+    bar2 = plt.bar(clients + width/2, squeezenet_avg, width, color = color_labels[1], label='Squeezenet')
     
     plt.title(title)
     plt.xlabel('Client')
@@ -141,10 +157,10 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     width = 0.2  # the width of the bars
     plt.figure(figsize=(10, 6))
     
-    bar1 = plt.bar(clients - width, shufflenet_sent_avg, width, color = 'b', label='Sent (Shufflenet)', hatch='+')
-    bar2 = plt.bar(clients, shufflenet_recv_avg, width, color = 'b', label='Recv (Shufflenet)', hatch='x')
-    bar3 = plt.bar(clients + width, squeezenet_sent_avg, width, color = 'y', label='Sent (Squeezenet)', hatch='+')
-    bar4 = plt.bar(clients + 2 * width, squeezenet_recv_avg, width, color = 'y', label='Recv (Squeezenet)', hatch='x')
+    bar1 = plt.bar(clients - width, shufflenet_sent_avg, width, color = color_labels[0], label='Sent (Shufflenet)', hatch = hatch_labels['A'])
+    bar2 = plt.bar(clients, shufflenet_recv_avg, width, color = color_labels[0], label='Recv (Shufflenet)', hatch = hatch_labels['B'])
+    bar3 = plt.bar(clients + width, squeezenet_sent_avg, width, color = color_labels[1], label='Sent (Squeezenet)', hatch = hatch_labels['A'])
+    bar4 = plt.bar(clients + 2 * width, squeezenet_recv_avg, width, color = color_labels[1], label='Recv (Squeezenet)', hatch = hatch_labels['B'])
     
     
     plt.title(title)
