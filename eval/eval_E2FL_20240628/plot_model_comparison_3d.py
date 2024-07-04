@@ -96,7 +96,7 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     bar2 = plt.bar(clients + width/2, squeezenet_avg, width, label='Squeezenet')
     
     plt.title(title)
-    plt.xlabel('Client ID')
+    plt.xlabel('Client')
     plt.ylabel(ylabel)
     plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
     plt.legend(loc='best')
@@ -143,7 +143,8 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     plt.bar(clients + 2 * width, squeezenet_recv_avg, width, label='Squeezenet Recv', hatch='\\')
     
     plt.title(title)
-    plt.xlabel('Round')
+    plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
+    plt.xlabel('Client')
     plt.ylabel(ylabel)
     plt.legend()
     plt.grid(True)
