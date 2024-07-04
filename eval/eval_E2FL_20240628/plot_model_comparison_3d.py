@@ -101,15 +101,19 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
     plt.legend(loc='best')
     #plt.grid(True)
+    
+    # Determine the max value to set the y-axis limit
+    max_value = max(max(shufflenet_avg), max(squeezenet_avg))
+    plt.ylim(0, max_value * 1.05)  # Increase y-axis limit by 5%
 
     # Adding the values on top of the bars
     for bar in bar1:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/4.0, yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment
+        plt.text(bar.get_x(), yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment bar.get_width()/4.0
     
     for bar in bar2:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/4.0, yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment
+        plt.text(bar.get_x(), yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment bar.get_width()/4.0
     
     #plt.show()
     plt.savefig('./'+filename)
