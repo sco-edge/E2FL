@@ -98,7 +98,7 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     plt.title(title)
     plt.xlabel('Client ID')
     plt.ylabel(ylabel)
-    plt.xticks(['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5']) #clients
+    plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
     plt.legend()
     #plt.grid(True)
 
