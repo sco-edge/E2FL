@@ -99,7 +99,7 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     plt.xlabel('Client')
     plt.ylabel(ylabel)
     plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
-    plt.legend(loc='best', fontsize=14)
+    plt.legend(loc='best', fontsize=12)
     #plt.grid(True)
     
     # Determine the max value to set the y-axis limit
@@ -151,7 +151,7 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
     plt.xlabel('Client')
     plt.ylabel(ylabel)
-    plt.legend(loc='best', fontsize=14)
+    plt.legend(loc='best', fontsize=12)
     #plt.grid(True)
 
     # Determine the max value to set the y-axis limit
