@@ -124,10 +124,10 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     clients = np.arange(max(len(data1), len(data2)))
     
     for client_id in clients:
-        shufflenet_sent_values = [data1[client_id][round_num]['sent'] for round_num in data1[client_id] if client_id < len(data1)]
-        shufflenet_recv_values = [data1[client_id][round_num]['recv'] for round_num in data1[client_id] if client_id < len(data1)]
-        squeezenet_sent_values = [data2[client_id][round_num]['sent'] for round_num in data2[client_id] if client_id < len(data2)]
-        squeezenet_recv_values = [data2[client_id][round_num]['recv'] for round_num in data2[client_id] if client_id < len(data2)]
+        shufflenet_sent_values = [data1[client_id][round_num]['sent'] for round_num in range(len(data1[client_id])) if client_id < len(data1)]
+        shufflenet_recv_values = [data1[client_id][round_num]['recv'] for round_num in range(len(data1[client_id])) if client_id < len(data1)]
+        squeezenet_sent_values = [data2[client_id][round_num]['sent'] for round_num in range(len(data2[client_id])) if client_id < len(data2)]
+        squeezenet_recv_values = [data2[client_id][round_num]['recv'] for round_num in range(len(data2[client_id])) if client_id < len(data2)]
         
         shufflenet_sent_avg.append(np.mean(shufflenet_sent_values))
         shufflenet_recv_avg.append(np.mean(shufflenet_recv_values))
