@@ -176,7 +176,7 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     # Adding the values on top of the bars
     for bar in bar1 + bar2 + bar3 + bar4:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', ha='center', fontsize=12)
+        plt.text(bar.get_x(), yval, f'{yval:.2f}', va='bottom', ha='center', fontsize=12)
 
     plt.legend(loc='best', fontsize=12)
     #plt.show()
