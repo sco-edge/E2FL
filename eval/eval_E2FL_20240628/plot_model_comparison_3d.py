@@ -92,8 +92,8 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     width = 0.35  # the width of the bars
     plt.figure(figsize=(10, 6))
     
-    bar1 = plt.bar(clients - width/2, shufflenet_avg, width, label='Shufflenet')
-    bar2 = plt.bar(clients + width/2, squeezenet_avg, width, label='Squeezenet')
+    bar1 = plt.bar(clients - width/2, shufflenet_avg, width, color = 'b', label='Shufflenet')
+    bar2 = plt.bar(clients + width/2, squeezenet_avg, width, color = 'g', label='Squeezenet')
     
     plt.title(title)
     plt.xlabel('Client')
@@ -141,10 +141,11 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     width = 0.2  # the width of the bars
     plt.figure(figsize=(10, 6))
     
-    plt.bar(clients - width, shufflenet_sent_avg, width, label='Shufflenet Sent', hatch='//')
-    plt.bar(clients, shufflenet_recv_avg, width, label='Shufflenet Recv', hatch='\\') # \\
-    plt.bar(clients + width, squeezenet_sent_avg, width, label='Squeezenet Sent', hatch='//')
-    plt.bar(clients + 2 * width, squeezenet_recv_avg, width, label='Squeezenet Recv', hatch='\\')
+    bar1 = plt.bar(clients - width, shufflenet_sent_avg, width, color = 'b', label='Sent (Shufflenet)', hatch='//')
+    bar2 = plt.bar(clients, shufflenet_recv_avg, width, color = 'b', label='Recv (Shufflenet)', hatch='\\')
+    bar3 = plt.bar(clients + width, squeezenet_sent_avg, width, color = 'g', label='Sent (Squeezenet)', hatch='//')
+    bar4 = plt.bar(clients + 2 * width, squeezenet_recv_avg, width, color = 'g', label='Recv (Squeezenet)', hatch='\\')
+    
     
     plt.title(title)
     plt.xticks(clients, ['RPi3B+ (1)', 'RPi3B+ (2)', 'RPi4B', 'RPi5'])
