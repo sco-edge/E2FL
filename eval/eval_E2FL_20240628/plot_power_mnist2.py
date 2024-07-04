@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 # Load power consumption data
 power_data_path = '../../../eval_E2FL/E2FL_20240628_175814.csv'
-power_data = pd.read_csv(power_data_path, delimiter='\s+', names=["Time(ms)", "USB(mA)", "Aux(mA)", "USB Voltage(V)"])
+power_data = pd.read_csv(power_data_path)#, delimiter='\s+', names=["Time(ms)", "USB(mA)", "Aux(mA)", "USB Voltage(V)"])
 
 # Load client data
 client_data_path = './updated_client_data.pkl'
