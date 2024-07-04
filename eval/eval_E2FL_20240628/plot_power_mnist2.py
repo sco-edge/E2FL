@@ -50,7 +50,16 @@ shufflenet_duration = (8 * 60 + 41) * 1000  # 8 minutes 41 seconds in millisecon
 # Split the power data into Shufflenet and Squeezenet
 power_data_shufflenet = power_data[power_data['Time(ms)'] <= shufflenet_duration]
 power_data_squeezenet = power_data[power_data['Time(ms)'] > shufflenet_duration].reset_index(drop=True)
-power_data_squeezenet['Time(ms)'] -= power_data_squeezenet['Time(ms)'].iloc[0]
+
+# Debugging prints
+print("Shufflenet data:", power_data_shufflenet.head())
+print("Squeezenet data:", power_data_squeezenet.head())
+
+# Check if power_data_squeezenet is not empty
+if not power_data_squeezenet.empty:
+    power_data_squeezenet['Time(ms)'] -= power_data_squeezenet['Time(ms)'].iloc[0]
+else:
+    print("Error: power_data_squeezenet is empty. Please check the data splitting logic.")
 
 # Analyze power consumption for each client
 for client_id, client_segments in client_data.items():
@@ -60,8 +69,11 @@ for client_id, client_segments in client_data.items():
             power_consumption = calculate_power_consumption(start_time, wait_times, power_data_shufflenet)
             print(f'Client {client_id} (Shufflenet) - Power Consumption per Phase: {power_consumption}')
         else:  # Squeezenet
-            power_consumption = calculate_power_consumption(start_time, wait_times, power_data_squeezenet)
-            print(f'Client {client_id} (Squeezenet) - Power Consumption per Phase: {power_consumption}')
+            if not power_data_squeezenet.empty:
+                power_consumption = calculate_power_consumption(start_time, wait_times, power_data_squeezenet)
+                print(f'Client {client_id} (Squeezenet) - Power Consumption per Phase: {power_consumption}')
+            else:
+                print(f'Client {client_id} (Squeezenet) - No data available for power consumption calculation.')
 
 # Example plot to visualize power consumption
 def plot_power_consumption(power_data, start_time, title, filename):
@@ -76,4 +88,7 @@ def plot_power_consumption(power_data, start_time, title, filename):
     plt.savefig('./'+filename)
 
 plot_power_consumption(power_data_shufflenet, start_time, 'Power Consumption Over Time (Shufflenet)', 'plot_p_mnist(shufflenet).png')
-plot_power_consumption(power_data_squeezenet, start_time, 'Power Consumption Over Time (Squeezenet)', 'plot_p_mnist(squeezenet).png')
+if not power_data_squeezenet.empty:
+    plot_power_consumption(power_data_squeezenet, start_time, 'Power Consumption Over Time (Squeezenet)', 'plot_p_mnist(squeezenet).png')
+else:
+    print("No plot created for Squeezenet as the data is empty.")
