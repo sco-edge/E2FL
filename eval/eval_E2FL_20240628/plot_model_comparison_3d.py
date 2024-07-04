@@ -105,11 +105,11 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     # Adding the values on top of the bars
     for bar in bar1:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/4.0, yval, f'{yval:.2f}', va='bottom')  # va: vertical alignment
+        plt.text(bar.get_x() + bar.get_width()/4.0, yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment
     
     for bar in bar2:
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/4.0, yval, f'{yval:.2f}', va='bottom')  # va: vertical alignment
+        plt.text(bar.get_x() + bar.get_width()/4.0, yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment
     
     #plt.show()
     plt.savefig('./'+filename)
