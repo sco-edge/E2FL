@@ -104,7 +104,7 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     
     # Determine the max value to set the y-axis limit
     max_value = max(max(shufflenet_avg), max(squeezenet_avg))
-    plt.ylim(0, max_value * 1.05)  # Increase y-axis limit by 5%
+    plt.ylim(0, max_value * 1.2)  # Increase y-axis limit by 5%
 
     # Adding the values on top of the bars
     for bar in bar1:
