@@ -109,11 +109,11 @@ def plot_average_values(data1, data2, title, ylabel, filename):
     # Adding the values on top of the bars
     for bar in bar1:
         yval = bar.get_height()
-        plt.text(bar.get_x(), yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment bar.get_width()/4.0
+        plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment bar.get_width()/4.0
     
     for bar in bar2:
         yval = bar.get_height()
-        plt.text(bar.get_x(), yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment bar.get_width()/4.0
+        plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', fontsize='small')  # va: vertical alignment bar.get_width()/4.0
     
     #plt.show()
     plt.savefig('./'+filename)
@@ -161,7 +161,7 @@ def plot_nethogs(data1, data2, title, ylabel, filename):
     # Adding the values on top of the bars
     for bar in bar1 + bar2 + bar3 + bar4:
         yval = bar.get_height()
-        plt.text(bar.get_x(), yval, f'{yval:.2f}', va='bottom', ha='center', fontsize='small')
+        plt.text(bar.get_x() + bar.get_width()/8.0, yval, f'{yval:.2f}', va='bottom', ha='center', fontsize='small')
 
     #plt.show()
     plt.savefig('./'+filename)
