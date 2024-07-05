@@ -109,6 +109,55 @@ def plot_power_consumption(data_time, data_power, time_i, filename='./plot_p_m3.
     plt.legend()
     #plt.grid(True)
     plt.savefig(filename)
+
+def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
+    avg_power1 = []
+    avg_power1.append(data_power1[:phase_i1[0]])
+    pre_ind = phase_i1[0]
+    for ind in phase_i1[1:]:
+        np.avg(data_power1[phase_i1[pre_ind:ind]])
+        pre_ind = ind
+
+    avg_power2 = []
+    avg_power2.append(data_power2[:phase_i2[0]])
+    pre_ind = phase_i2[0]
+    for ind in phase_i2[1:]:
+        np.avg(data_power1[phase_i2[pre_ind:ind]])
+        pre_ind = ind
+
+    # init, fit, comm_fit, eval, comm_eval (1, 2, 3, 4), (5, 6, 7, 8)
+    num_rounds = len(phase_i1) // 4
+    avg_power_shuf = [avg_power1[0]]
+    avg_power_sqez = [avg_power2[0]]
+
+    for phase_ind in (0, 1, 2, 3):
+        temp1 = 0
+        temp2 = 0
+        for round in range(num_rounds):
+            temp1 += avg_power1[4*round + phase_ind]
+            temp2 += avg_power2[4*round + phase_ind]
+        avg_power_shuf.append(np.avg(temp1))
+        avg_power_sqez.append(np.avg(temp2))
+    
+    plt.figure(figsize=(12, 8))
+    width = 0.35  # the width of the bars
+    phases = np.arange(1, len(avg_power_shuf) + 1)
+
+    bar1 = plt.bar(phases - width/2, avg_power_shuf, width, color = color_labels[0], label='Shufflenet')
+    bar2 = plt.bar(phases + width/2, avg_power_sqez, width, color = color_labels[1], label='Squeezenet')
+
+    max_value = max(max(avg_power1), max(avg_power2))
+    plt.ylim(0, max_value * 1.4)
+    
+    # Labeling the plot
+    plt.xlabel('Federated Leearning Phase')
+    plt.xticks(phases, ['init', 'fit', 'comm (fit)', 'eval', 'comm (eval)'])
+    plt.ylabel('Average Power (mW)')
+    #plt.title('Power Consumption Over Time')
+    plt.legend(loc='best', fontsize=12)
+    #plt.grid(True)
+    plt.savefig(filename)
+
 #############################################################################################
 
 # Load power consumption data
@@ -147,7 +196,7 @@ seqz_time_i = convert_timescale(power_data_shuf, seqz_time)
 
 plot_power_consumption(power_data_shuf[:,0], power_data_shuf[:,5], shuf_time_i, filename='./plot_p_m3_shufflenet.png')
 plot_power_consumption(power_data_seqz[0], power_data_seqz[5], seqz_time_i, filename='./plot_p_m3_squeezenet.png')
-
+plot_power_avg(power_data_shuf[:,5], power_data_seqz[:,5], shuf_time_i, seqz_time_i, filename='./plot_p_m3_bar.png')
 # init
 
 
