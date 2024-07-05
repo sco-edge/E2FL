@@ -124,8 +124,7 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
     for ind in phase_i2[1:]:
         avg_power2.append(np.mean(data_power2[pre_ind:ind]))
         pre_ind = ind
-    print("avg_power1: ", avg_power1)
-    print("avg_power2: ", avg_power2)
+
     # init, fit, comm_fit, eval, comm_eval (1, 2, 3, 4), (5, 6, 7, 8)
     num_rounds = len(phase_i1) // 4
     avg_power_shuf = []
@@ -146,10 +145,8 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
     width = 0.35  # the width of the bars
     phases = np.arange(1, len(avg_power_shuf) + 1)
 
-    print('phase_i2: ', phase_i2)
-    print('avg_power_sqez: ',avg_power_sqez)
-    bar1 = plt.bar(phases - width/2, avg_power_shuf*-1, width, color = color_labels[0], label='Shufflenet')
-    bar2 = plt.bar(phases + width/2, avg_power_sqez*-1, width, color = color_labels[1], label='Squeezenet')
+    bar1 = plt.bar(phases - width/2, avg_power_shuf, width, color = color_labels[0], label='Shufflenet')
+    bar2 = plt.bar(phases + width/2, avg_power_sqez, width, color = color_labels[1], label='Squeezenet')
 
     max_value = max(max(avg_power_shuf), max(avg_power_sqez))
     plt.ylim(0, max_value * 1.4)
@@ -199,14 +196,9 @@ seqz_time = calculate_time_duration(client_data_seqz, squeezenet_info) # seconds
 shuf_time_i = convert_timescale(power_data_shuf, shuf_time)
 seqz_time_i = convert_timescale(power_data_shuf, seqz_time)
 
-#print('shuff_time_i: ', shuf_time_i)
-#print("power_data_shuf[:,5]: ", power_data_shuf[:,5])
-#print("np.array(power_data_seqz[5]):", np.array(power_data_seqz[6]))
-#print("seqz_time_i: ", seqz_time_i)
-#print("len(power_data_seqz[6]): ", len(power_data_seqz[6]))
-plot_power_consumption(power_data_shuf[:,0], power_data_shuf[:,5], shuf_time_i, filename='./plot_p_m3_shufflenet.png')
-plot_power_consumption(power_data_seqz[0], power_data_seqz[6], seqz_time_i, filename='./plot_p_m3_squeezenet.png')
-plot_power_avg(power_data_shuf[:,5], np.array(power_data_seqz[6]), shuf_time_i, seqz_time_i, filename='./plot_p_m3_bar.png')
+plot_power_consumption(power_data_shuf[:,0], power_data_shuf[:,5]*-1, shuf_time_i, filename='./plot_p_m3_shufflenet.png')
+plot_power_consumption(power_data_seqz[0], np.array(power_data_seqz[6])*-1, seqz_time_i, filename='./plot_p_m3_squeezenet.png')
+plot_power_avg(power_data_shuf[:,5], np.array(power_data_seqz[6])*-1, shuf_time_i, seqz_time_i, filename='./plot_p_m3_bar.png')
 # init
 
 
