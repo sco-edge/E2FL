@@ -112,17 +112,17 @@ def plot_power_consumption(data_time, data_power, time_i, filename='./plot_p_m3.
 
 def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
     avg_power1 = []
-    avg_power1.append(data_power1[:phase_i1[0]])
+    avg_power1.append(np.mean(data_power1[:phase_i1[0]]))
     pre_ind = phase_i1[0]
     for ind in phase_i1[1:]:
-        np.mean(data_power1[pre_ind:ind])
+        avg_power1.append(np.mean(data_power1[pre_ind:ind]))
         pre_ind = ind
 
     avg_power2 = []
     avg_power2.append(data_power2[:phase_i2[0]])
     pre_ind = phase_i2[0]
     for ind in phase_i2[1:]:
-        np.mean(data_power2[pre_ind:ind])
+        avg_power2.append(np.mean(data_power2[pre_ind:ind]))
         pre_ind = ind
 
     # init, fit, comm_fit, eval, comm_eval (1, 2, 3, 4), (5, 6, 7, 8)
