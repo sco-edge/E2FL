@@ -139,8 +139,8 @@ client_data_shuf = client_data[0]
 client_data_seqz = client_data[1]
 
 num_rounds = max(len(client_data_seqz['fit']), len(client_data_shuf['fit']))
-shuf_time = calculate_time_duration(client_data_shuf) # seconds
-seqz_time = calculate_time_duration(client_data_seqz) # seconds
+shuf_time = calculate_time_duration(client_data_shuf, shufflenet_info) # seconds
+seqz_time = calculate_time_duration(client_data_seqz, squeezenet_info) # seconds
 
 shuf_time_i = convert_timescale(power_data_shuf, shuf_time)
 seqz_time_i = convert_timescale(power_data_shuf, seqz_time)
