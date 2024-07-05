@@ -115,14 +115,14 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
     avg_power1.append(data_power1[:phase_i1[0]])
     pre_ind = phase_i1[0]
     for ind in phase_i1[1:]:
-        np.avg(data_power1[phase_i1[pre_ind:ind]])
+        np.mean(data_power1[phase_i1[pre_ind:ind]])
         pre_ind = ind
 
     avg_power2 = []
     avg_power2.append(data_power2[:phase_i2[0]])
     pre_ind = phase_i2[0]
     for ind in phase_i2[1:]:
-        np.avg(data_power1[phase_i2[pre_ind:ind]])
+        np.mean(data_power1[phase_i2[pre_ind:ind]])
         pre_ind = ind
 
     # init, fit, comm_fit, eval, comm_eval (1, 2, 3, 4), (5, 6, 7, 8)
@@ -136,8 +136,8 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
         for round in range(num_rounds):
             temp1 += avg_power1[4*round + phase_ind]
             temp2 += avg_power2[4*round + phase_ind]
-        avg_power_shuf.append(np.avg(temp1))
-        avg_power_sqez.append(np.avg(temp2))
+        avg_power_shuf.append(np.mean(temp1))
+        avg_power_sqez.append(np.mean(temp2))
     
     plt.figure(figsize=(12, 8))
     width = 0.35  # the width of the bars
@@ -196,7 +196,7 @@ seqz_time_i = convert_timescale(power_data_shuf, seqz_time)
 
 plot_power_consumption(power_data_shuf[:,0], power_data_shuf[:,5], shuf_time_i, filename='./plot_p_m3_shufflenet.png')
 plot_power_consumption(power_data_seqz[0], power_data_seqz[5], seqz_time_i, filename='./plot_p_m3_squeezenet.png')
-plot_power_avg(power_data_shuf[:,5], power_data_seqz[5], shuf_time_i, seqz_time_i, filename='./plot_p_m3_bar.png')
+plot_power_avg(power_data_shuf[:,5], np.array(power_data_seqz[5]), shuf_time_i, seqz_time_i, filename='./plot_p_m3_bar.png')
 # init
 
 
