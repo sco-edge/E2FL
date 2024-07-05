@@ -78,7 +78,7 @@ for client_id, client_segments in client_data.items():
 # Example plot to visualize power consumption
 def plot_power_consumption(power_data, start_time, title, filename):
     plt.figure(figsize=(12, 6))
-    plt.plot(power_data['Time(ms)'], power_data['Total Power (mW)'], label='Total Power (mW)')
+    plt.plot(power_data['Time(ms)'].to_numpy(), power_data['Total Power (mW)'].to_numpy(), label='Total Power (mW)')
     plt.axvline(x=start_time, color='r', linestyle='--', label='Start of Computation')
     plt.xlabel('Time (ms)')
     plt.ylabel('Power (mW)')
