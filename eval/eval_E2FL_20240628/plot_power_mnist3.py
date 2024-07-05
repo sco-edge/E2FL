@@ -94,10 +94,10 @@ def convert_timescale(power_data, times):
             current_time += times[len(output_index)]
     return output_index
 
-def plot_power_consumption(data, time_i, filename='./plot_p_m3.png'):
+def plot_power_consumption(data_time, data_power, time_i, filename='./plot_p_m3.png'):
     plt.figure(figsize=(12, 8))
     
-    plt.plot(data[0], data[5])
+    plt.plot(data_time, data_power)
     
     for index in time_i:
         plt.axvline(x=index, color='r', linestyle='--')
@@ -145,8 +145,8 @@ seqz_time = calculate_time_duration(client_data_seqz, squeezenet_info) # seconds
 shuf_time_i = convert_timescale(power_data_shuf, shuf_time)
 seqz_time_i = convert_timescale(power_data_shuf, seqz_time)
 
-plot_power_consumption(power_data_shuf, shuf_time_i, filename='./plot_p_m3_shufflenet.png')
-plot_power_consumption(power_data_shuf, seqz_time_i, filename='./plot_p_m3_squeezenet.png')
+plot_power_consumption(power_data_shuf[:,0], power_data_shuf[:,5], shuf_time_i, filename='./plot_p_m3_shufflenet.png')
+plot_power_consumption(power_data_seqz[0], power_data_seqz[5], seqz_time_i, filename='./plot_p_m3_squeezenet.png')
 
 # init
 
