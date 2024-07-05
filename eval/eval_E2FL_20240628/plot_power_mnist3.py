@@ -97,7 +97,7 @@ def convert_timescale(power_data, times):
 def plot_power_consumption(data, time_i, filename='./plot_p_m3.png'):
     plt.figure(figsize=(12, 8))
     
-    plt.plot(data['Time(s)'], data['Power(mW)'])
+    plt.plot(data[0], data[5])
     
     for index in time_i:
         plt.axvline(x=index, color='r', linestyle='--')
