@@ -119,7 +119,7 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
         pre_ind = ind
 
     avg_power2 = []
-    avg_power2.append(data_power2[:phase_i2[0]])
+    avg_power2.append(np.mean(data_power2[:phase_i2[0]]))
     pre_ind = phase_i2[0]
     for ind in phase_i2[1:]:
         avg_power2.append(np.mean(data_power2[pre_ind:ind]))
@@ -202,8 +202,8 @@ seqz_time_i = convert_timescale(power_data_shuf, seqz_time)
 #print('shuff_time_i: ', shuf_time_i)
 #print("power_data_shuf[:,5]: ", power_data_shuf[:,5])
 #print("np.array(power_data_seqz[5]):", np.array(power_data_seqz[6]))
-print("seqz_time_i: ", seqz_time_i)
-print("len(power_data_seqz[6]): ", len(power_data_seqz[6]))
+#print("seqz_time_i: ", seqz_time_i)
+#print("len(power_data_seqz[6]): ", len(power_data_seqz[6]))
 plot_power_consumption(power_data_shuf[:,0], power_data_shuf[:,5], shuf_time_i, filename='./plot_p_m3_shufflenet.png')
 plot_power_consumption(power_data_seqz[0], power_data_seqz[6], seqz_time_i, filename='./plot_p_m3_squeezenet.png')
 plot_power_avg(power_data_shuf[:,5], np.array(power_data_seqz[6]), shuf_time_i, seqz_time_i, filename='./plot_p_m3_bar.png')
