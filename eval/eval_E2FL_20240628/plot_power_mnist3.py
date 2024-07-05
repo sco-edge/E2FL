@@ -107,7 +107,7 @@ def plot_power_consumption(data, time_i, filename='./plot_p_m3.png'):
     plt.ylabel('Power (mW)')
     plt.title('Power Consumption Over Time')
     plt.legend()
-    plt.grid(True)
+    #plt.grid(True)
     plt.savefig(filename)
 #############################################################################################
 
