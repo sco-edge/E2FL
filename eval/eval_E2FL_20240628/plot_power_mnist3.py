@@ -124,7 +124,8 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
     for ind in phase_i2[1:]:
         avg_power2.append(np.mean(data_power2[pre_ind:ind]))
         pre_ind = ind
-
+    print("avg_power1: ", avg_power1)
+    print("avg_power2: ", avg_power2)
     # init, fit, comm_fit, eval, comm_eval (1, 2, 3, 4), (5, 6, 7, 8)
     num_rounds = len(phase_i1) // 4
     avg_power_shuf = []
