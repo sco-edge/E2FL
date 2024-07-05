@@ -198,7 +198,7 @@ seqz_time_i = convert_timescale(power_data_shuf, seqz_time)
 
 plot_power_consumption(power_data_shuf[:,0], power_data_shuf[:,5]*-1, shuf_time_i, filename='./plot_p_m3_shufflenet.png')
 plot_power_consumption(power_data_seqz[0], np.array(power_data_seqz[6])*-1, seqz_time_i, filename='./plot_p_m3_squeezenet.png')
-plot_power_avg(power_data_shuf[:,5], np.array(power_data_seqz[6])*-1, shuf_time_i, seqz_time_i, filename='./plot_p_m3_bar.png')
+plot_power_avg(power_data_shuf[:,5]*-1, np.array(power_data_seqz[6])*-1, shuf_time_i, seqz_time_i, filename='./plot_p_m3_bar.png')
 # init
 
 
