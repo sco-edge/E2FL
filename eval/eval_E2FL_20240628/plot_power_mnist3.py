@@ -148,8 +148,8 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
 
     print('phase_i2: ', phase_i2)
     print('avg_power_sqez: ',avg_power_sqez)
-    bar1 = plt.bar(phases - width/2, avg_power_shuf, width, color = color_labels[0], label='Shufflenet')
-    bar2 = plt.bar(phases + width/2, avg_power_sqez, width, color = color_labels[1], label='Squeezenet')
+    bar1 = plt.bar(phases - width/2, avg_power_shuf*-1, width, color = color_labels[0], label='Shufflenet')
+    bar2 = plt.bar(phases + width/2, avg_power_sqez*-1, width, color = color_labels[1], label='Squeezenet')
 
     max_value = max(max(avg_power_shuf), max(avg_power_sqez))
     plt.ylim(0, max_value * 1.4)
