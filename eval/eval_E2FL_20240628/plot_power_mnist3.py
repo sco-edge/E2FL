@@ -89,9 +89,9 @@ def convert_timescale(power_data, times):
         time_power = power_data[data_i][0] # Time(ms)
         if current_time <= time_power:
             output_index.append(data_i-1)
+            if len(output_index) == len(times):
+                 break
             current_time += times[len(output_index)]
-        if len(output_index) == len(times):
-             break
     return output_index
 
 def plot_power_consumption(data, time_i, filename='./plot_p_m3.png'):
