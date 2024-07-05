@@ -127,8 +127,10 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
 
     # init, fit, comm_fit, eval, comm_eval (1, 2, 3, 4), (5, 6, 7, 8)
     num_rounds = len(phase_i1) // 4
-    avg_power_shuf = [avg_power1[0]]
-    avg_power_sqez = [avg_power2[0]]
+    avg_power_shuf = []
+    avg_power_sqez = []
+    avg_power_shuf.append(avg_power1[0])
+    avg_power_sqez.append(avg_power2[0])
 
     for phase_ind in (0, 1, 2, 3):
         temp1 = 0
