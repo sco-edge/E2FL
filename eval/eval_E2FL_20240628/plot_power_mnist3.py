@@ -108,7 +108,7 @@ def plot_power_consumption(data, time_i, filename='./plot_p_m3.png'):
     plt.title('Power Consumption Over Time')
     plt.legend()
     plt.grid(True)
-    plt.savefig('./fig/plot_power_consumption.png')
+    plt.savefig(filename)
 #############################################################################################
 
 # Load power consumption data
