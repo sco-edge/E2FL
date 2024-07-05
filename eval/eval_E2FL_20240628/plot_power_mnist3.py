@@ -145,6 +145,8 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
     width = 0.35  # the width of the bars
     phases = np.arange(1, len(avg_power_shuf) + 1)
 
+    print('phase_i2: ', phase_i2)
+    print('avg_power_sqez: ',avg_power_sqez)
     bar1 = plt.bar(phases - width/2, avg_power_shuf, width, color = color_labels[0], label='Shufflenet')
     bar2 = plt.bar(phases + width/2, avg_power_sqez, width, color = color_labels[1], label='Squeezenet')
 
