@@ -132,7 +132,7 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
     avg_power_shuf.append(avg_power1[0])
     avg_power_sqez.append(avg_power2[0])
 
-    for phase_ind in (0, 1, 2, 3):
+    for phase_ind in (1, 2, 3, 4):
         temp1 = 0
         temp2 = 0
         for round in range(num_rounds):
@@ -182,7 +182,7 @@ def plot_power_sum(data_power1, data_power2, phase_i1, phase_i2, filename):
     avg_power_shuf.append(avg_power1[0])
     avg_power_sqez.append(avg_power2[0])
 
-    for phase_ind in (0, 1, 2, 3):
+    for phase_ind in (1, 2, 3, 4):
         temp1 = 0
         temp2 = 0
         for round in range(num_rounds):
