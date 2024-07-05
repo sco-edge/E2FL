@@ -33,7 +33,7 @@ def calculate_power_consumption(start_time, wait_times, power_data):
     return power_consumption
 
 # Identify the start of the computation
-start_time = find_start_of_computation(power_data)
+start_time = 0 #find_start_of_computation(power_data)
 
 # Calculate power consumption for each phase
 def convert_wait_times_to_intervals(client_data):

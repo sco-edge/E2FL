@@ -482,6 +482,7 @@ def main():
     current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     logging.basicConfig(filename=f"fl_info_{args.cid}_{args.dataset}_{current_time}.txt")
     fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{args.cid}_{args.dataset}_{current_time}.txt")
+    logger.info([f'[{time.time()}] Client Start!'])
 
     assert args.cid < NUM_CLIENTS
 
