@@ -149,7 +149,7 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
     bar2 = plt.bar(phases + width/2, avg_power_sqez, width, color = color_labels[1], label='Squeezenet')
 
     max_value = max(max(avg_power_shuf), max(avg_power_sqez))
-    plt.ylim(0, max_value * 1.4)
+    plt.ylim(0, max_value * 1.2)
     
     # Labeling the plot
     plt.xlabel('Federated Leearning Phase')
