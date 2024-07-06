@@ -156,7 +156,6 @@ def plot_power_avg(data_power1, data_power2, phase_i1, phase_i2, filename):
     plt.xticks(phases, ['init', 'fit', 'comm (fit)', 'eval', 'comm (eval)'])
     plt.ylabel('Average Power (mW)')
     #plt.title('Power Consumption Over Time')
-    plt.legend(loc='best', fontsize=12)
     #plt.grid(True)
     plt.savefig(filename)
 
