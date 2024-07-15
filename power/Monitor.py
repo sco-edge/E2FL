@@ -3,6 +3,7 @@ import Monsoon.sampleEngine as sampleEngine
 import Monsoon.Operations as op
 import datetime
 import subprocess
+import re
 
 '''
 pip install monsoon
@@ -79,6 +80,7 @@ class PowerMon():
                 print("Main current at time " + repr(timeStamp) + " is: " + repr(Current) + "mA")
             '''
         elif mode == 'PMIC':
+            '''
             try:
                 result = subprocess.run(['vgencmd', 'pmic_read_adc'], capture_output=True, text=True)
                 power_value = float(result.stdout.strip())
@@ -86,6 +88,15 @@ class PowerMon():
             except Exception as e:
                 print(f"Error reading power consumption: {e}")
                 return None
+            '''
+            fmt = 'pi5_{}{{name="{}",id="{}"}} {}\n'
+
+            res = subprocess.run(['vgencmd', 'pmic_read_adc'], capture_output=True) #, text=True
+            lines = res.stdout.decode("utf-8").splitlines()
+            for line in lines:
+                res = re.search('([A-Z_0-9]+)_[VA] (current|volt)\(([0-9]+)\)=([0-9.]+)', line)
+                self.wfile.write(fmt.format(res.group(2), res.group(1), res.group(3), res.group(4)).encode("utf-8"))
+            return res
             
     def setTrigger(self, bool, numSamples = 5000, thld_high = 100, thld_low = 10):
         '''
