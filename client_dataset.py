@@ -494,7 +494,7 @@ def main():
         thread.start()
         thread.join()
         end_time = time.time()
-        
+        logger.info()
         
     # Start Flower client setting its associated data partition
     fl.client.start_client(
