@@ -6,6 +6,8 @@ import psutil
 import argparse
 import warnings
 from collections import OrderedDict
+from power import Monitor # PMIC
+import threading
 
 import flwr as fl
 import torch
@@ -54,6 +56,12 @@ parser.add_argument(
     type=str,
     default='Net',
     help="\{resnet18, resnext50, resnet50, vgg16, alexnet, convnext_tiny, squeezenet1, densenet161, inception_v3, googlenet, shufflenet_v2, mobilenet_v2, mnasnet1\}",
+)
+parser.add_argument(
+    "--power",
+    type=str,
+    default='None',
+    help="\{None, PMIC, INA3221\}",
 )
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
@@ -446,34 +454,15 @@ class FlowerClient(fl.client.NumPyClient):
         # Return statistics
         return float(loss), len(valloader.dataset), {"accuracy": float(accuracy)}
 
+def measure_power_during_function(logger, duration):
+    start_power = Monitor.PowreMon(node = 'rpi5', vout = 5.0, mode = 'PMIC')
+    if start_power is None:
+        logger.error("PMIC FAILED")
+        exit(1)
+    time.sleep(duration)
+    end_power = Monitor.PowreMon(node = 'rpi5', vout = 5.0, mode = 'PMIC')
 
 def main():
-    '''
-    server_address=192.168.0.6
-    client_id=1
-
-    echo "Enter the client id: "
-    read client_id
-    echo "client_id: $client_id"
-
-    echo "Enter the server address: "
-    read server_address
-    echo "server_address: $server_address"
-
-    # Run the default example (CIFAR-10)
-    # python3 client_pytorch.py --cid=$client_id --server_address=$server_address
-
-    # Use MNIST (and a smaller model) if your devices require a more lightweight workload
-    python3.10 ./FLOWER_embedded_devices/client_pytorch.py --cid=$client_id --server_address=$server_address --mnist
-    # python3.10 ./FLOWER_embedded_devices/client_pytorch.py --cid=0 --server_address=192.168.0.6 --mnist
-
-        
-    dataset = ['CIFAR']
-
-    client_cmd = "python3.10 ./FLOWER_embedded_devices/client_pytorch.py --cid=$client_id --server_address=$server_address --mnist"
-    server_cmd = "python3.10 ./FLOWER_embedded_devices/server.py --rounds $round --min_num_clients $num_clients --sample_fraction $sample_frac"
-
-    '''
     
     args = parser.parse_args()
     logger.info(args)
@@ -499,7 +488,14 @@ def main():
 
     # Prepare a bucket to store the results.
     usage_record = {}
-
+    if 'PMIC' in args.power:
+        thread = threading.Thread(target = measure_power_during_function)
+        start_time = time.time()
+        thread.start()
+        thread.join()
+        end_time = time.time()
+        
+        
     # Start Flower client setting its associated data partition
     fl.client.start_client(
         server_address=args.server_address,

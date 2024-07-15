@@ -2,6 +2,7 @@ import Monsoon.LVPM as LVPM
 import Monsoon.sampleEngine as sampleEngine
 import Monsoon.Operations as op
 import datetime
+import subprocess
 
 '''
 pip install monsoon
@@ -77,7 +78,15 @@ class PowerMon():
                 Current = samples[sampleEngine.channels.timeStamp][i]
                 print("Main current at time " + repr(timeStamp) + " is: " + repr(Current) + "mA")
             '''
-
+        elif mode == 'PMIC':
+            try:
+                result = subprocess.run(['vgencmd', 'pmic_read_adc'], capture_output=True, text=True)
+                power_value = float(result.stdout.strip())
+                return power_value
+            except Exception as e:
+                print(f"Error reading power consumption: {e}")
+                return None
+            
     def setTrigger(self, bool, numSamples = 5000, thld_high = 100, thld_low = 10):
         '''
             Set the threshold for trigger that starts sampleEngine's recording measurements.
