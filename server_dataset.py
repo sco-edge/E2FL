@@ -271,3 +271,26 @@ except Exception as e:
 
 
 
+import grpc
+import logging
+import time
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class LoggingInterceptor(grpc.ServerInterceptor):
+    def intercept_service(self, continuation, handler_call_details):
+        method = handler_call_details.method
+        def log_and_continue(request, context):
+            start_time = time.time()
+            response = continuation(request, context)
+            end_time = time.time()
+            logger.info(f"Method: {method}, Start: {start_time}, End: {end_time}, Duration: {end_time - start_time}")
+            return response
+        return log_and_continue
+def serve():
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), interceptors=[LoggingInterceptor()])
+    
+    server.add_insecure_port('[::]:8080')
+    server.start()
+    server.wait_for_termination()
