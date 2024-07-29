@@ -22,8 +22,30 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from tqdm import tqdm
-
 from flwr_datasets import FederatedDataset
+
+import grpc # intercept grpc
+
+
+class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
+    def intercept_unary_unary(self, continuation, client_call_details, request):
+        method = client_call_details.method
+        start_time = time.time()
+        response = continuation(client_call_details, request)
+        end_time = time.time()
+        logger.info(f"Method: {method}, Start: {start_time}, End: {end_time}, Duration: {end_time - start_time}")
+        return response
+def create_channel():
+    channel = grpc.insecure_channel('localhost:8080')
+    intercept_channel = grpc.intercept_channel(channel, LoggingInterceptor())
+    return intercept_channel
+
+def start_flower_client():
+    channel = create_channel()
+    flower_client = FlowerClient(channel)
+    flower_client.start()
+
+
 
 
 parser = argparse.ArgumentParser(description="Flower Embedded devices")
@@ -526,34 +548,3 @@ def main():
         pickle.dump(usage_record, handle, protocol=pickle.HIGHEST_PROTOCOL)
     logger.info(f"The measurement data is saved as {filename}.")
     '''
-
-if __name__ == "__main__":
-    main()
-
-import grpc
-import logging
-import time
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
-    def intercept_unary_unary(self, continuation, client_call_details, request):
-        method = client_call_details.method
-        start_time = time.time()
-        response = continuation(client_call_details, request)
-        end_time = time.time()
-        logger.info(f"Method: {method}, Start: {start_time}, End: {end_time}, Duration: {end_time - start_time}")
-        return response
-def create_channel():
-    channel = grpc.insecure_channel('localhost:8080')
-    intercept_channel = grpc.intercept_channel(channel, LoggingInterceptor())
-    return intercept_channel
-
-def start_flower_client():
-    channel = create_channel()
-    flower_client = FlowerClient(channel)
-    flower_client.start()
-
-if __name__ == "__main__":
-    start_flower_client()
