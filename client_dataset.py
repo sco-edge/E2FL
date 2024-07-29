@@ -26,6 +26,11 @@ from flwr_datasets import FederatedDataset
 
 import grpc # intercept grpc
 
+'''
+https://github.com/adap/flower/blob/ad811b5a0afc8bd32fb27305a8d0063f41a09ce5/src/py/flwr/client/app.py#L74
+- app.py
+
+
 
 class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
     def intercept_unary_unary(self, continuation, client_call_details, request):
@@ -45,7 +50,7 @@ def start_flower_client():
     flower_client = FlowerClient(channel)
     flower_client.start()
 
-
+'''
 
 
 parser = argparse.ArgumentParser(description="Flower Embedded devices")
