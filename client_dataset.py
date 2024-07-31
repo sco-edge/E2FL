@@ -29,6 +29,14 @@ import grpc # intercept grpc
 '''
 https://github.com/adap/flower/blob/ad811b5a0afc8bd32fb27305a8d0063f41a09ce5/src/py/flwr/client/app.py#L74
 - app.py
+-> Line: 645 
+    connection, error_type = grpc_connection, RpcError
+    _init_connection -> return conneciton ,address, error_type
+   
+   Line: 275 -> "connection, address, connection_error_type = _init_connection( ~ )
+   Line 326 ~ ...
+    -> Line 336: receive, send, create_node, delete_node, get_run = conn
+
 
 
 
