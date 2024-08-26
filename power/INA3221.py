@@ -24,26 +24,29 @@ from time import sleep
 # configurations
 times = 1000 # times to run the blocks
 
-class read_sysfs():
+class read_sysfs:
+    def __init__(self, filename):
+        self.filename = filename
+
     def read_sysfs(self):
         # sysfs node of GPU power in mW
-        filename = '/sys/bus/i2c/drivers/ina3221x/1-0040/iio_device/in_power0_input'
-        with open(filename, 'r') as f:
+        with open(self.filename, 'r') as f:
             power = f.read();
         power = power.replace('\n', '')
         return power
 
-    if __name__ == "__main__":
+    def read(self):
         pairs = list()
         for i in range(5000):
             start = time.time()
-            power = read_sysfs()
+            power = self.read_sysfs()
             end = time.time()
             time_passed = (end - start) * 1e3 # ms
             pairs.append((power, time_passed))
-        import pickle
         with open('power_time_pairs.pkl', 'wb') as f:
             pickle.dump(pairs, f, pickle.HIGHEST_PROTOCOL)
+        return pairs
+        
 
 def load_config_list():
     block_config_pkl = './config_list.pkl'
