@@ -20,6 +20,43 @@ from build_model import build_block
 from tqdm import tqdm
 from time import sleep
 
+'''
+https://forums.developer.nvidia.com/t/jetson-orin-nx-power-management-parameters/280460
+https://docs.nvidia.com/jetson/archives/r35.4.1/DeveloperGuide/text/SD/PlatformPowerAndPerformance/JetsonOrinNanoSeriesJetsonOrinNxSeriesAndJetsonAgxOrinSeries.html?#jetson-orin-nx-series-and-jetson-orin-nano-series
+INA3221 (on jetson orin nx)
+
+To read INA3221 at 0x40, the channel-1 rail name, enter the command:
+
+$ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/in1_label
+To read channel-1 voltage and current, enter the commands:
+
+$ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/in1_input
+$ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_input
+To read the channel-1 instantaneous current limit, enter the command:
+
+$ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_crit
+To set the channel-1 instantaneous current limit, enter the command:
+
+$ echo  > /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_crit
+To read the channel-1 average current limit, enter the command:
+
+$ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_max
+To set the channel-1 average current limit, enter the command:
+
+$ echo  > /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_max
+Where is the current limit to be set for the rail, in milliamperes.
+
+There are 3 types of OC events in the Orin series, 
+which are Under Voltage, Average Overcurrent, and Instantaneous Overcurrent events respectively.
+
+To check which OC event is enabled, the following sysfs nodes can be used:
+
+$ grep "" /sys/class/hwmon/hwmon/oc*_throt_en
+The following sysfs nodes can be used to learn the number of OC events occurred:
+
+$ grep "" /sys/class/hwmon/hwmon/oc*_event_cnt
+
+'''
 
 # configurations
 times = 1000 # times to run the blocks
