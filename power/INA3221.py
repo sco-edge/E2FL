@@ -26,26 +26,34 @@ https://docs.nvidia.com/jetson/archives/r35.4.1/DeveloperGuide/text/SD/PlatformP
 INA3221 (on jetson orin nx)
 
 To read INA3221 at 0x40, the channel-1 rail name, enter the command:
-
 $ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/in1_label
+=> VDD_IN
+
 To read channel-1 voltage and current, enter the commands:
-
 $ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/in1_input
+=> 5072
 $ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_input
+=> 1312 or 1320
+
 To read the channel-1 instantaneous current limit, enter the command:
-
 $ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_crit
+=> 5920
+
 To set the channel-1 instantaneous current limit, enter the command:
-
 $ echo  > /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_crit
+
+
 To read the channel-1 average current limit, enter the command:
-
 $ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_max
-To set the channel-1 average current limit, enter the command:
+=> 4936
 
+To set the channel-1 average current limit, enter the command:
 $ echo  > /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_max
+
+
 Where is the current limit to be set for the rail, in milliamperes.
 
+--
 There are 3 types of OC events in the Orin series, 
 which are Under Voltage, Average Overcurrent, and Instantaneous Overcurrent events respectively.
 
@@ -55,6 +63,13 @@ $ grep "" /sys/class/hwmon/hwmon/oc*_throt_en
 The following sysfs nodes can be used to learn the number of OC events occurred:
 
 $ grep "" /sys/class/hwmon/hwmon/oc*_event_cnt
+
+in1_label: VDD IN; The total power of module
+in2_label: VDD CPU GPU CV; CV includes DLA (Deep Learning Accelerator), PVA (Programmable Vision Accelerator), and etc. (CV hardware)
+in3_label: VDD SOC
+in4_label: Sum of shunt voltages
+
+CPU, GPU, CV? https://developer.nvidia.com/blog/maximizing-deep-learning-performance-on-nvidia-jetson-orin-with-dla/
 
 '''
 
