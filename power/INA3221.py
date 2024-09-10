@@ -25,7 +25,7 @@ from time import sleep
 times = 1000 # times to run the blocks
 
 class read_sysfs:
-    def __init__(self, filename):
+    def __init__(self, filename = '/sys/bus/i2c/drivers/ina3221/1-0040/iio_device/in_power0_input'):
         self.filename = filename
 
     def read_sysfs(self):
