@@ -100,14 +100,12 @@ class read_sysfs:
         return pairs
         
 
-def load_config_list():
-    block_config_pkl = './config_list.pkl'
+def load_config_list(filename):
     # read in block configurations
-    with open(block_config_pkl, 'rb') as f:
+    with open(filename, 'rb') as f:
         block_config = pickle.load(f)
     return block_config
 
-block_config = load_config_list()
 
 def static_power(filename):
     print("sleeping to stablize system ...")
@@ -236,7 +234,12 @@ def main():
     # measure static power
     root_dir = './'
     static_power_filename = root_dir+'static_power.txt'
+    config_filename = root_dir+'config_list.pkl'
+
+    block_config = load_config_list(config_filename)
+
     static_power(static_power_filename)
+
 
     # take care of the result folder
     result_dir = './results'
