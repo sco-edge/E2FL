@@ -109,7 +109,7 @@ def load_config_list():
 
 block_config = load_config_list()
 
-def static_power():
+def static_power(filename):
     print("sleeping to stablize system ...")
     sleep(10)
     print("measuring static power ...")
@@ -120,10 +120,10 @@ def static_power():
         static_power += float(power)
     static_power /= 1000
     
-    with open('./static_power.txt', 'w') as f:
+    with open(filename, 'w') as f:
         f.write(str(static_power))
 
-    print('static power measurement done')
+    print(f'static power: {static_power}')
 
 # ------- power measurement thread ---------
 def power_thread(power_q, interval_q, in_q):
@@ -234,7 +234,9 @@ def dynamic_power(model, input_shape):
 # main function
 def main():
     # measure static power
-    static_power()
+    root_dir = './'
+    static_power_filename = root_dir+'static_power.txt'
+    static_power(static_power_filename)
 
     # take care of the result folder
     result_dir = './results'
