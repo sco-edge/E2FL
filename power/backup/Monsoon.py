@@ -4,60 +4,11 @@ import Monsoon.Operations as op
 import datetime
 import subprocess
 import re
-import time
-import csv
-from _power_monitor_interface import PowerMonitor
 
 '''
 pip install monsoon
 It is broken for LVPM. Use HVPM or uses manual mode.
 '''
-class MonsoonMonitor(PowerMonitor):
-    def __init__(self):
-        super().__init__('Monsoon')
-        self.monsoon_device = Monsoon.connect()  # Monsoon 장치 연결
-        self.global_start_time = None
-
-    def start(self, freq):
-        self.sampling_interval = freq
-        self.is_monitoring = True
-        self.power_data = []
-        self.start_time = time.time()
-        self.global_start_time = datetime.datetime.utcnow()
-        print(f"{self.device_name}: Monitoring started with frequency {self.sampling_interval}s at {self.global_start_time} (UTC).")
-
-    def stop(self):
-        self.is_monitoring = False
-        elapsed_time = len(self.power_data) * self.sampling_interval
-        data_size = len(self.power_data)
-        print(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
-        return elapsed_time, data_size
-
-    def read_power(self):
-        try:
-            power = self.monsoon_device.measure_power()  # Monsoon 모듈에서 전력 데이터 수집
-            current_time = time.time() - self.start_time
-            self.power_data.append((current_time, power))
-            return power
-        except Exception as e:
-            print(f"{self.device_name} Error reading power: {e}")
-            return None
-
-    def save(self, filepath):
-        with open(filepath, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow([f"global_start_time", f"{self.global_start_time} (UTC)"])
-            writer.writerow(["timestamp", "power_mW"])
-            for timestamp, power in self.power_data:
-                writer.writerow([timestamp, power])
-        print(f"{self.device_name}: Data saved to {filepath}.")
-
-    def close(self):
-        if self.is_monitoring:
-            self.stop()
-        print(f"{self.device_name}: Resources cleaned up.")
-
-
 class PowerMon():
     
     def __init__(self, node, vout, mode = "PyMonsoon", ConsoleIO = False):

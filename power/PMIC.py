@@ -4,6 +4,59 @@ import subprocess
 import time
 import threading
 
+import csv
+import time
+import datetime
+from power_monitor_interface import PowerMonitor
+
+class PMICMonitor(PowerMonitor):
+    def __init__(self, sysfs_path='/sys/class/power_supply/pmic_device/power_now'):
+        super().__init__('PMIC')
+        self.sysfs_path = sysfs_path
+        self.global_start_time = None  # 글로벌 시작 시간을 기록할 변수
+
+    def start(self, freq):
+        self.sampling_interval = freq
+        self.is_monitoring = True
+        self.power_data = []
+        self.start_time = time.time()
+        self.global_start_time = datetime.datetime.utcnow()
+        print(f"{self.device_name}: Monitoring started with frequency {self.sampling_interval}s at {self.global_start_time} (UTC).")
+
+    def stop(self):
+        self.is_monitoring = False
+        elapsed_time = len(self.power_data) * self.sampling_interval
+        data_size = len(self.power_data)
+        print(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
+        return elapsed_time, data_size
+
+    def read_power(self):
+        try:
+            with open(self.sysfs_path, 'r') as f:
+                power = f.read().strip()
+            current_time = time.time() - self.start_time
+            self.power_data.append((current_time, float(power)))
+            return float(power)
+        except Exception as e:
+            print(f"{self.device_name} Error reading power: {e}")
+            return None
+
+    def save(self, filepath):
+        with open(filepath, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow([f"global_start_time", f"{self.global_start_time} (UTC)"])
+            writer.writerow(["timestamp", "power_mW"])
+            for timestamp, power in self.power_data:
+                writer.writerow([timestamp, power])
+        print(f"{self.device_name}: Data saved to {filepath}.")
+
+    def close(self):
+        if self.is_monitoring:
+            self.stop()
+        print(f"{self.device_name}: Resources cleaned up.")
+
+
+
 def read_power():
     try:
         result = subprocess.run(['vgencmd', 'pmic_read_adc'], capture_output=True, text=True)
