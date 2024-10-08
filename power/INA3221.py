@@ -90,16 +90,6 @@ class INA3221(PowerMonitor):
             print(f"Error reading sysfs: {e}")
             return None
     
-        try:
-            with open(self.sysfs_path, 'r') as f:
-                power = f.read().strip()
-            current_time = datetime.now() - self.start_time  # 측정된 시간 계산 (상대적 시간)
-            self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
-            return float(power)
-        except Exception as e:
-            print(f"{self.device_name} Error reading power: {e}")
-            return None
-
     def _monitor(self):
         """
         Monitor the energy usage in a separate thread
@@ -108,7 +98,7 @@ class INA3221(PowerMonitor):
             power = self._read_sysfs()
             current_time = datetime.now() - self.start_time
             if power is not None:
-                self.energy_data.append(power)
+                self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
             time.sleep(self.freq)
 
     def start(self, freq):
@@ -162,100 +152,7 @@ class INA3221(PowerMonitor):
             self.stop()
         print(f"{self.device_name}: Resources cleaned up.")
 
-
-
-class EnergyMonitor:
-    def __init__(self, sysfs_path='/sys/bus/i2c/drivers/ina3221/1-0040/iio_device/in_power0_input'):
-        """
-        Initialize the EnergyMonitor class
-        :param sysfs_path: Path to the sysfs file for energy data (default path for Jetson devices)
-        """
-        self.sysfs_path = sysfs_path
-        self.freq = 1  # Frequency in seconds (default)
-        self.monitoring = False
-        self.thread = None
-        self.energy_data = []  # List to store energy data (power readings)
-        self.start_time = None
-        self.end_time = None
-
-    def _read_sysfs(self):
-        """
-        Read the power consumption value from sysfs
-        """
-        try:
-            with open(self.sysfs_path, 'r') as f:
-                power = f.read().strip()
-            return float(power)  # Assuming power value is in float format (e.g., mW)
-        except Exception as e:
-            print(f"Error reading sysfs: {e}")
-            return None
-
-    def _monitor(self):
-        """
-        Monitor the energy usage in a separate thread
-        """
-        while self.monitoring:
-            power = self._read_sysfs()
-            if power is not None:
-                self.energy_data.append(power)
-            time.sleep(self.freq)
-
-    def start(self, freq=1):
-        """
-        Start energy monitoring at the specified frequency
-        :param freq: Frequency in seconds to sample energy data
-        """
-        if self.monitoring:
-            print("Energy monitoring is already running.")
-            return
-
-        self.freq = freq
-        self.monitoring = True
-        self.energy_data = []  # Reset energy data on start
-        self.start_time = time.time()  # Capture start time
-        self.thread = threading.Thread(target=self._monitor)
-        self.thread.start()
-        print(f"Energy monitoring started with a frequency of {self.freq} second(s).")
-
-    def stop(self):
-        """
-        Stop energy monitoring and return the elapsed time and the amount of data collected
-        :return: Elapsed time (seconds), data size (number of power readings)
-        """
-        if not self.monitoring:
-            print("Energy monitoring is not running.")
-            return None, None
-
-        self.monitoring = False
-        self.thread.join()  # Wait for thread to finish
-        self.end_time = time.time()  # Capture end time
-        elapsed_time = self.end_time - self.start_time
-        data_size = len(self.energy_data)
-        print(f"Energy monitoring stopped. Time elapsed: {elapsed_time:.2f}s, Data size: {data_size}")
-        return elapsed_time, data_size
-
-    def save(self, fpath):
-        """
-        Save the energy data to a file using pickle
-        :param fpath: Path to save the data (file extension can be .pkl or any other format)
-        """
-        if not self.energy_data:
-            print("No energy data to save.")
-            return
-
-        with open(fpath, 'wb') as f:
-            pickle.dump(self.energy_data, f)
-        print(f"Energy data saved to {fpath}.")
-
-    def close(self):
-        """
-        Gracefully terminate the thread and cleanup resources
-        """
-        if self.monitoring:
-            self.stop()
-
-        print("EnergyMonitor closed.")
-
+'''
 # Example usage in any Python code
 if __name__ == "__main__":
     monitor = EnergyMonitor()
@@ -274,3 +171,4 @@ if __name__ == "__main__":
 
     # Close the monitor and clean up
     monitor.close()
+'''
