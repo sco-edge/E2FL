@@ -89,6 +89,16 @@ class INA3221(PowerMonitor):
         except Exception as e:
             print(f"Error reading sysfs: {e}")
             return None
+    
+        try:
+            with open(self.sysfs_path, 'r') as f:
+                power = f.read().strip()
+            current_time = datetime.now() - self.start_time  # 측정된 시간 계산 (상대적 시간)
+            self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
+            return float(power)
+        except Exception as e:
+            print(f"{self.device_name} Error reading power: {e}")
+            return None
 
     def _monitor(self):
         """
@@ -96,6 +106,7 @@ class INA3221(PowerMonitor):
         """
         while self.monitoring:
             power = self._read_sysfs()
+            current_time = datetime.now() - self.start_time
             if power is not None:
                 self.energy_data.append(power)
             time.sleep(self.freq)
@@ -134,23 +145,12 @@ class INA3221(PowerMonitor):
         print(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
         return elapsed_time, data_size
 
-    def read_power(self):
-        try:
-            with open(self.sysfs_path, 'r') as f:
-                power = f.read().strip()
-            current_time = time.time() - self.start_time  # 측정된 시간 계산 (상대적 시간)
-            self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
-            return float(power)
-        except Exception as e:
-            print(f"{self.device_name} Error reading power: {e}")
-            return None
-
     def save(self, filepath):
         # CSV 모듈을 사용하여 데이터를 저장
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             # CSV 헤더: 글로벌 시작 시간 기록
-            writer.writerow([f"start_time", f"{self.start_time} (UTC)"])
+            writer.writerow([f"start_time", f"{self.start_time}"])
             writer.writerow(["timestamp", "power_mW"])
             # 측정된 데이터 저장
             for timestamp, power in self.power_data:

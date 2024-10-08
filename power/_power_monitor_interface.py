@@ -2,24 +2,25 @@ from abc import ABC, abstractmethod
 
 class PowerMonitor(ABC):
     def __init__(self, device_name):
-        self.device_name = device_name  # 장치 이름
-        self.sampling_interval = 1  # 샘플링 주기 (초)
-        self.power_data = []  # 전력 데이터를 저장할 리스트 [(timestamp, power)]
-        self.is_monitoring = False
-        self.start_time = None  # 측정 시작 시간
+        self.device_name = device_name  # Name of the device
+        self.freq = 1  # Sampling interval in seconds
+        self.power_data = []  # List to store power data [(timestamp, power)]
+        self.monitoring = False  # Flag to track if monitoring is ongoing
+        self.start_time = None  # Time when monitoring started (for relative time calculations)
+        self.end_time = None  # Time when monitoring endded (for relative time calculations)
     
     @abstractmethod
     def start(self, freq):
         """
-        주어진 주기로 전력 측정을 시작하는 메서드.
-        :param freq: 샘플링 주기 (초 단위)
+        Start power monitoring at the given frequency.
+        :param freq: Sampling interval in seconds
         """
         pass
 
     @abstractmethod
     def stop(self):
         """
-        전력 측정을 중단하고, 측정된 데이터의 크기와 측정 기간을 반환.
+        Stop power monitoring and return the elapsed time and size of the data collected.
         :return: (elapsed_time, data_size)
         """
         pass
@@ -27,22 +28,22 @@ class PowerMonitor(ABC):
     @abstractmethod
     def read_power(self):
         """
-        현재 전력 소모량을 읽는 메서드.
-        :return: float (전력, 단위는 mW)
+        Read the current power consumption.
+        :return: float (power, in mW)
         """
         pass
 
     @abstractmethod
     def save(self, filepath):
         """
-        측정된 데이터를 지정된 경로에 저장하는 메서드.
-        :param filepath: 파일 경로
+        Save the collected power data to the specified file.
+        :param filepath: Path to the file where data will be saved
         """
         pass
 
     @abstractmethod
     def close(self):
         """
-        모니터링을 종료하고 리소스를 정리하는 메서드.
+        Stop monitoring and clean up resources.
         """
         pass
