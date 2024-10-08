@@ -60,26 +60,76 @@ import pickle
 
 import csv
 import time
-import datetime
+from datetime import datetime, timedelta
 from _power_monitor_interface import PowerMonitor
 
 class INA3221(PowerMonitor):
     def __init__(self, sysfs_path='/sys/bus/i2c/drivers/ina3221/1-0040/iio_device/in_power0_input'):
+        """
+        Initialize the EnergyMonitor class
+        :param sysfs_path: Path to the sysfs file for energy data (default path for Jetson devices)
+        """
         super().__init__('INA3221')
         self.sysfs_path = sysfs_path
-        self.global_start_time = None  # 글로벌 시작 시간을 기록할 변수
+        self.monitoring = False
+        self.thread = None
+        self.start_time = None
+        self.end_time = None
+        self.power_data = []
+        self.freq = 1 # Frequency in seconds (default)
+    
+    def _read_sysfs(self):
+        """
+        Read the power consumption value from sysfs
+        """
+        try:
+            with open(self.sysfs_path, 'r') as f:
+                power = f.read().strip() # v
+            return float(power)  # Assuming power value is in float format (e.g., mW)
+        except Exception as e:
+            print(f"Error reading sysfs: {e}")
+            return None
+
+    def _monitor(self):
+        """
+        Monitor the energy usage in a separate thread
+        """
+        while self.monitoring:
+            power = self._read_sysfs()
+            if power is not None:
+                self.energy_data.append(power)
+            time.sleep(self.freq)
 
     def start(self, freq):
-        self.sampling_interval = freq
-        self.is_monitoring = True
-        self.power_data = []
-        self.start_time = time.time()  # 측정 시작 시간 기록 (상대적 시간 계산용)
-        self.global_start_time = datetime.datetime.utcnow()  # 글로벌 UTC 시간 기록
-        print(f"{self.device_name}: Monitoring started with frequency {self.sampling_interval}s at {self.global_start_time} (UTC).")
+        """
+        Start energy monitoring at the specified frequency
+        :param freq: Frequency in seconds to sample energy data
+        """
+        if self.monitoring:
+            print("Energy monitoring is already running.")
+            return
+
+        self.freq = freq
+        self.monitoring = True
+        self.power_data = []  # Reset energy data on start
+        self.start_time = datetime.now() #time.strftime("%Y/%m/%d %H:%M:%S")
+        self.thread = threading.Thread(target=self._monitor)
+        self.thread.start()
+        print(f"{self.device_name}: Monitoring started with frequency {self.freq} at {self.start_time} (UTC).")
 
     def stop(self):
-        self.is_monitoring = False
-        elapsed_time = len(self.power_data) * self.sampling_interval
+        """
+        Stop energy monitoring and return the elapsed time and the amount of data collected
+        :return: Elapsed time (seconds), data size (number of power readings)
+        """
+        if not self.monitoring:
+            print("Energy monitoring is not running.")
+            return None, None
+        
+        self.monitoring = False
+        self.thread.join() # Wait for thread to finish
+        self.end_time = datetime.now() # time.strftime("%Y/%m/%d %H:%M:%S")
+        elapsed_time = self.end_time - self.start_time
         data_size = len(self.power_data)
         print(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
         return elapsed_time, data_size
@@ -100,7 +150,7 @@ class INA3221(PowerMonitor):
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             # CSV 헤더: 글로벌 시작 시간 기록
-            writer.writerow([f"global_start_time", f"{self.global_start_time} (UTC)"])
+            writer.writerow([f"start_time", f"{self.start_time} (UTC)"])
             writer.writerow(["timestamp", "power_mW"])
             # 측정된 데이터 저장
             for timestamp, power in self.power_data:
