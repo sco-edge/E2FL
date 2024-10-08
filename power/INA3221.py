@@ -58,6 +58,62 @@ import time
 import os
 import pickle
 
+import csv
+import time
+import datetime
+from power_monitor_interface import PowerMonitor
+
+class INA3221Monitor(PowerMonitor):
+    def __init__(self, sysfs_path='/sys/bus/i2c/drivers/ina3221/1-0040/iio_device/in_power0_input'):
+        super().__init__('INA3221')
+        self.sysfs_path = sysfs_path
+        self.global_start_time = None  # 글로벌 시작 시간을 기록할 변수
+
+    def start(self, freq):
+        self.sampling_interval = freq
+        self.is_monitoring = True
+        self.power_data = []
+        self.start_time = time.time()  # 측정 시작 시간 기록 (상대적 시간 계산용)
+        self.global_start_time = datetime.datetime.utcnow()  # 글로벌 UTC 시간 기록
+        print(f"{self.device_name}: Monitoring started with frequency {self.sampling_interval}s at {self.global_start_time} (UTC).")
+
+    def stop(self):
+        self.is_monitoring = False
+        elapsed_time = len(self.power_data) * self.sampling_interval
+        data_size = len(self.power_data)
+        print(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
+        return elapsed_time, data_size
+
+    def read_power(self):
+        try:
+            with open(self.sysfs_path, 'r') as f:
+                power = f.read().strip()
+            current_time = time.time() - self.start_time  # 측정된 시간 계산 (상대적 시간)
+            self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
+            return float(power)
+        except Exception as e:
+            print(f"{self.device_name} Error reading power: {e}")
+            return None
+
+    def save(self, filepath):
+        # CSV 모듈을 사용하여 데이터를 저장
+        with open(filepath, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            # CSV 헤더: 글로벌 시작 시간 기록
+            writer.writerow([f"global_start_time", f"{self.global_start_time} (UTC)"])
+            writer.writerow(["timestamp", "power_mW"])
+            # 측정된 데이터 저장
+            for timestamp, power in self.power_data:
+                writer.writerow([timestamp, power])
+        print(f"{self.device_name}: Data saved to {filepath}.")
+
+    def close(self):
+        if self.is_monitoring:
+            self.stop()
+        print(f"{self.device_name}: Resources cleaned up.")
+
+
+
 class EnergyMonitor:
     def __init__(self, sysfs_path='/sys/bus/i2c/drivers/ina3221/1-0040/iio_device/in_power0_input'):
         """
