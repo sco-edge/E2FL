@@ -61,9 +61,9 @@ import pickle
 import csv
 import time
 import datetime
-from power_monitor_interface import PowerMonitor
+from _power_monitor_interface import PowerMonitor
 
-class INA3221Monitor(PowerMonitor):
+class INA3221(PowerMonitor):
     def __init__(self, sysfs_path='/sys/bus/i2c/drivers/ina3221/1-0040/iio_device/in_power0_input'):
         super().__init__('INA3221')
         self.sysfs_path = sysfs_path

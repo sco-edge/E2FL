@@ -7,7 +7,7 @@ import threading
 import csv
 import time
 import datetime
-from power_monitor_interface import PowerMonitor
+from _power_monitor_interface import PowerMonitor
 
 class PMICMonitor(PowerMonitor):
     def __init__(self, sysfs_path='/sys/class/power_supply/pmic_device/power_now'):
