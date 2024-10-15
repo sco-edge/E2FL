@@ -113,7 +113,7 @@ class INA3221(PowerMonitor):
         self.start_time = datetime.now() #time.strftime("%Y/%m/%d %H:%M:%S")
         self.thread = threading.Thread(target=self._monitor)
         self.thread.start()
-        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq} at {self.start_time} (UTC).")
+        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq} at {self.start_time}.")
 
     def stop(self):
         """

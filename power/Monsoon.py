@@ -5,6 +5,8 @@ import datetime
 import subprocess
 import re
 import time
+import logging
+import threading
 import csv
 from _power_monitor_interface import PowerMonitor
 
@@ -16,22 +18,7 @@ class MonsoonMonitor(PowerMonitor):
     def __init__(self):
         super().__init__('Monsoon')
         self.monsoon_device = Monsoon.connect()  # Monsoon 장치 연결
-        self.global_start_time = None
-
-    def start(self, freq):
-        self.sampling_interval = freq
-        self.is_monitoring = True
-        self.power_data = []
-        self.start_time = time.time()
-        self.global_start_time = datetime.datetime.utcnow()
-        print(f"{self.device_name}: Monitoring started with frequency {self.sampling_interval}s at {self.global_start_time} (UTC).")
-
-    def stop(self):
-        self.is_monitoring = False
-        elapsed_time = len(self.power_data) * self.sampling_interval
-        data_size = len(self.power_data)
-        print(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
-        return elapsed_time, data_size
+        self.start_time = None
 
     def read_power(self):
         try:
@@ -42,20 +29,59 @@ class MonsoonMonitor(PowerMonitor):
         except Exception as e:
             print(f"{self.device_name} Error reading power: {e}")
             return None
+    
+    def _monitor(self):
+        while self.monitoring:
+            power = self._read_sysfs()
+            current_time = datetime.now() - self.start_time
+            if power is not None:
+                self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
+            time.sleep(self.freq)
+
+    def start(self, freq):
+        if self.monitoring:
+            logging.info("Energy monitoring is already running.")
+            return
+        
+        self.freq = freq
+        self.monitoring = True
+        self.power_data = []
+        self.start_time = datetime.now() #time.strftime("%Y/%m/%d %H:%M:%S")
+        self.thread = threading.Thread(target=self._monitor)
+        self.thread.start()
+        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.start_time}.")
+
+    def stop(self):
+        if not self.monitoring:
+            logging.info("Energy monitoring is not running.")
+            return None, None
+
+        self.monitoring = False
+        self.thread.join() # Wait for thread to finish
+        self.end_time = datetime.now() # time.strftime("%Y/%m/%d %H:%M:%S")
+        elapsed_time = self.end_time - self.start_time
+        data_size = len(self.power_data)
+        logging.debug(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
+        return elapsed_time, data_size
+
 
     def save(self, filepath):
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow([f"global_start_time", f"{self.global_start_time} (UTC)"])
+            writer.writerow([f"start_time", f"{self.start_time}"])
             writer.writerow(["timestamp", "power_mW"])
-            for timestamp, power in self.power_data:
-                writer.writerow([timestamp, power])
-        print(f"{self.device_name}: Data saved to {filepath}.")
+            with self.lock:
+                for timestamp, power in self.power_data:
+                    writer.writerow([f"{timestamp:.2f}", power])
+        logging.info(f"{self.device_name}: Data saved to {filepath}.")
 
     def close(self):
-        if self.is_monitoring:
-            self.stop()
-        print(f"{self.device_name}: Resources cleaned up.")
+        elapsed_time, data_size = None, None
+        if self.monitoring:
+            elapsed_time, data_size = self.stop()
+        if elapsed_time == None:
+            return
+        logging.info(f"{self.device_name}: Resources (data_size: {data_size}, elapsed_time: {elapsed_time}) cleaned up.")
 
 
 class PowerMon():
