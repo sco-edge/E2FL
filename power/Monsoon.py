@@ -15,165 +15,65 @@ pip install monsoon
 It is broken for LVPM. Use HVPM or uses manual mode.
 '''
 class MonsoonMonitor(PowerMonitor):
-    def __init__(self):
-        super().__init__('Monsoon')
-        self.monsoon_device = Monsoon.connect()  # Monsoon 장치 연결
-        self.start_time = None
-
-    def read_power(self):
-        try:
-            power = self.monsoon_device.measure_power()  # Monsoon 모듈에서 전력 데이터 수집
-            current_time = time.time() - self.start_time
-            self.power_data.append((current_time, power))
-            return power
-        except Exception as e:
-            print(f"{self.device_name} Error reading power: {e}")
-            return None
-    
-    def _monitor(self):
-        while self.monitoring:
-            power = self._read_sysfs()
-            current_time = datetime.now() - self.start_time
-            if power is not None:
-                self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
-            time.sleep(self.freq)
-
-    def start(self, freq):
-        if self.monitoring:
-            logging.info("Energy monitoring is already running.")
-            return
-        
-        self.freq = freq
-        self.monitoring = True
-        self.power_data = []
-        self.start_time = datetime.now() #time.strftime("%Y/%m/%d %H:%M:%S")
-        self.thread = threading.Thread(target=self._monitor)
-        self.thread.start()
-        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.start_time}.")
-
-    def stop(self):
-        if not self.monitoring:
-            logging.info("Energy monitoring is not running.")
-            return None, None
-
-        self.monitoring = False
-        self.thread.join() # Wait for thread to finish
-        self.end_time = datetime.now() # time.strftime("%Y/%m/%d %H:%M:%S")
-        elapsed_time = self.end_time - self.start_time
-        data_size = len(self.power_data)
-        logging.debug(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
-        return elapsed_time, data_size
-
-
-    def save(self, filepath):
-        with open(filepath, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow([f"start_time", f"{self.start_time}"])
-            writer.writerow(["timestamp", "power_mW"])
-            with self.lock:
-                for timestamp, power in self.power_data:
-                    writer.writerow([f"{timestamp:.2f}", power])
-        logging.info(f"{self.device_name}: Data saved to {filepath}.")
-
-    def close(self):
-        elapsed_time, data_size = None, None
-        if self.monitoring:
-            elapsed_time, data_size = self.stop()
-        if elapsed_time == None:
-            return
-        logging.info(f"{self.device_name}: Resources (data_size: {data_size}, elapsed_time: {elapsed_time}) cleaned up.")
-
-
-class PowerMon():
-    
     def __init__(self, node, vout, mode = "PyMonsoon", ConsoleIO = False):
-        '''
-            Initialization
-        '''
+        super().__init__('Monsoon')
         self.mode = mode
         self.node = node
         self.vout = vout
-        if mode == "PyMonsoon":
-            Mon = LVPM.Monsoon()
-            Mon.setup_usb()
-            if type(Mon.DEVICE) == type(None):
-                print("Mon.Device is NoneType")
 
-            if vout >= 4.56:
-                Mon.setVout(4.55) # vout = 5.5V
-            else:
-                Mon.setVout(vout) # vout = 5.5V
-            self.engine = sampleEngine.SampleEngine(Mon)
-            self.engine.ConsoleOutput(ConsoleIO)
-            #self.engine.startSampling(numSamples)
+        Mon = LVPM.Monsoon()
+        Mon.setup_usb()
+        if type(Mon.DEVICE) == type(None):
+            logging.info("Mon.Device is NoneType")
+            exit()
 
-            # The main power regulator can source 3.0 A of continuous current and 4.5 A of peak current
-            # Power up with no current limit for 20 ms, run continuously with the current limit set to 4.6 A
-            # If you require a higher measurement voltage, the AUX channel can support up to 5.5V.
-            # If you require larger sustaned currents, the AUX channel can support up to 4.5 Amps continuous current
-            # If it is necessary to vary voltage continuously, without ending the sampling run.
-            if vout >= 4.56 and vout <= 5.5:
-                #Disable Main channels
-                self.engine.disableChannel(sampleEngine.channels.MainCurrent)
-                self.engine.disableChannel(sampleEngine.channels.MainVoltage)
+        if self.vout >= 4.56:
+            Mon.setVout(4.55) # vout = 5.5V
+        else:
+            Mon.setVout(vout) # vout = 5.5V
 
-                #Enable USB channels
-                self.engine.enableChannel(sampleEngine.channels.USBCurrent)
-                self.engine.enableChannel(sampleEngine.channels.USBVoltage)
+        self.engine = sampleEngine.SampleEngine(Mon)
+        self.engine.ConsoleOutput(ConsoleIO)
+        #self.engine.startSampling(numSamples)
 
-                #Enable AUX channels
-                self.engine.enableChannel(sampleEngine.channels.AuxCurrent)
+        # The main power regulator can source 3.0 A of continuous current and 4.5 A of peak current
+        # Power up with no current limit for 20 ms, run continuously with the current limit set to 4.6 A
+        # If you require a higher measurement voltage, the AUX channel can support up to 5.5V.
+        # If you require larger sustaned currents, the AUX channel can support up to 4.5 Amps continuous current
+        # If it is necessary to vary voltage continuously, without ending the sampling run.
+        if vout >= 4.56 and vout <= 5.5:
+            #Disable Main channels
+            self.engine.disableChannel(sampleEngine.channels.MainCurrent)
+            self.engine.disableChannel(sampleEngine.channels.MainVoltage)
 
-                #Set USB Pasthrough mode to 'on', since it defaults to 'auto' 
-                #and will turn off when sampling mode begins
-                Mon.setUSBPassthroughMode(op.USB_Passthrough.On) # == 1
-            elif vout < 4.56:
-                #Disable USB channels
-                self.engine.disableChannel(sampleEngine.channels.USBCurrent)
-                self.engine.disableChannel(sampleEngine.channels.USBVoltage)
+            #Enable USB channels
+            self.engine.enableChannel(sampleEngine.channels.USBCurrent)
+            self.engine.enableChannel(sampleEngine.channels.USBVoltage)
 
-                #Disable AUX channels
-                self.engine.disableChannel(sampleEngine.channels.AuxCurrent)
+            #Enable AUX channels
+            self.engine.enableChannel(sampleEngine.channels.AuxCurrent)
 
-                #Enable Main channels
-                self.engine.enableChannel(sampleEngine.channels.MainCurrent)
-                self.engine.enableChannel(sampleEngine.channels.Mainoltage)
-                
-                #Set USB Pasthrough mode to 'auto' as default
-                Mon.setUSBPassthroughMode(2) # op.USB_Passthrough.Auto? == 2
-            else:
-                raise Exception("The required voltage is not supported on Monsoon Power Monitor.")
+            #Set USB Pasthrough mode to 'on', since it defaults to 'auto' 
+            #and will turn off when sampling mode begins
+            Mon.setUSBPassthroughMode(op.USB_Passthrough.On) # == 1
+        elif vout < 4.56:
+            #Disable USB channels
+            self.engine.disableChannel(sampleEngine.channels.USBCurrent)
+            self.engine.disableChannel(sampleEngine.channels.USBVoltage)
+
+            #Disable AUX channels
+            self.engine.disableChannel(sampleEngine.channels.AuxCurrent)
+
+            #Enable Main channels
+            self.engine.enableChannel(sampleEngine.channels.MainCurrent)
+            self.engine.enableChannel(sampleEngine.channels.Mainoltage)
             
-            '''
-            # self.engine.disableCSVOutput()
-            samples = self.engine.getSamples()
-
-            #Samples are stored in order, indexed sampleEngine.channels values
-            for i in range(len(samples[sampleEngine.channels.timeStamp])):
-                timeStamp = samples[sampleEngine.channels.timeStamp][i]
-                Current = samples[sampleEngine.channels.timeStamp][i]
-                print("Main current at time " + repr(timeStamp) + " is: " + repr(Current) + "mA")
-            '''
-        elif mode == 'PMIC':
-            '''
-            try:
-                result = subprocess.run(['vgencmd', 'pmic_read_adc'], capture_output=True, text=True)
-                power_value = float(result.stdout.strip())
-                return power_value
-            except Exception as e:
-                print(f"Error reading power consumption: {e}")
-                return None
-            '''
-            fmt = 'pi5_{}{{name="{}",id="{}"}} {}\n'
-
-            res = subprocess.run(['vgencmd', 'pmic_read_adc'], capture_output=True) #, text=True
-            lines = res.stdout.decode("utf-8").splitlines()
-            for line in lines:
-                res = re.search('([A-Z_0-9]+)_[VA] (current|volt)\(([0-9]+)\)=([0-9.]+)', line)
-                self.wfile.write(fmt.format(res.group(2), res.group(1), res.group(3), res.group(4)).encode("utf-8"))
-            return res
-            
-    def setTrigger(self, bool, numSamples = 5000, thld_high = 100, thld_low = 10):
+            #Set USB Pasthrough mode to 'auto' as default
+            Mon.setUSBPassthroughMode(2) # op.USB_Passthrough.Auto? == 2
+        else:
+            logging.error("The required voltage is not supported on Monsoon Power Monitor.")
+            return None
+    def _setTrigger(self, bool, numSamples = 5000, thld_high = 100, thld_low = 10):
         '''
             Set the threshold for trigger that starts sampleEngine's recording measurements.
             sampleEngine begins recording measurements when the 'start' trigger condition is met,
@@ -203,7 +103,7 @@ class PowerMon():
             return False
             #self.engine.startSampling(numSamples)
 
-    def setCSVOutput(self, bool, filename="default"):
+    def _setCSVOutput(self, bool, filename="default"):
         '''
             Opens a file and causes the sampleEngine to periodically output samples when taking measurements.
             
@@ -221,7 +121,8 @@ class PowerMon():
         else:
             self.engine.disableCSVOutput()
 
-    def getSamples(self):
+    
+    def _getSamples(self):
         '''
             Returns samples in a Python list.
             
@@ -230,20 +131,61 @@ class PowerMon():
         '''
         return self.engine.getSamples()
 
-    def startSampling(self, numSamples = 5000):
+    def _startSampling(self, numSamples = 5000):
         '''
         '''
         # numSamples = sample for one second
         self.engine.startSampling(numSamples)
 
-    def stopSampling(self, closeCSV=False):
+    def _stopSampling(self, closeCSV=False):
         '''
+        closeCSV: closes the CSV file along with existile mode.
         '''
         self.engine.periodicStopSampling(closeCSV)
 
-    #def calibration(self)
-    
+    def start(self, freq):
+        if self.monitoring:
+            logging.info("Energy monitoring is already running.")
+            return
+        
+        self.freq = freq
+        self.monitoring = True
+        self.power_data = []
+        self.start_time = datetime.now() #time.strftime("%Y/%m/%d %H:%M:%S")
+        #self.thread = threading.Thread(target=self._monitor)
+        #self.thread.start()
+        self._startSampling(self.freq)
+        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.start_time}.")
+
+    def stop(self):
+        if not self.monitoring:
+            logging.info("Energy monitoring is not running.")
+            return None, None
+
+        self.monitoring = False
+        #self.thread.join() # Wait for thread to finish
+        self._stopSampling(closeCSV = True)
+        self.end_time = datetime.now() # time.strftime("%Y/%m/%d %H:%M:%S")
+        elapsed_time = self.end_time - self.start_time
+        data_size = len(self.power_data)
+        logging.debug(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
+        return elapsed_time, data_size
 
 
-            
+    def save(self, filepath):
+        with open(filepath, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow([f"start_time", f"{self.start_time}"])
+            writer.writerow(["timestamp", "power_mW"])
+            with self.lock:
+                for timestamp, power in self.power_data:
+                    writer.writerow([f"{timestamp:.2f}", power])
+        logging.info(f"{self.device_name}: Data saved to {filepath}.")
 
+    def close(self):
+        elapsed_time, data_size = None, None
+        if self.monitoring:
+            elapsed_time, data_size = self.stop()
+        if elapsed_time == None:
+            return
+        logging.info(f"{self.device_name}: Resources (data_size: {data_size}, elapsed_time: {elapsed_time}) cleaned up.")
