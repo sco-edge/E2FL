@@ -5,9 +5,11 @@ import time
 import threading
 
 import csv
-import time
 import datetime
+import logging
 from _power_monitor_interface import PowerMonitor
+
+logging.basicConfig(level=logging.INFO)
 
 class PMICMonitor(PowerMonitor):
     def __init__(self, sysfs_path='/sys/class/power_supply/pmic_device/power_now'):
@@ -31,21 +33,40 @@ class PMICMonitor(PowerMonitor):
         return elapsed_time, data_size
 
     def read_power(self):
+        """
+        Executes the 'vgencmd pmmic_read_adc' command to retrieve the power consumption.
+        :return: Power consumption in mW (float)
+        """
         try:
-            with open(self.sysfs_path, 'r') as f:
-                power = f.read().strip()
+            #result = subprocess.run(['vgencmd', 'pmmic_read_adc'], stdout=subprocess.PIPE, text=True, check=True)
+            result = subprocess.run(['vgencmd', 'pmmic_read_adc'], stdout=subprocess.PIPE, text=True, check=True, timeout=5)
+            power_str = result.stdout.strip()
+            power = float(power_str)
             current_time = time.time() - self.start_time
-            self.power_data.append((current_time, float(power)))
-            return float(power)
+            with self.lock:
+                self.power_data.append((current_time, power))
+            return power
+        except subprocess.CalledProcessError as e:
+            logging.error(f"{self.device_name} Command failed: {e}")
+            return None
+        except ValueError:
+            logging.error(f"{self.device_name} Invalid power value received.")
+            return None
+        except subprocess.TimeoutExpired:
+            print(f"{self.device_name} Command timed out.")
+            return None
         except Exception as e:
-            print(f"{self.device_name} Error reading power: {e}")
+            logging.error(f"{self.device_name} Unexpected error: {e}")
             return None
 
     def save(self, filepath):
+        # Save the power data to a CSV file using the csv module
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
+            # Write the global start time in the header
             writer.writerow([f"global_start_time", f"{self.global_start_time} (UTC)"])
             writer.writerow(["timestamp", "power_mW"])
+            # Write each (timestamp, power) pair into the file
             for timestamp, power in self.power_data:
                 writer.writerow([timestamp, power])
         print(f"{self.device_name}: Data saved to {filepath}.")
