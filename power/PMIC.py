@@ -45,6 +45,7 @@ class PMICMonitor(PowerMonitor):
             current_time = time.time() - self.start_time
             with self.lock:
                 self.power_data.append((current_time, power))
+            logging.debug(f"{self.device_name}: Current power: {power} mW at {current_time:.2f}s")
             return power
         except subprocess.CalledProcessError as e:
             logging.error(f"{self.device_name} Command failed: {e}")
@@ -61,20 +62,24 @@ class PMICMonitor(PowerMonitor):
 
     def save(self, filepath):
         # Save the power data to a CSV file using the csv module
-        with open(filepath, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            # Write the global start time in the header
-            writer.writerow([f"global_start_time", f"{self.global_start_time} (UTC)"])
-            writer.writerow(["timestamp", "power_mW"])
-            # Write each (timestamp, power) pair into the file
-            for timestamp, power in self.power_data:
-                writer.writerow([timestamp, power])
-        print(f"{self.device_name}: Data saved to {filepath}.")
+        try:
+            with open(filepath, 'w', newline='') as csvfile:
+                writer = csv.writer(csvfile)
+                # Write the global start time in the header
+                writer.writerow([f"global_start_time", f"{self.global_start_time} (UTC)"])
+                writer.writerow(["timestamp", "power_mW"])
+                # Write each (timestamp, power) pair into the file
+                with self.lock:
+                        for timestamp, power in self.power_data:
+                            writer.writerow([f"{timestamp:.2f}", power])
+            logging.info(f"{self.device_name}: Data saved to {filepath}.")
+        except Exception as e:
+            logging.error(f"Failed to save data to {filepath}: {e}")
 
     def close(self):
         if self.is_monitoring:
             self.stop()
-        print(f"{self.device_name}: Resources cleaned up.")
+        logging.info(f"{self.device_name}: Resources cleaned up.")
 
 
 
