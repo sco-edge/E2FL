@@ -72,25 +72,20 @@ class INA3221(PowerMonitor):
         """
         super().__init__('INA3221')
         self.sysfs_path = sysfs_path
-        self.monitoring = False
-        self.thread = None
-        self.lock = threading.Lock()
-        self.start_time = None
-        self.end_time = None
-        self.power_data = []
-        self.freq = 1 # Frequency in seconds (default)
     
     def _read_sysfs(self):
         """
         Read the power consumption value from sysfs
         """
-        try:
-            with open(self.sysfs_path, 'r') as f:
-                power = f.read().strip() # v
-            return float(power)  # Assuming power value is in float format (e.g., mW)
-        except Exception as e:
-            print(f"Error reading sysfs: {e}")
-            return None
+        with self.lock:  # Thread-safe access to shared resource
+            try:
+                with open(self.sysfs_path, 'r') as f:
+                    power = f.read().strip()
+                logging.info(f"Power read: {power} mW")
+                return float(power)
+            except Exception as e:
+                logging.error(f"Error reading power: {e}")
+                return None
     
     def _monitor(self):
         """

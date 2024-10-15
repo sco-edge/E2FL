@@ -11,11 +11,7 @@ from _power_monitor_interface import PowerMonitor
 
 class PMICMonitor(PowerMonitor):
     def __init__(self):
-        super().__init__('PMIC')
-        self.sysfs_path = None
-        self.lock = threading.Lock()
-        self.global_start_time = None  # 글로벌 시작 시간을 기록할 변수
-
+        super().__init__('PMIC')    
 
     def start(self, freq):
         self.sampling_interval = freq
