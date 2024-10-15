@@ -1,13 +1,17 @@
 from abc import ABC, abstractmethod
+import logging
 
 class PowerMonitor(ABC):
-    def __init__(self, device_name):
+    def __init__(self, device_name, logging_config=None):
         self.device_name = device_name  # Name of the device
         self.freq = 1  # Sampling interval in seconds
         self.power_data = []  # List to store power data [(timestamp, power)]
         self.monitoring = False  # Flag to track if monitoring is ongoing
         self.start_time = None  # Time when monitoring started (for relative time calculations)
         self.end_time = None  # Time when monitoring endded (for relative time calculations)
+
+        if logging_config:
+            logging.basicConfig(**logging_config)
     
     @abstractmethod
     def start(self, freq):
