@@ -9,6 +9,7 @@ class PowerMonitor(ABC):
         self.monitoring = False  # Flag to track if monitoring is ongoing
         self.start_time = None  # Time when monitoring started (for relative time calculations)
         self.end_time = None  # Time when monitoring endded (for relative time calculations)
+        self.lock = threading.Lock()
 
         if logging_config:
             logging.basicConfig(**logging_config)
