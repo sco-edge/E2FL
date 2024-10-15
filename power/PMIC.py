@@ -10,15 +10,12 @@ import logging
 from _power_monitor_interface import PowerMonitor
 
 class PMICMonitor(PowerMonitor):
-    def __init__(self, sysfs_path='/sys/class/power_supply/pmic_device/power_now', logging_config=None):
+    def __init__(self):
         super().__init__('PMIC')
-        self.sysfs_path = sysfs_path
+        self.sysfs_path = None
         self.lock = threading.Lock()
         self.global_start_time = None  # 글로벌 시작 시간을 기록할 변수
 
-        # Set up logging based on the passed configuration
-        if logging_config:
-            logging.basicConfig(**logging_config)
 
     def start(self, freq):
         self.sampling_interval = freq
@@ -26,13 +23,13 @@ class PMICMonitor(PowerMonitor):
         self.power_data = []
         self.start_time = time.time()
         self.global_start_time = datetime.datetime.utcnow()
-        print(f"{self.device_name}: Monitoring started with frequency {self.sampling_interval}s at {self.global_start_time} (UTC).")
+        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.sampling_interval}s at {self.global_start_time} (UTC).")
 
     def stop(self):
         self.is_monitoring = False
         elapsed_time = len(self.power_data) * self.sampling_interval
         data_size = len(self.power_data)
-        print(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
+        logging.debug(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
         return elapsed_time, data_size
 
     def read_power(self):

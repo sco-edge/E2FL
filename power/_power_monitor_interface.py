@@ -12,6 +12,9 @@ class PowerMonitor(ABC):
 
         if logging_config:
             logging.basicConfig(**logging_config)
+        else:
+            # Default logging configuration (prints to console, level set to INFO)
+            logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     
     @abstractmethod
     def start(self, freq):

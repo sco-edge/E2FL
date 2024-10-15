@@ -61,6 +61,7 @@ import pickle
 import csv
 import time
 from datetime import datetime, timedelta
+import logging
 from _power_monitor_interface import PowerMonitor
 
 class INA3221(PowerMonitor):
@@ -73,6 +74,7 @@ class INA3221(PowerMonitor):
         self.sysfs_path = sysfs_path
         self.monitoring = False
         self.thread = None
+        self.lock = threading.Lock()
         self.start_time = None
         self.end_time = None
         self.power_data = []
