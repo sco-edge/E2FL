@@ -104,7 +104,7 @@ class INA3221(PowerMonitor):
         :param freq: Frequency in seconds to sample energy data
         """
         if self.monitoring:
-            print("Energy monitoring is already running.")
+            logging.info("Energy monitoring is already running.")
             return
 
         self.freq = freq
@@ -113,7 +113,7 @@ class INA3221(PowerMonitor):
         self.start_time = datetime.now() #time.strftime("%Y/%m/%d %H:%M:%S")
         self.thread = threading.Thread(target=self._monitor)
         self.thread.start()
-        print(f"{self.device_name}: Monitoring started with frequency {self.freq} at {self.start_time} (UTC).")
+        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq} at {self.start_time} (UTC).")
 
     def stop(self):
         """
@@ -121,7 +121,7 @@ class INA3221(PowerMonitor):
         :return: Elapsed time (seconds), data size (number of power readings)
         """
         if not self.monitoring:
-            print("Energy monitoring is not running.")
+            logging.info("Energy monitoring is not running.")
             return None, None
         
         self.monitoring = False
@@ -129,25 +129,29 @@ class INA3221(PowerMonitor):
         self.end_time = datetime.now() # time.strftime("%Y/%m/%d %H:%M:%S")
         elapsed_time = self.end_time - self.start_time
         data_size = len(self.power_data)
-        print(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
+        logging.debug(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
         return elapsed_time, data_size
 
     def save(self, filepath):
-        # CSV 모듈을 사용하여 데이터를 저장
+        # Save the power data to a CSV file using the csv module
         with open(filepath, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
-            # CSV 헤더: 글로벌 시작 시간 기록
+            # Write the start time in the header
             writer.writerow([f"start_time", f"{self.start_time}"])
             writer.writerow(["timestamp", "power_mW"])
-            # 측정된 데이터 저장
-            for timestamp, power in self.power_data:
-                writer.writerow([timestamp, power])
-        print(f"{self.device_name}: Data saved to {filepath}.")
+            # Write each (timestamp, power) pair into the file
+            with self.lock:
+                for timestamp, power in self.power_data:
+                    writer.writerow([f"{timestamp:.2f}", power])
+        logging.info(f"{self.device_name}: Data saved to {filepath}.")
 
     def close(self):
-        if self.is_monitoring:
-            self.stop()
-        print(f"{self.device_name}: Resources cleaned up.")
+        elapsed_time, data_size = None, None
+        if self.monitoring:
+            elapsed_time, data_size = self.stop()
+        if elapsed_time == None:
+            return
+        logging.info(f"{self.device_name}: Resources (data_size: {data_size}, elapsed_time: {elapsed_time}) cleaned up.")
 
 '''
 # Example usage in any Python code
