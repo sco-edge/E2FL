@@ -15,9 +15,8 @@ pip install monsoon
 It is broken for LVPM. Use HVPM or uses manual mode.
 '''
 class MonsoonMonitor(PowerMonitor):
-    def __init__(self, node, vout, ConsoleIO = False):
+    def __init__(self, vout, ConsoleIO = False):
         super().__init__('Monsoon')
-        self.node = node
         self.vout = vout
 
         Mon = LVPM.Monsoon()
