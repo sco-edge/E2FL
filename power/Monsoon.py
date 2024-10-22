@@ -83,7 +83,7 @@ class MonsoonMonitor(PowerMonitor):
         if bool: # trigger mode
             #Don't stop based on sample count, continue until 
             #the trigger conditions have been satisfied.
-            numSamples = sampleEngine.triggers.SAMPLECOUNT_INFINITE
+            self.numSamples = sampleEngine.triggers.SAMPLECOUNT_INFINITE
 
             #Start when we exceed threshold_high (100 mA)
             self.engine.setStartTrigger(sampleEngine.triggers.GREATER_THAN, thld_high)
@@ -96,11 +96,11 @@ class MonsoonMonitor(PowerMonitor):
                 self.engine.setTriggerChannel(sampleEngine.channels.AuxCurrent)
             else:  # main channel
                 self.engine.setTriggerChannel(sampleEngine.channels.MainCurrent)
-            #self.engine.startSampling(numSamples)
+            #self.engine.startSampling(self.numSamples)
             return True
         else: # turn off the trigger mode and start the sampling mode
             return False
-            #self.engine.startSampling(numSamples)
+            #self.engine.startSampling(self.numSamples)
 
     def _setCSVOutput(self, bool, filename="default"):
         '''
