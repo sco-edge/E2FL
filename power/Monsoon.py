@@ -134,7 +134,10 @@ class MonsoonMonitor(PowerMonitor):
         '''
         '''
         # numSamples = sample for one second
-        self.engine.startSampling(numSamples)
+        # self.engine.startSampling(numSamples)
+
+        # samples: Number of samples to collect
+        self.engine.periodicCollectSamples()
 
     def _stopSampling(self, closeCSV=False):
         '''
