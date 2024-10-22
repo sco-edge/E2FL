@@ -19,18 +19,18 @@ class MonsoonMonitor(PowerMonitor):
         super().__init__('Monsoon')
         self.vout = vout
 
-        Mon = LVPM.Monsoon()
-        Mon.setup_usb()
-        if type(Mon.DEVICE) == type(None):
+        self.Mon = LVPM.Monsoon()
+        self.Mon.setup_usb()
+        if type(self.Mon.DEVICE) == type(None):
             logging.info("Mon.Device is NoneType")
             exit()
 
         if self.vout >= 4.56:
-            Mon.setVout(4.55) # vout = 5.5V
+            self.Mon.setVout(4.55) # vout = 5.5V
         else:
-            Mon.setVout(vout) # vout = 5.5V
+            self.Mon.setVout(vout) # vout = 5.5V
 
-        self.engine = sampleEngine.SampleEngine(Mon)
+        self.engine = sampleEngine.SampleEngine(self.Mon)
         self.engine.ConsoleOutput(ConsoleIO)
         #self.engine.startSampling(numSamples)
 
@@ -39,7 +39,7 @@ class MonsoonMonitor(PowerMonitor):
         # If you require a higher measurement voltage, the AUX channel can support up to 5.5V.
         # If you require larger sustaned currents, the AUX channel can support up to 4.5 Amps continuous current
         # If it is necessary to vary voltage continuously, without ending the sampling run.
-        if vout >= 4.56 and vout <= 5.5:
+        if self.vout >= 4.56 and self.vout <= 5.5:
             #Disable Main channels
             self.engine.disableChannel(sampleEngine.channels.MainCurrent)
             self.engine.disableChannel(sampleEngine.channels.MainVoltage)
@@ -53,7 +53,7 @@ class MonsoonMonitor(PowerMonitor):
 
             #Set USB Pasthrough mode to 'on', since it defaults to 'auto' 
             #and will turn off when sampling mode begins
-            Mon.setUSBPassthroughMode(op.USB_Passthrough.On) # == 1
+            self.Mon.setUSBPassthroughMode(op.USB_Passthrough.On) # == 1
         elif vout < 4.56:
             #Disable USB channels
             self.engine.disableChannel(sampleEngine.channels.USBCurrent)
@@ -67,10 +67,11 @@ class MonsoonMonitor(PowerMonitor):
             self.engine.enableChannel(sampleEngine.channels.Mainoltage)
             
             #Set USB Pasthrough mode to 'auto' as default
-            Mon.setUSBPassthroughMode(2) # op.USB_Passthrough.Auto? == 2
+            self.Mon.setUSBPassthroughMode(2) # op.USB_Passthrough.Auto? == 2
         else:
             logging.error("The required voltage is not supported on Monsoon Power Monitor.")
             return None
+    
     def _setTrigger(self, bool, numSamples = 5000, thld_high = 100, thld_low = 10):
         '''
             Set the threshold for trigger that starts sampleEngine's recording measurements.
