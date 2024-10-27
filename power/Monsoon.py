@@ -203,8 +203,21 @@ class MonsoonMonitor(PowerMonitor):
             writer.writerow([f"start_time", f"{self.start_time}"])
             writer.writerow(["timestamp", "power_mW"])
             with self.lock:
-                for timestamp, power in self.power_data:
-                    writer.writerow([f"{timestamp:.2f}", power])
+                for entry in self.power_data:
+                    timestamp, main, usb, aux, mainVolts, usbVolts = entry
+                
+                # Calculate main and USB power in mW
+                main_power = main * mainVolts
+                usb_power = usb * usbVolts
+                
+                # Write the row with calculated powers
+                #writer.writerow([
+                #    experiment_details, f"{timestamp:.2f}", f"{main_power:.2f}", f"{usb_power:.2f}", 
+                #    f"{aux:.2f}", f"{mainVolts:.2f}", f"{usbVolts:.2f}"
+                #])
+                with self.lock:
+                    for ind, power in enumerate(usb_power):
+                        writer.writerow([f"{(timestamp[ind]):.2f}", power])
         logging.info(f"{self.device_name}: Data saved to {filepath}.")
 
     def close(self):
