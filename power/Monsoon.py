@@ -191,3 +191,70 @@ class MonsoonMonitor(PowerMonitor):
         if elapsed_time == None:
             return
         logging.info(f"{self.device_name}: Resources (data_size: {data_size}, elapsed_time: {elapsed_time}) cleaned up.")
+        
+    
+    def start(self):
+        """
+        Start energy monitoring in a separate thread.
+        """
+        if self.is_sampling:
+            logging.warning("Sampling is already running.")
+            return
+
+        # Configure the sampling parameters
+        self.is_sampling = True
+        self.sampling_thread = threading.Thread(target=self._run_sampling, daemon=True)
+        self.sampling_thread.start()
+        logging.info("Monsoon sampling started.")
+
+    def _run_sampling(self):
+        """
+        Run sampling loop in a background thread.
+        """
+        try:
+            with self.lock:
+                # Start sampling using __startSampling with provided parameters
+                self.monsoon.startSampling(
+                    samples=self.samples,
+                    granularity=self.granularity,
+                    legacy_timestamp=self.legacy_timestamp,
+                    calTime=self.calTime
+                )
+                
+                # Loop to continuously collect samples while sampling is active
+                while self.is_sampling:
+                    # The actual sample processing happens in the Monsoon library's __sampleLoop
+                    sample_count = self.monsoon.__sampleLoop(0, [], self.granularity, self.legacy_timestamp)
+                    
+                    # Delay to allow sampling at the specified interval
+                    time.sleep(1 / self.granularity)
+
+        except Exception as e:
+            logging.error(f"Error in sampling: {e}")
+
+        finally:
+            # Clean up and stop sampling
+            self.monsoon.stopSampling()
+            logging.info("Monsoon sampling stopped.")
+
+    def stop(self):
+        """
+        Stop energy monitoring gracefully.
+        """
+        with self.lock:
+            if not self.is_sampling:
+                logging.warning("Sampling is not running.")
+                return
+
+            # Signal the sampling loop to stop and wait for the thread to complete
+            self.is_sampling = False
+            self.sampling_thread.join()
+            logging.info("Monsoon sampling has been stopped.")
+
+    def close(self):
+        """
+        Clean up resources and ensure sampling is stopped.
+        """
+        if self.is_sampling:
+            self.stop()
+        logging.info("Resources cleaned up.")
