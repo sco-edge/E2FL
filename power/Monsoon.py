@@ -134,12 +134,12 @@ class MonsoonMonitor(PowerMonitor):
         """
         Start energy monitoring in a separate thread.
         """
-        if self.is_sampling:
+        if self.monitoring:
             logging.warning("Sampling is already running.")
             return
 
         # Configure the sampling parameters
-        self.is_sampling = True
+        self.monitoring = True
         self.sampling_thread = threading.Thread(target=self._run_sampling, daemon=True)
         self.sampling_thread.start()
         logging.info("Monsoon sampling started.")
@@ -153,13 +153,11 @@ class MonsoonMonitor(PowerMonitor):
                 # Start sampling using __startSampling with provided parameters
                 self.engine.startSampling(
                     samples=sampleEngine.triggers.SAMPLECOUNT_INFINITE,
-                    granularity=self.granularity,
-                    legacy_timestamp=self.legacy_timestamp,
-                    calTime=self.calTime
+                    legacy_timestamp=True
                 )
                 
                 # Loop to continuously collect samples while sampling is active
-                while self.is_sampling:
+                while self.monitoring:
                     # The actual sample processing happens in the Monsoon library's __sampleLoop
                     sample_count = self.monsoon.__sampleLoop(0, [], self.granularity, self.legacy_timestamp)
                     
@@ -183,7 +181,7 @@ class MonsoonMonitor(PowerMonitor):
             return None, None
 
         with self.lock:
-            if not self.is_sampling:
+            if not self.monitoring:
                 logging.warning("Sampling is not running.")
                 return
 
@@ -193,6 +191,7 @@ class MonsoonMonitor(PowerMonitor):
             logging.info("Monsoon sampling has been stopped.")
             self.end_time = datetime.now() # time.strftime("%Y/%m/%d %H:%M:%S")
             elapsed_time = self.end_time - self.start_time
+            self.power_data = self._getSamples()
             data_size = len(self.power_data)
             logging.debug(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
 
