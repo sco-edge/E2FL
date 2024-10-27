@@ -130,69 +130,6 @@ class MonsoonMonitor(PowerMonitor):
         '''
         return self.engine.getSamples()
 
-    def _startSampling(self, numSamples = 5000):
-        '''
-        '''
-        # numSamples = sample for one second
-        # self.engine.startSampling(numSamples)
-
-        # samples: Number of samples to collect
-        self.engine.periodicCollectSamples()
-
-    def _stopSampling(self, closeCSV=False):
-        '''
-        closeCSV: closes the CSV file along with existile mode.
-        '''
-        self.engine.periodicStopSampling(closeCSV)
-
-    def start(self, freq):
-        if self.monitoring:
-            logging.info("Energy monitoring is already running.")
-            return
-        
-        self.freq = freq
-        self.monitoring = True
-        self.power_data = []
-        self.start_time = datetime.now() #time.strftime("%Y/%m/%d %H:%M:%S")
-        #self.thread = threading.Thread(target=self._monitor)
-        #self.thread.start()
-        self._startSampling(self.freq)
-        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.start_time}.")
-
-    def stop(self):
-        if not self.monitoring:
-            logging.info("Energy monitoring is not running.")
-            return None, None
-
-        self.monitoring = False
-        #self.thread.join() # Wait for thread to finish
-        self._stopSampling(closeCSV = True)
-        self.end_time = datetime.now() # time.strftime("%Y/%m/%d %H:%M:%S")
-        elapsed_time = self.end_time - self.start_time
-        data_size = len(self.power_data)
-        logging.debug(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
-        return elapsed_time, data_size
-
-
-    def save(self, filepath):
-        with open(filepath, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow([f"start_time", f"{self.start_time}"])
-            writer.writerow(["timestamp", "power_mW"])
-            with self.lock:
-                for timestamp, power in self.power_data:
-                    writer.writerow([f"{timestamp:.2f}", power])
-        logging.info(f"{self.device_name}: Data saved to {filepath}.")
-
-    def close(self):
-        elapsed_time, data_size = None, None
-        if self.monitoring:
-            elapsed_time, data_size = self.stop()
-        if elapsed_time == None:
-            return
-        logging.info(f"{self.device_name}: Resources (data_size: {data_size}, elapsed_time: {elapsed_time}) cleaned up.")
-        
-    
     def start(self):
         """
         Start energy monitoring in a separate thread.
@@ -214,8 +151,8 @@ class MonsoonMonitor(PowerMonitor):
         try:
             with self.lock:
                 # Start sampling using __startSampling with provided parameters
-                self.monsoon.startSampling(
-                    samples=self.samples,
+                self.engine.startSampling(
+                    samples=sampleEngine.triggers.SAMPLECOUNT_INFINITE,
                     granularity=self.granularity,
                     legacy_timestamp=self.legacy_timestamp,
                     calTime=self.calTime
@@ -241,20 +178,42 @@ class MonsoonMonitor(PowerMonitor):
         """
         Stop energy monitoring gracefully.
         """
+        if not self.monitoring:
+            logging.info("Energy monitoring is not running.")
+            return None, None
+
         with self.lock:
             if not self.is_sampling:
                 logging.warning("Sampling is not running.")
                 return
 
             # Signal the sampling loop to stop and wait for the thread to complete
-            self.is_sampling = False
+            self.monitoring = False
             self.sampling_thread.join()
             logging.info("Monsoon sampling has been stopped.")
+            self.end_time = datetime.now() # time.strftime("%Y/%m/%d %H:%M:%S")
+            elapsed_time = self.end_time - self.start_time
+            data_size = len(self.power_data)
+            logging.debug(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
+
+        return elapsed_time, data_size
+        
+    def save(self, filepath):
+        with open(filepath, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow([f"start_time", f"{self.start_time}"])
+            writer.writerow(["timestamp", "power_mW"])
+            with self.lock:
+                for timestamp, power in self.power_data:
+                    writer.writerow([f"{timestamp:.2f}", power])
+        logging.info(f"{self.device_name}: Data saved to {filepath}.")
 
     def close(self):
-        """
-        Clean up resources and ensure sampling is stopped.
-        """
-        if self.is_sampling:
-            self.stop()
-        logging.info("Resources cleaned up.")
+        elapsed_time, data_size = None, None
+        if self.monitoring:
+            elapsed_time, data_size = self.stop()
+        if elapsed_time == None:
+            return
+        logging.info(f"{self.device_name}: Resources (data_size: {data_size}, elapsed_time: {elapsed_time}) cleaned up.")
+        
+    
