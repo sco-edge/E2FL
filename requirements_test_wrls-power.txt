@@ -1,7 +1,0 @@
-paramiko>2.6.0
-yaml>5.3.1
-Monsoon
-pickle
-cffi
-
-
