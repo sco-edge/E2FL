@@ -6,7 +6,7 @@ import psutil
 import argparse
 import warnings
 from collections import OrderedDict
-from power import Monitor # PMIC
+from power import _power_monitor_interface # PMIC
 import threading
 
 import flwr as fl
@@ -23,6 +23,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 from tqdm import tqdm
 from flwr_datasets import FederatedDataset
+
 
 import grpc # intercept grpc
 
