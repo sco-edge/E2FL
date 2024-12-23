@@ -27,7 +27,7 @@ class WirlENV:
     CSI: np.complex
     DR: float
 
-class DevEST():
+class Energy_Time_Estimator:
     '''
     * Performance Estimator for each device.
     '''
@@ -62,3 +62,7 @@ class DevEST():
         '''
         return 0
 
+
+class Learning_Time_Estimator:
+    def __init__(self):
+    
