@@ -1,5 +1,5 @@
 import time
-from power import INA3221
+import INA3221
 
 # Initialize power monitor
 monitor = INA3221(freq=0.5)  # Sample every 0.5 seconds
