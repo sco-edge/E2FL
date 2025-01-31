@@ -61,13 +61,16 @@ import logging
 from power._power_monitor_interface import PowerMonitor
 
 class INA3221(PowerMonitor):
-    def __init__(self, sysfs_path='/sys/bus/i2c/drivers/ina3221/1-0040/iio_device/in_power0_input'):
+    def __init__(self, voltage_path='/sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/in1_input',
+                 current_path='/sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_input'):
         """
         Initialize the INA3221 power monitor.
-        :param sysfs_path: Path to the sysfs file for energy data (default path for Jetson devices)
+        :param voltage_path: Path to read voltage in mV.
+        :param current_path: Path to read current in mA.
         """
         super().__init__('INA3221')
-        self.sysfs_path = sysfs_path
+        self.voltage_path = voltage_path
+        self.current_path = current_path
         self.monitoring = False
         self.power_data = []
         self.lock = threading.Lock()
@@ -76,38 +79,36 @@ class INA3221(PowerMonitor):
         # Configure logging
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    def read_power(self):
+    def _read_sysfs(self, path):
         """
-        Required method implementation for PowerMonitor.
-        Reads power from INA3221 via sysfs.
-        :return: Power consumption in mW (float), or None if an error occurs.
+        Helper function to read a value from a sysfs path.
+        :param path: sysfs file path to read from.
+        :return: Value as float, or None if an error occurs.
         """
         with self.lock:
             try:
-                with open(self.sysfs_path, 'r') as f:
-                    power = f.read().strip()
-                power_value = float(power)
-                logging.debug(f"{self.device_name}: Power read {power_value} mW")
-                return power_value
+                with open(path, 'r') as f:
+                    value = f.read().strip()
+                return float(value)
             except Exception as e:
-                logging.error(f"{self.device_name}: Error reading power: {e}")
+                logging.error(f"{self.device_name}: Error reading {path}: {e}")
                 return None
 
-    def _read_sysfs(self):
+    def read_power(self):
         """
-        Read the power consumption value from sysfs.
-        :return: Power consumption in mW (float) or None if an error occurs.
+        Reads power consumption in mW by reading voltage (mV) and current (mA) from sysfs.
+        :return: Power consumption in mW (float), or None if reading fails.
         """
-        with self.lock:
-            try:
-                with open(self.sysfs_path, 'r') as f:
-                    power = f.read().strip()
-                power_value = float(power)
-                logging.debug(f"{self.device_name}: Power read {power_value} mW")
-                return power_value
-            except Exception as e:
-                logging.error(f"{self.device_name}: Error reading power: {e}")
-                return None
+        voltage = self._read_sysfs(self.voltage_path)  # in mV
+        current = self._read_sysfs(self.current_path)  # in mA
+
+        if voltage is None or current is None:
+            return None  # Return None if any reading fails
+
+        # Convert mV * mA to mW
+        power_mw = (voltage / 1000.0) * (current / 1000.0) * 1000  # Convert to mW
+        logging.debug(f"{self.device_name}: Voltage={voltage}mV, Current={current}mA, Power={power_mw:.2f}mW")
+        return power_mw
 
     def _monitor(self):
         """
@@ -115,8 +116,8 @@ class INA3221(PowerMonitor):
         """
         logging.info(f"{self.device_name}: Power monitoring started.")
         while self.monitoring:
-            power = self._read_sysfs()
             timestamp = (datetime.now() - self.start_time).total_seconds()
+            power = self.read_power()
             if power is not None:
                 with self.lock:
                     self.power_data.append((timestamp, power))
@@ -125,7 +126,7 @@ class INA3221(PowerMonitor):
     def start(self, freq):
         """
         Start power monitoring in a separate background thread.
-        :param freq: Frequency in seconds to sample energy data.
+        :param freq: Sampling frequency in seconds.
         """
         with self.lock:
             if self.monitoring:
@@ -137,7 +138,6 @@ class INA3221(PowerMonitor):
             self.power_data = []
             self.start_time = datetime.now()
 
-        # Start the monitoring thread
         self.thread = threading.Thread(target=self._monitor, daemon=True)
         self.thread.start()
         logging.info(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.start_time}.")
@@ -173,7 +173,6 @@ class INA3221(PowerMonitor):
             try:
                 with open(filepath, 'w', newline='') as csvfile:
                     writer = csv.writer(csvfile)
-                    writer.writerow(["Start Time", self.start_time])
                     writer.writerow(["Timestamp (s)", "Power (mW)"])
                     for timestamp, power in self.power_data:
                         writer.writerow([f"{timestamp:.2f}", f"{power:.2f}"])
