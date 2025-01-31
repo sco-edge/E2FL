@@ -61,8 +61,8 @@ import logging
 from power._power_monitor_interface import PowerMonitor
 
 class INA3221(PowerMonitor):
-    def __init__(self, voltage_path='/sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/in1_input',
-                 current_path='/sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/curr1_input'):
+    def __init__(self, voltage_path='/sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon2/in1_input',
+                 current_path='/sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon2/curr1_input'):
         """
         Initialize the INA3221 power monitor.
         :param voltage_path: Path to read voltage in mV.
