@@ -76,6 +76,23 @@ class INA3221(PowerMonitor):
         # Configure logging
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+    def read_power(self):
+        """
+        Required method implementation for PowerMonitor.
+        Reads power from INA3221 via sysfs.
+        :return: Power consumption in mW (float), or None if an error occurs.
+        """
+        with self.lock:
+            try:
+                with open(self.sysfs_path, 'r') as f:
+                    power = f.read().strip()
+                power_value = float(power)
+                logging.debug(f"{self.device_name}: Power read {power_value} mW")
+                return power_value
+            except Exception as e:
+                logging.error(f"{self.device_name}: Error reading power: {e}")
+                return None
+
     def _read_sysfs(self):
         """
         Read the power consumption value from sysfs.
