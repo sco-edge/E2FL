@@ -55,121 +55,125 @@ CPU, GPU, CV? https://developer.nvidia.com/blog/maximizing-deep-learning-perform
 '''
 import threading
 import time
-import os
-import pickle
-
 import csv
-import time
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 from _power_monitor_interface import PowerMonitor
 
 class INA3221(PowerMonitor):
     def __init__(self, sysfs_path='/sys/bus/i2c/drivers/ina3221/1-0040/iio_device/in_power0_input'):
         """
-        Initialize the EnergyMonitor class
+        Initialize the INA3221 power monitor.
         :param sysfs_path: Path to the sysfs file for energy data (default path for Jetson devices)
         """
         super().__init__('INA3221')
         self.sysfs_path = sysfs_path
-    
+        self.monitoring = False
+        self.power_data = []
+        self.lock = threading.Lock()
+        self.thread = None
+
+        # Configure logging
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
     def _read_sysfs(self):
         """
-        Read the power consumption value from sysfs
+        Read the power consumption value from sysfs.
+        :return: Power consumption in mW (float) or None if an error occurs.
         """
-        with self.lock:  # Thread-safe access to shared resource
+        with self.lock:
             try:
                 with open(self.sysfs_path, 'r') as f:
                     power = f.read().strip()
-                logging.info(f"Power read: {power} mW")
-                return float(power)
+                power_value = float(power)
+                logging.debug(f"{self.device_name}: Power read {power_value} mW")
+                return power_value
             except Exception as e:
-                logging.error(f"Error reading power: {e}")
+                logging.error(f"{self.device_name}: Error reading power: {e}")
                 return None
-    
+
     def _monitor(self):
         """
-        Monitor the energy usage in a separate thread
+        Background thread function that records timestamped power data.
         """
+        logging.info(f"{self.device_name}: Power monitoring started.")
         while self.monitoring:
             power = self._read_sysfs()
-            current_time = datetime.now() - self.start_time
+            timestamp = (datetime.now() - self.start_time).total_seconds()
             if power is not None:
-                self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
+                with self.lock:
+                    self.power_data.append((timestamp, power))
             time.sleep(self.freq)
 
     def start(self, freq):
         """
-        Start energy monitoring at the specified frequency
-        :param freq: Frequency in seconds to sample energy data
+        Start power monitoring in a separate background thread.
+        :param freq: Frequency in seconds to sample energy data.
         """
-        if self.monitoring:
-            logging.info("Energy monitoring is already running.")
-            return
+        with self.lock:
+            if self.monitoring:
+                logging.warning(f"{self.device_name}: Monitoring is already running.")
+                return
 
-        self.freq = freq
-        self.monitoring = True
-        self.power_data = []  # Reset energy data on start
-        self.start_time = datetime.now() #time.strftime("%Y/%m/%d %H:%M:%S")
-        self.thread = threading.Thread(target=self._monitor)
+            self.freq = freq
+            self.monitoring = True
+            self.power_data = []
+            self.start_time = datetime.now()
+
+        # Start the monitoring thread
+        self.thread = threading.Thread(target=self._monitor, daemon=True)
         self.thread.start()
-        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq} at {self.start_time}.")
+        logging.info(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.start_time}.")
 
     def stop(self):
         """
-        Stop energy monitoring and return the elapsed time and the amount of data collected
-        :return: Elapsed time (seconds), data size (number of power readings)
+        Stop power monitoring and return elapsed time and data size.
+        :return: Elapsed time (seconds), data size (number of power readings).
         """
-        if not self.monitoring:
-            logging.info("Energy monitoring is not running.")
-            return None, None
-        
-        self.monitoring = False
-        self.thread.join() # Wait for thread to finish
-        self.end_time = datetime.now() # time.strftime("%Y/%m/%d %H:%M:%S")
-        elapsed_time = self.end_time - self.start_time
+        with self.lock:
+            if not self.monitoring:
+                logging.warning(f"{self.device_name}: Monitoring is not running.")
+                return None, None
+
+            self.monitoring = False
+
+        self.thread.join()
+        elapsed_time = (datetime.now() - self.start_time).total_seconds()
         data_size = len(self.power_data)
-        logging.debug(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
+        logging.info(f"{self.device_name}: Monitoring stopped. Duration: {elapsed_time:.2f}s, Data size: {data_size} samples.")
         return elapsed_time, data_size
 
     def save(self, filepath):
-        # Save the power data to a CSV file using the csv module
-        with open(filepath, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            # Write the start time in the header
-            writer.writerow([f"start_time", f"{self.start_time}"])
-            writer.writerow(["timestamp", "power_mW"])
-            # Write each (timestamp, power) pair into the file
-            with self.lock:
-                for timestamp, power in self.power_data:
-                    writer.writerow([f"{timestamp:.2f}", power])
-        logging.info(f"{self.device_name}: Data saved to {filepath}.")
+        """
+        Save collected power data to a CSV file.
+        :param filepath: File path for saving data.
+        """
+        with self.lock:
+            if not self.power_data:
+                logging.warning(f"{self.device_name}: No power data to save.")
+                return
+
+            try:
+                with open(filepath, 'w', newline='') as csvfile:
+                    writer = csv.writer(csvfile)
+                    writer.writerow(["Start Time", self.start_time])
+                    writer.writerow(["Timestamp (s)", "Power (mW)"])
+                    for timestamp, power in self.power_data:
+                        writer.writerow([f"{timestamp:.2f}", f"{power:.2f}"])
+                logging.info(f"{self.device_name}: Data saved to {filepath}.")
+            except Exception as e:
+                logging.error(f"{self.device_name}: Failed to save power data: {e}")
 
     def close(self):
+        """
+        Stop monitoring and clean up resources.
+        """
         elapsed_time, data_size = None, None
         if self.monitoring:
             elapsed_time, data_size = self.stop()
-        if elapsed_time == None:
+
+        if elapsed_time is None:
+            logging.info(f"{self.device_name}: No active monitoring to clean up.")
             return
-        logging.info(f"{self.device_name}: Resources (data_size: {data_size}, elapsed_time: {elapsed_time}) cleaned up.")
 
-'''
-# Example usage in any Python code
-if __name__ == "__main__":
-    monitor = EnergyMonitor()
-
-    # Start monitoring with a frequency of 2 seconds
-    monitor.start(freq=2)
-
-    # Simulate a task
-    time.sleep(10)
-
-    # Stop monitoring
-    elapsed, data_size = monitor.stop()
-
-    # Save the collected energy data to a file
-    monitor.save('energy_data.pkl')
-
-    # Close the monitor and clean up
-    monitor.close()
-'''
+        logging.info(f"{self.device_name}: Resources cleaned up (Elapsed Time: {elapsed_time:.2f}s, Data Size: {data_size} samples).")
