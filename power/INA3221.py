@@ -58,7 +58,7 @@ import time
 import csv
 from datetime import datetime
 import logging
-from _power_monitor_interface import PowerMonitor
+from power._power_monitor_interface import PowerMonitor
 
 class INA3221(PowerMonitor):
     def __init__(self, sysfs_path='/sys/bus/i2c/drivers/ina3221/1-0040/iio_device/in_power0_input'):
