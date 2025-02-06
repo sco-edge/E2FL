@@ -6,6 +6,10 @@ https://forums.developer.nvidia.com/t/jetson-orin-nx-power-management-parameters
 https://docs.nvidia.com/jetson/archives/r35.4.1/DeveloperGuide/text/SD/PlatformPowerAndPerformance/JetsonOrinNanoSeriesJetsonOrinNxSeriesAndJetsonAgxOrinSeries.html?#jetson-orin-nx-series-and-jetson-orin-nano-series
 INA3221 (on jetson orin nx)
 
+Power Modes
+$ sudo /usr/sbin/nvpmodel -m 2 # 15W with 6cpus @ 1.4GHz
+
+
 To read INA3221 at 0x40, the channel-1 rail name, enter the command:
 $ cat /sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon/in1_label
 => VDD_IN
