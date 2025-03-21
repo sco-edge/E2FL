@@ -9,6 +9,8 @@ from collections import OrderedDict
 from power import _power_monitor_interface # PMIC
 import threading
 
+import traceback
+
 import flwr as fl
 import torch
 import torchvision.transforms as transforms
@@ -498,7 +500,6 @@ def measure_power_during_function(logger, duration):
     time.sleep(duration)
     end_power = Monitor.PowreMon(node = 'rpi5', vout = 5.0, mode = 'PMIC')
 
-import traceback
 
 if __name__ == "__main__":
     try:
