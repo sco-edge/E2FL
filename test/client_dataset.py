@@ -498,6 +498,8 @@ def measure_power_during_function(logger, duration):
     time.sleep(duration)
     end_power = Monitor.PowreMon(node = 'rpi5', vout = 5.0, mode = 'PMIC')
 
+import traceback
+
 def main():
     try:
         print("Client Start!")
