@@ -1,68 +1,33 @@
-from log import WrlsEnv
-from datetime import datetime
-import subprocess, os, logging, time, socket, pickle
-# from log.NetLogger import *
-import psutil
-import argparse
-import warnings
-from collections import OrderedDict
-from power import _power_monitor_interface # PMIC
-import threading
-
-import traceback
-
-import flwr as fl
-import torch
-import torchvision.transforms as transforms
-import torchvision.datasets as datasets
-from torchvision.datasets import MNIST
-from torch.utils.data import DataLoader
-import torchvision.models as models #import resnet18, mobilenet_v3_small
-from torchvision.transforms import Compose, Normalize, ToTensor
-from torchvision.datasets import CIFAR10
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-from tqdm import tqdm
-from flwr_datasets import FederatedDataset
-
-
-import grpc # intercept grpc
-
-'''
-https://github.com/adap/flower/blob/ad811b5a0afc8bd32fb27305a8d0063f41a09ce5/src/py/flwr/client/app.py#L74
-- app.py
--> Line: 645 
-    connection, error_type = grpc_connection, RpcError
-    _init_connection -> return conneciton ,address, error_type
-   
-   Line: 275 -> "connection, address, connection_error_type = _init_connection( ~ )
-   Line 326 ~ ...
-    -> Line 336: receive, send, create_node, delete_node, get_run = conn
-
-
-
-
-class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
-    def intercept_unary_unary(self, continuation, client_call_details, request):
-        method = client_call_details.method
-        start_time = time.time()
-        response = continuation(client_call_details, request)
-        end_time = time.time()
-        logger.info(f"Method: {method}, Start: {start_time}, End: {end_time}, Duration: {end_time - start_time}")
-        return response
-def create_channel():
-    channel = grpc.insecure_channel('localhost:8080')
-    intercept_channel = grpc.intercept_channel(channel, LoggingInterceptor())
-    return intercept_channel
-
-def start_flower_client():
-    channel = create_channel()
-    flower_client = FlowerClient(channel)
-    flower_client.start()
-
-'''
-
+try:
+    from log import WrlsEnv
+    from datetime import datetime
+    import subprocess, os, logging, time, socket, pickle
+    import psutil
+    import argparse
+    import warnings
+    from collections import OrderedDict
+    from power import _power_monitor_interface  # PMIC
+    import threading
+    import traceback
+    import flwr as fl
+    import torch
+    import torchvision.transforms as transforms
+    import torchvision.datasets as datasets
+    from torchvision.datasets import MNIST
+    from torch.utils.data import DataLoader
+    import torchvision.models as models
+    from torchvision.transforms import Compose, Normalize, ToTensor
+    from torchvision.datasets import CIFAR10
+    import torch.nn as nn
+    import torch.optim as optim
+    import torch.nn.functional as F
+    from tqdm import tqdm
+    from flwr_datasets import FederatedDataset
+    import grpc
+except ImportError as e:
+    print(f"ImportError: {e}")
+    print("One or more required modules could not be imported. Please ensure all dependencies are installed.")
+    exit(1)
 
 parser = argparse.ArgumentParser(description="Flower Embedded devices")
 parser.add_argument(
@@ -504,7 +469,88 @@ def measure_power_during_function(logger, duration):
 if __name__ == "__main__":
     try:
         print("Client Start!")  # 시작 메시지 출력
-        
+        logger.info("Client Start!")
+        args = parser.parse_args()
+
+        # Check required arguments and provide help if missing
+        if args.cid is None or args.cid >= NUM_CLIENTS:
+            error_message = f"Error: '--cid' is required and must be an integer less than {NUM_CLIENTS}."
+            print(error_message)
+            logger.error(error_message)
+            parser.print_help()
+            exit(1)
+
+        if args.dataset not in ['mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet']:
+            error_message = "Error: '--dataset' must be one of {'mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet'}."
+            print(error_message)
+            logger.error(error_message)
+            parser.print_help()
+            exit(1)
+
+        if args.model not in [
+            'resnet18', 'resnext50', 'resnet50', 'vgg16', 'alexnet', 'convnext_tiny', 
+            'squeezenet1', 'densenet161', 'inception_v3', 'googlenet', 'shufflenet_v2', 
+            'mobilenet_v2', 'mnasnet1', 'lenet', 'Net', 'mobilenet_v3_small'
+        ]:
+            error_message = "Error: '--model' must be a valid model name."
+            print(error_message)
+            logger.error(error_message)
+            parser.print_help()
+            exit(1)
+
+        if args.power not in ['None', 'PMIC', 'INA3221']:
+            error_message = "Error: '--power' must be one of {'None', 'PMIC', 'INA3221'}."
+            print(error_message)
+            logger.error(error_message)
+            parser.print_help()
+            exit(1)
+
+        logger.info(f"Parsed arguments: {args}")
+        pid = psutil.Process().ppid()
+        logger.info(f"[{time.time()}] PPID: {pid}")
+        current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        logging.basicConfig(filename=f"fl_info_{args.cid}_{args.dataset}_{current_time}.txt")
+        fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{args.cid}_{args.dataset}_{current_time}.txt")
+        logger.info(f"[{time.time()}] Client Start!")
+
+        DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        logger.debug(f"Using device: {DEVICE}")
+
+        root_path = os.path.abspath(os.getcwd()) + '/'
+        arg_dataset = args.dataset
+        trainsets, valsets, _ = prepare_dataset(arg_dataset)
+        logger.debug("Datasets prepared successfully.")
+
+        global wlan_interf, start_net, end_net
+        wlan_interf = args.interface
+        start_net = get_network_usage(wlan_interf)
+        logger.debug(f"Initial network usage: {start_net}")
+
+        usage_record = {}
+        if 'PMIC' in args.power:
+            logger.debug("Starting power measurement thread...")
+            thread = threading.Thread(target=measure_power_during_function, args=(logger, 10))
+            start_time = time.time()
+            thread.start()
+            thread.join()
+            end_time = time.time()
+            logger.debug(f"Power measurement thread completed in {end_time - start_time} seconds.")
+
+        logger.info(f"Client {args.cid} connecting to {args.server_address}")
+        fl.client.start_client(
+            server_address=args.server_address,
+            client=FlowerClient(
+                trainset=trainsets[args.cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
+            ),
+        )
+
+        end_time = time.time()
+        logger.info(f"[{time.time()}] Communication end: {end_time}")
+
+        end_net = get_network_usage(wlan_interf)
+        net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
+        net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
+        logger.info(f"Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]")
 
     except Exception as e:
         # 예외 발생 시 로그와 콘솔에 출력
