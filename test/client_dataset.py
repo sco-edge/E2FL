@@ -503,41 +503,50 @@ def measure_power_during_function(logger, duration):
 
 if __name__ == "__main__":
     try:
-        print("Client Start!")
+        print("Client Start!")  # 시작 메시지 출력
+        logger.info("Client Start!")
         args = parser.parse_args()
 
         # Check required arguments and provide help if missing
         if args.cid is None or args.cid >= NUM_CLIENTS:
-            print(f"Error: '--cid' is required and must be an integer less than {NUM_CLIENTS}.")
+            error_message = f"Error: '--cid' is required and must be an integer less than {NUM_CLIENTS}."
+            print(error_message)
+            logger.error(error_message)
             parser.print_help()
-            exit()
+            exit(1)
 
         if args.dataset not in ['mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet']:
-            print("Error: '--dataset' must be one of {'mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet'}.")
+            error_message = "Error: '--dataset' must be one of {'mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet'}."
+            print(error_message)
+            logger.error(error_message)
             parser.print_help()
-            exit()
+            exit(1)
 
         if args.model not in [
             'resnet18', 'resnext50', 'resnet50', 'vgg16', 'alexnet', 'convnext_tiny', 
             'squeezenet1', 'densenet161', 'inception_v3', 'googlenet', 'shufflenet_v2', 
             'mobilenet_v2', 'mnasnet1', 'lenet', 'Net', 'mobilenet_v3_small'
         ]:
-            print("Error: '--model' must be a valid model name.")
+            error_message = "Error: '--model' must be a valid model name."
+            print(error_message)
+            logger.error(error_message)
             parser.print_help()
-            exit()
+            exit(1)
 
         if args.power not in ['None', 'PMIC', 'INA3221']:
-            print("Error: '--power' must be one of {'None', 'PMIC', 'INA3221'}.")
+            error_message = "Error: '--power' must be one of {'None', 'PMIC', 'INA3221'}."
+            print(error_message)
+            logger.error(error_message)
             parser.print_help()
-            exit()
+            exit(1)
 
-        logger.info(args)
+        logger.info(f"Parsed arguments: {args}")
         pid = psutil.Process().ppid()
         logger.info(f"[{time.time()}] PPID: {pid}")
         current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         logging.basicConfig(filename=f"fl_info_{args.cid}_{args.dataset}_{current_time}.txt")
         fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{args.cid}_{args.dataset}_{current_time}.txt")
-        logger.info([f'[{time.time()}] Client Start!'])
+        logger.info(f"[{time.time()}] Client Start!")
 
         DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         logger.debug(f"Using device: {DEVICE}")
@@ -579,7 +588,11 @@ if __name__ == "__main__":
         logger.info(f"Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]")
 
     except Exception as e:
-        logger.error(f"Unexpected error in main: {e}")
-        logger.error(traceback.format_exc())
+        # 예외 발생 시 로그와 콘솔에 출력
+        error_message = f"Unexpected error in main: {e}"
+        print(error_message)
+        logger.error(error_message)
+        logger.error(traceback.format_exc())  # 전체 스택 트레이스 출력
     finally:
         logger.info("Client execution completed.")
+        print("Client execution completed.")  # 종료 메시지 출력
