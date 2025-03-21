@@ -499,67 +499,84 @@ def measure_power_during_function(logger, duration):
     end_power = Monitor.PowreMon(node = 'rpi5', vout = 5.0, mode = 'PMIC')
 
 def main():
-    
-    args = parser.parse_args()
-    logger.info(args)
-    pid = psutil.Process().ppid()
-    logger.info(f"[{time.time()}] PPID: {pid}")
-    current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    logging.basicConfig(filename=f"fl_info_{args.cid}_{args.dataset}_{current_time}.txt")
-    fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{args.cid}_{args.dataset}_{current_time}.txt")
-    logger.info([f'[{time.time()}] Client Start!'])
+    try:
+        print("Client Start!")
+        args = parser.parse_args()
 
-    assert args.cid < NUM_CLIENTS
+        # Check required arguments and provide help if missing
+        if args.cid is None or args.cid >= NUM_CLIENTS:
+            print(f"Error: '--cid' is required and must be an integer less than {NUM_CLIENTS}.")
+            parser.print_help()
+            return
 
-    DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if args.dataset not in ['mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet']:
+            print("Error: '--dataset' must be one of {'mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet'}.")
+            parser.print_help()
+            return
 
-    # default parameters
-    root_path = os.path.abspath(os.getcwd())+'/'
-    arg_dataset = args.dataset
-    trainsets, valsets, _ = prepare_dataset(arg_dataset)
-    global wlan_interf, start_net, end_net
-    wlan_interf = args.interface
-    start_net = get_network_usage(wlan_interf)
-    
+        if args.model not in [
+            'resnet18', 'resnext50', 'resnet50', 'vgg16', 'alexnet', 'convnext_tiny', 
+            'squeezenet1', 'densenet161', 'inception_v3', 'googlenet', 'shufflenet_v2', 
+            'mobilenet_v2', 'mnasnet1', 'lenet', 'Net', 'mobilenet_v3_small'
+        ]:
+            print("Error: '--model' must be a valid model name.")
+            parser.print_help()
+            return
 
-    # Prepare a bucket to store the results.
-    usage_record = {}
-    if 'PMIC' in args.power:
-        thread = threading.Thread(target = measure_power_during_function)
-        start_time = time.time()
-        thread.start()
-        thread.join()
+        if args.power not in ['None', 'PMIC', 'INA3221']:
+            print("Error: '--power' must be one of {'None', 'PMIC', 'INA3221'}.")
+            parser.print_help()
+            return
+
+        logger.info(args)
+        pid = psutil.Process().ppid()
+        logger.info(f"[{time.time()}] PPID: {pid}")
+        current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        logging.basicConfig(filename=f"fl_info_{args.cid}_{args.dataset}_{current_time}.txt")
+        fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{args.cid}_{args.dataset}_{current_time}.txt")
+        logger.info([f'[{time.time()}] Client Start!'])
+
+        DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        logger.debug(f"Using device: {DEVICE}")
+
+        root_path = os.path.abspath(os.getcwd()) + '/'
+        arg_dataset = args.dataset
+        trainsets, valsets, _ = prepare_dataset(arg_dataset)
+        logger.debug("Datasets prepared successfully.")
+
+        global wlan_interf, start_net, end_net
+        wlan_interf = args.interface
+        start_net = get_network_usage(wlan_interf)
+        logger.debug(f"Initial network usage: {start_net}")
+
+        usage_record = {}
+        if 'PMIC' in args.power:
+            logger.debug("Starting power measurement thread...")
+            thread = threading.Thread(target=measure_power_during_function, args=(logger, 10))
+            start_time = time.time()
+            thread.start()
+            thread.join()
+            end_time = time.time()
+            logger.debug(f"Power measurement thread completed in {end_time - start_time} seconds.")
+
+        logger.info(f"Client {args.cid} connecting to {args.server_address}")
+        fl.client.start_client(
+            server_address=args.server_address,
+            client=FlowerClient(
+                trainset=trainsets[args.cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
+            ),
+        )
+
         end_time = time.time()
-        logger.info()
-        
-    # Start Flower client setting its associated data partition
-    print(f"Client {args.cid} connecting to {args.server_address}")
-    fl.client.start_client(
-        server_address=args.server_address,
-        client=FlowerClient(
-            trainset=trainsets[args.cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
-        ).to_client(),
-    )
+        logger.info(f"[{time.time()}] Communication end: {end_time}")
 
-    end_time = time.time()
-    logger.info([f'[{time.time()}] Communication end: {end_time}'])
+        end_net = get_network_usage(wlan_interf)
+        net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
+        net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
+        logger.info(f"Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]")
 
-    # Log the network IO
-    end_net = get_network_usage(wlan_interf)
-    net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
-    net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
-    logger.info([f'[{time.time()}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
-
-    '''
-    usage_record["execution_time"] = end_time - start_time
-    usage_record["bytes_sent"] = end_net["bytes_sent"] - start_net["bytes_sent"]
-    usage_record["bytes_recv"] = end_net["bytes_recv"] - start_net["bytes_recv"]
-
-
-    # Save the data.
-    
-    filename = f"data_{args.cid}_{current_time}.pickle"
-    with open(filename, 'wb') as handle:
-        pickle.dump(usage_record, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    logger.info(f"The measurement data is saved as {filename}.")
-    '''
+    except Exception as e:
+        logger.error(f"Unexpected error in main: {e}")
+        logger.error(traceback.format_exc())
+    finally:
+        logger.info("Client execution completed.")
