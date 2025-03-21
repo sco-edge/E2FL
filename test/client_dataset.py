@@ -582,3 +582,6 @@ def main():
         logger.error(traceback.format_exc())
     finally:
         logger.info("Client execution completed.")
+
+if __name__ == "__main__":
+    main()
