@@ -500,7 +500,7 @@ def measure_power_during_function(logger, duration):
 
 import traceback
 
-def main():
+if __name__ == "__main__":
     try:
         print("Client Start!")
         args = parser.parse_args()
@@ -509,12 +509,12 @@ def main():
         if args.cid is None or args.cid >= NUM_CLIENTS:
             print(f"Error: '--cid' is required and must be an integer less than {NUM_CLIENTS}.")
             parser.print_help()
-            return
+            exit()
 
         if args.dataset not in ['mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet']:
             print("Error: '--dataset' must be one of {'mnist', 'cifar10', 'fashion_mnist', 'sasha/dog-food', 'zh-plus/tiny-imagenet'}.")
             parser.print_help()
-            return
+            exit()
 
         if args.model not in [
             'resnet18', 'resnext50', 'resnet50', 'vgg16', 'alexnet', 'convnext_tiny', 
@@ -523,12 +523,12 @@ def main():
         ]:
             print("Error: '--model' must be a valid model name.")
             parser.print_help()
-            return
+            exit()
 
         if args.power not in ['None', 'PMIC', 'INA3221']:
             print("Error: '--power' must be one of {'None', 'PMIC', 'INA3221'}.")
             parser.print_help()
-            return
+            exit()
 
         logger.info(args)
         pid = psutil.Process().ppid()
@@ -582,6 +582,3 @@ def main():
         logger.error(traceback.format_exc())
     finally:
         logger.info("Client execution completed.")
-
-if __name__ == "__main__":
-    main()
