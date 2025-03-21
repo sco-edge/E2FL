@@ -533,6 +533,7 @@ def main():
         logger.info()
         
     # Start Flower client setting its associated data partition
+    print(f"Client {args.cid} connecting to {args.server_address}")
     fl.client.start_client(
         server_address=args.server_address,
         client=FlowerClient(
