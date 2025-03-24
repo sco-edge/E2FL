@@ -18,25 +18,20 @@ class PMICMonitor(PowerMonitor):
         Executes the 'vgencmd pmmic_read_adc' command to retrieve the power consumption.
         :return: Power consumption in mW (float)
         """
-        with self.lock:
-            try:
-                #result = subprocess.run(['vgencmd', 'pmmic_read_adc'], stdout=subprocess.PIPE, text=True, check=True)
-                result = subprocess.run(['vgencmd', 'pmmic_read_adc'], stdout=subprocess.PIPE, text=True, check=True, timeout=timeout)
-                power = result.stdout.strip()
-                logging.info(f"Power read: {power} mW")
-                return float(power)
-            except subprocess.CalledProcessError as e:
-                logging.error(f"{self.device_name} Command failed: {e}")
-                return None
-            except ValueError:
-                logging.error(f"{self.device_name} Invalid power value received.")
-                return None
-            except subprocess.TimeoutExpired:
-                print(f"{self.device_name} Command timed out.")
-                return None
-            except Exception as e:
-                logging.error(f"{self.device_name} Unexpected error: {e}")
-                return None
+        try:
+            result = subprocess.run(['vgencmd', 'pmmic_read_adc'], stdout=subprocess.PIPE, text=True, check=True, timeout=timeout)
+            power = result.stdout.strip()
+            logging.info(f"Power read: {power} mW")
+            return float(power)
+        except subprocess.CalledProcessError as e:
+            self.handle_error(f"Command failed: {e}")
+        except ValueError:
+            self.handle_error("Invalid power value received.")
+        except subprocess.TimeoutExpired:
+            self.handle_error("Command timed out.")
+        except Exception as e:
+            self.handle_error(f"Unexpected error: {e}")
+        return None
 
     def _monitor(self):
         """

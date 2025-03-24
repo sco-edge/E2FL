@@ -57,3 +57,11 @@ class PowerMonitor(ABC):
         Stop monitoring and clean up resources.
         """
         pass
+
+    def handle_error(self, error_message):
+        """
+        Handle errors during power monitoring.
+        :param error_message: Error message to log.
+        """
+        logging.error(f"{self.device_name}: {error_message}")
+        self.stop()
