@@ -545,11 +545,14 @@ if __name__ == "__main__":
 
     # Measure power consumption if a power monitor is initialized
     if power_monitor:
-        elapsed_time, data_size = power_monitor.start(freq=1)  # Start monitoring with 1-second intervals
-        time.sleep(10)  # Example duration
+        logger.info("Starting power monitoring...")
+        power_monitor.start(freq=1)  # Start monitoring with 1-second intervals
+        time.sleep(10)  # Example duration for monitoring
         elapsed_time, data_size = power_monitor.stop()
         if elapsed_time is not None:
             logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
+        else:
+            logger.warning("Power monitoring failed or returned no data.")
 
     # Start Flower client setting its associated data partition
     print(f"Client {args.cid} connecting to {args.server_address}")
