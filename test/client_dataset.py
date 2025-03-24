@@ -7,6 +7,7 @@ import argparse
 import warnings
 from collections import OrderedDict
 from power import _power_monitor_interface # PMIC
+from power.powermon import get_power_monitor
 import threading
 
 import flwr as fl
@@ -476,15 +477,6 @@ class FlowerClient(fl.client.NumPyClient):
             logger.error(f"Error during power measurement: {e}")
             return None
 
-    def initialize_power_monitor(self, power_mode):
-        """Initialize the appropriate power monitor based on the power mode."""
-        if power_mode == "PMIC":
-            return PMICMonitor()
-        elif power_mode == "INA3221":
-            return INA3221Monitor()
-        else:
-            return None
-
     def measure_power_during_function(self, duration, power_monitor):
         """Measure power consumption during a specific duration."""
         if power_monitor is None:
@@ -502,33 +494,6 @@ class FlowerClient(fl.client.NumPyClient):
             logger.error(f"Error during power measurement: {e}")
             return None
 
-class Monitor:
-    """Base class for power monitoring."""
-    def __init__(self, node, vout, mode):
-        self.node = node
-        self.vout = vout
-        self.mode = mode
-
-    def start(self, freq):
-        """Start monitoring with a given frequency."""
-        # Implement start logic for monitoring
-        pass
-
-    def stop(self):
-        """Stop monitoring and return elapsed time and data size."""
-        # Implement stop logic for monitoring
-        return 0, 0
-
-class PMICMonitor(Monitor):
-    """PMIC-specific power monitoring."""
-    def __init__(self):
-        super().__init__(node='rpi5', vout=5.0, mode='PMIC')
-
-class INA3221Monitor(Monitor):
-    """INA3221-specific power monitoring."""
-    def __init__(self):
-        super().__init__(node='rpi5', vout=5.0, mode='INA3221')
-
 if __name__ == "__main__":
     # Set up logger
     logger = logging.getLogger("test")
@@ -538,11 +503,7 @@ if __name__ == "__main__":
     ch.setFormatter(CustomFormatter())
     logger.addHandler(ch)
     start_net, end_net, wlan_interf = 0, 0, 'wlan0'
-
-    '''
-
-
-    '''
+    
     warnings.filterwarnings("ignore", category=UserWarning)
     NUM_CLIENTS = 50
 
@@ -577,15 +538,16 @@ if __name__ == "__main__":
         if power_consumed is not None:
             logger.info(f"Measured power consumption: {power_consumed} mW.")
 
-    # Initialize power monitor based on the --power argument
+    # Initialize power monitor based on the --power argument and device name
     power_monitor = None
     if args.power != "None":
-        flower_client = FlowerClient(None, None, None, None, None)
-        power_monitor = flower_client.initialize_power_monitor(args.power)
+        power_monitor = get_power_monitor(args.power, device_name=socket.gethostname())
 
     # Measure power consumption if a power monitor is initialized
     if power_monitor:
-        elapsed_time, data_size = flower_client.measure_power_during_function(duration=10, power_monitor=power_monitor)
+        elapsed_time, data_size = power_monitor.start(freq=1)  # Start monitoring with 1-second intervals
+        time.sleep(10)  # Example duration
+        elapsed_time, data_size = power_monitor.stop()
         if elapsed_time is not None:
             logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
 
