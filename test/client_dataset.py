@@ -467,6 +467,7 @@ def measure_power_during_function(logger, duration):
 
 
 if __name__ == "__main__":
+    print(f"main function:")
     try:
         print("Client Start!")  # 시작 메시지 출력
         logger.info("Client Start!")
