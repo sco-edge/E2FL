@@ -494,6 +494,18 @@ class FlowerClient(fl.client.NumPyClient):
             logger.error(f"Error during power measurement: {e}")
             return None
 
+def validate_network_interface(interface):
+    """
+    Validate if the given network interface exists on the system.
+    :param interface: Network interface name to validate.
+    :return: True if the interface exists, False otherwise.
+    """
+    if interface in psutil.net_if_addrs():
+        return True
+    else:
+        logging.error(f"Invalid network interface: {interface}")
+        return False
+
 if __name__ == "__main__":
     # Set up logger
     logger = logging.getLogger("test")
@@ -526,7 +538,8 @@ if __name__ == "__main__":
     root_path = os.path.abspath(os.getcwd())+'/'
     arg_dataset = args.dataset
     trainsets, valsets, _ = prepare_dataset(arg_dataset)
-    wlan_interf = args.interface
+    wlan_interf = args.interface if validate_network_interface(args.interface) else "wlan0"
+    logger.info(f"Using network interface: {wlan_interf}")
     start_net = get_network_usage(wlan_interf)
     
 
