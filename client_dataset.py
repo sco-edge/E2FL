@@ -11,6 +11,8 @@ from power.powermon import get_power_monitor
 import threading
 
 import flwr as fl
+from fl.client import ClientApp, NumPyClient
+from fl.common import Context
 import torch
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
@@ -24,6 +26,15 @@ import torch.optim as optim
 import torch.nn.functional as F
 from tqdm import tqdm
 from flwr_datasets import FederatedDataset
+
+from embeddedexample.task import (
+    Net,
+    get_weights,
+    load_data_from_disk,
+    set_weights,
+    test,
+    train,
+)
 
 
 import grpc # intercept grpc
@@ -257,24 +268,27 @@ def prepare_dataset(dataset):
 
 
 # Flower client, adapted from Pytorch quickstart/simulation example
-class FlowerClient(fl.client.NumPyClient):
+class FlowerClient(NumpyClient):
     """A FlowerClient that trains a model and manages network usage."""
 
-    def __init__(self, trainset, valset, dataset, model, interface):
-        self.trainset = trainset
-        self.valset = valset
-        self.dataset = dataset
+    def __init__(self, trainloader, valloader, local_epochs, learning_rate, interface):
+        self.net = Net()
+        self.trainloader = trainloader
+        self.valloader = valloader
+        self.local_epochs = local_epochs
+        self.lr = learning_rate
         self.interface = interface  # 네트워크 인터페이스
         self.start_net = self.get_network_usage()  # 초기 네트워크 상태
         self.end_net = None
 
+        '''
         # 모델 초기화
         self.model = self.initialize_model(model, dataset)
         if self.model is None:
             raise ValueError(f"Model '{model}' is not supported or failed to initialize.")
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.model.to(self.device) # send model to device
-
+        '''
     # https://pytorch.org/vision/main/models.html
     # https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
     def initialize_model(self, model, dataset):
@@ -346,45 +360,52 @@ class FlowerClient(fl.client.NumPyClient):
         logger.info(f"Network usage during fit: [sent: {net_usage_sent}, recv: {net_usage_recv}]")
 
         # 모델 파라미터 설정
-        self.set_parameters(parameters)
-
+        #self.set_parameters(parameters)
         # 하이퍼파라미터 읽기
-        batch_size, epochs = config["batch_size"], config["epochs"]
-
+        #batch_size, epochs = config["batch_size"], config["epochs"]
         # 데이터 로더 생성
-        trainloader = DataLoader(self.trainset, batch_size=batch_size, shuffle=True)
-
+        #trainloader = DataLoader(self.trainset, batch_size=batch_size, shuffle=True)
         # 옵티마이저 정의
-        optimizer = torch.optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
+        #optimizer = torch.optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
+
+        set_weights(self.net, parameters)
 
         # 모델 학습
         logger.info(f"[{time.time()}] Starting training...")
-        train(self.model, trainloader, optimizer, epochs, self.device)
+        results = train(
+            self.net, 
+            self.trainloader, 
+            self.valloader, 
+            self.local_epochs, 
+            self.lr,
+            self.device,
+        )
         logger.info(f"[{time.time()}] Training completed.")
 
         # 학습 후 네트워크 상태 업데이트
         self.start_net = self.get_network_usage()
 
         # 로컬 모델과 통계 반환
-        return self.get_parameters({}), len(trainloader.dataset), {}
+        return get_weights(self.net), len(self.trainloader.dataset), results #self.get_parameters({}), len(trainloader.dataset), {}
 
     def evaluate(self, parameters, config):
         """Evaluate the model on the validation set."""
         logger.info(f"[{time.time()}] Client sampled for evaluate()")
 
         # 모델 파라미터 설정
-        self.set_parameters(parameters)
+        #self.set_parameters(parameters)
+        set_weights(self.net, parameters)
 
         # 데이터 로더 생성
-        valloader = DataLoader(self.valset, batch_size=64)
+        #valloader = DataLoader(self.valset, batch_size=64)
 
         # 모델 평가
         logger.info(f"[{time.time()}] Starting evaluation...")
-        loss, accuracy = test(self.model, valloader, self.device)
+        loss, accuracy = test(self.net, self.valloader, self.device)
         logger.info(f"[{time.time()}] Evaluation completed with accuracy: {accuracy}")
 
         # 평가 결과 반환
-        return float(loss), len(valloader.dataset), {"accuracy": float(accuracy)}
+        return loss, len(self.valloader.dataset), {"accuracy": accuracy}
     
     def measure_power_during_function(self, duration):
         """Measure power consumption during a specific duration."""
@@ -431,6 +452,21 @@ def validate_network_interface(interface):
     else:
         logging.error(f"Invalid network interface: {interface}")
         return False
+
+def client_fn(context: Context):
+    """Construct a Client that will be run in a ClientApp."""
+
+    # Read the node_config to know where dataset is located
+    dataset_path = context.node_config["dataset-path"]
+
+    # Read run_config to fetch hyperparameters relevant to this run
+    batch_size = context.run_config["batch-size"]
+    trainloader, valloader = load_data_from_disk(dataset_path, batch_size)
+    local_epochs = context.run_config["local-epochs"]
+    learning_rate = context.run_config["learning-rate"]
+
+    # Return Client instance
+    return FlowerClient(trainloader, valloader, local_epochs, learning_rate).to_client()
 
 if __name__ == "__main__":
     # Set up logger
@@ -494,7 +530,8 @@ if __name__ == "__main__":
     )
 
     # Use flwr.client.Client to start the client
-    fl.client.start_numpy_client(server_address=args.server_address, client=client)
+    #fl.client.start_client(server_address=args.server_address, client=client.to_client())
+    app = ClientApp(client_fn)
 
     # Log the end of the script
     end_time = time.time()
