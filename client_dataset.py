@@ -567,27 +567,27 @@ if __name__ == "__main__":
         interface=wlan_interf
     )
 
-    # Use flwr.client.Client to start the cliented data partition
-    fl.client.start_numpy_client(server_address=args.server_address, client=client)t(f"Client {args.cid} connecting to {args.server_address}")
+    # Use flwr.client.Client to start the client
+    fl.client.start_numpy_client(server_address=args.server_address, client=client)
 
     # Log the end of the script
     end_time = time.time()
-    logger.info([f'[{time.time()}] Communication end: {end_time}']).cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
+    logger.info([f'[{time.time()}] Communication end: {end_time}'])
 
     # Log the network IO
     end_net = get_network_usage(wlan_interf)
     net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
-    net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]e()}] Communication end: {end_time}'])
+    net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
     logger.info([f'[{time.time()}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
-    
-    '''usage(wlan_interf)
-    usage_record["execution_time"] = end_time - start_timesent"]
-    usage_record["bytes_sent"] = end_net["bytes_sent"] - start_net["bytes_sent"]ecv = end_net["bytes_recv"] - start_net["bytes_recv"]
-    usage_record["bytes_recv"] = end_net["bytes_recv"] - start_net["bytes_recv"]    logger.info([f'[{time.time()}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
+
+    '''
+    usage_record["execution_time"] = end_time - start_time
+    usage_record["bytes_sent"] = end_net["bytes_sent"] - start_net["bytes_sent"]
+    usage_record["bytes_recv"] = end_net["bytes_recv"] - start_net["bytes_recv"]
 
     # Save the data.
-    filename = f"data_{args.cid}_{current_time}.pickle"_time"] = end_time - start_time
-    with open(filename, 'wb') as handle:ytes_sent"] - start_net["bytes_sent"]
-        pickle.dump(usage_record, handle, protocol=pickle.HIGHEST_PROTOCOL)"] = end_net["bytes_recv"] - start_net["bytes_recv"]
+    filename = f"data_{args.cid}_{current_time}.pickle"
+    with open(filename, 'wb') as handle:
+        pickle.dump(usage_record, handle, protocol=pickle.HIGHEST_PROTOCOL)
     logger.info(f"The measurement data is saved as {filename}.")
     '''
