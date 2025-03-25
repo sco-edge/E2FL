@@ -265,13 +265,15 @@ class FlowerClient(fl.client.NumPyClient):
         self.valset = valset
         self.dataset = dataset
         self.interface = interface  # 네트워크 인터페이스
-        self.start_net = self.get_network_usage()  # 초기 네트워크 상태
+
+        # 네트워크 상태 초기화
+        self.start_net = None
         self.end_net = None
 
         # 모델 초기화
         self.model = self.initialize_model(model, dataset)
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.model.to(self.device) # send model to device
+        self.model.to(self.device)  # send model to device
 
     # https://pytorch.org/vision/main/models.html
     # https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
@@ -586,8 +588,12 @@ if __name__ == "__main__":
     fl.client.start_client(
         server_address=args.server_address,
         client=FlowerClient(
-            trainset=trainsets[args.cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
-        ).to_client(),
+            trainset=trainsets[args.cid],
+            valset=valsets[args.cid],
+            dataset=arg_dataset,
+            model=args.model,
+            interface=wlan_interf
+        ),
     )
 
     end_time = time.time()
