@@ -8,6 +8,7 @@ import csv
 import datetime
 import logging
 from power._power_monitor_interface import PowerMonitor
+from datetime import datetime  # 추가: datetime.now()를 사용하기 위해 datetime 클래스를 가져옵니다.
 
 class PMICMonitor(PowerMonitor):
     def __init__(self):
@@ -47,7 +48,7 @@ class PMICMonitor(PowerMonitor):
         """
         while self.monitoring:
             power = self._read_power()
-            current_time = datetime.now() - self.start_time
+            current_time = datetime.now() - self.start_time  # 수정: datetime.now() 사용
             if power is not None:
                 self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
             time.sleep(self.freq)
@@ -64,10 +65,10 @@ class PMICMonitor(PowerMonitor):
         self.freq = freq
         self.monitoring = True
         self.power_data = []
-        self.start_time = datetime.now()
+        self.start_time = datetime.now()  # 수정: datetime.now() 사용
         self.thread = threading.Thread(target=self._monitor)
         self.thread.start()
-        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.global_start_time} (UTC).")
+        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.start_time} (UTC).")
 
     def stop(self):
         if not self.monitoring:
