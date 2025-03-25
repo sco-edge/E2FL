@@ -579,7 +579,7 @@ if __name__ == "__main__":
     net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
     net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]e()}] Communication end: {end_time}'])
     logger.info([f'[{time.time()}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
-etwork IO
+    
     '''usage(wlan_interf)
     usage_record["execution_time"] = end_time - start_timesent"]
     usage_record["bytes_sent"] = end_net["bytes_sent"] - start_net["bytes_sent"]ecv = end_net["bytes_recv"] - start_net["bytes_recv"]
