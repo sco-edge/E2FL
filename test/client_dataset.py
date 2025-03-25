@@ -565,11 +565,6 @@ if __name__ == "__main__":
 
     # Prepare a bucket to store the results.
     usage_record = {}
-    if 'PMIC' in args.power:
-        power_monitor = FlowerClient(None, None, None, None, None)
-        power_consumed = power_monitor.measure_power_during_function(duration=10)
-        if power_consumed is not None:
-            logger.info(f"Measured power consumption: {power_consumed} mW.")
 
     # Initialize power monitor based on the --power argument and device name
     power_monitor = None
