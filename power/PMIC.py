@@ -12,7 +12,15 @@ from power._power_monitor_interface import PowerMonitor
 class PMICMonitor(PowerMonitor):
     def __init__(self):
         super().__init__('PMIC')    
-    
+
+    def read_power(self):
+        """
+        Implements the abstract method from PowerMonitor.
+        Reads the power consumption using the '_read_power' method.
+        :return: Power consumption in mW (float), or None if reading fails.
+        """
+        return self._read_power()
+
     def _read_power(self, timeout=5):
         """
         Executes the 'vgencmd pmmic_read_adc' command to retrieve the power consumption.
