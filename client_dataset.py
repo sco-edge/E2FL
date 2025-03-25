@@ -7,6 +7,7 @@ import argparse
 import warnings
 from collections import OrderedDict
 from power import _power_monitor_interface # PMIC
+from power.powermon import get_power_monitor
 import threading
 
 import flwr as fl
@@ -122,23 +123,6 @@ class CustomFormatter(logging.Formatter):
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
-
-# Set up logger
-logger = logging.getLogger("test")
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-ch.setFormatter(CustomFormatter())
-logger.addHandler(ch)
-start_net, end_net, wlan_interf = 0, 0, 'wlan0'
-
-'''
-
-
-'''
-warnings.filterwarnings("ignore", category=UserWarning)
-NUM_CLIENTS = 50
-
 
 def get_network_usage(interf):
     net_io = psutil.net_io_counters(pernic=True)
@@ -274,20 +258,27 @@ def prepare_dataset(dataset):
 
 # Flower client, adapted from Pytorch quickstart/simulation example
 class FlowerClient(fl.client.NumPyClient):
-    """A FlowerClient that trains a MobileNetV3 model for CIFAR-10 or a much smaller CNN
-    for MNIST."""
+    """A FlowerClient that trains a model and manages network usage."""
 
-    def __init__(self, trainset, valset, dataset, model, start_net, end_net):
+    def __init__(self, trainset, valset, dataset, model, interface):
         self.trainset = trainset
         self.valset = valset
-        # Instantiate model
-        #if dataset == 'mnist':
-        #    self.model = Net()
-        #else:
-        #    self.model = models.mobilenet_v3_small(num_classes=10)
-        
-        # https://pytorch.org/vision/main/models.html
-        # https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
+        self.dataset = dataset
+        self.interface = interface  # 네트워크 인터페이스
+
+        # 네트워크 상태 초기화
+        self.start_net = None
+        self.end_net = None
+
+        # 모델 초기화
+        self.model = self.initialize_model(model, dataset)
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.model.to(self.device)  # send model to device
+
+    # https://pytorch.org/vision/main/models.html
+    # https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
+    def initialize_model(self, model, dataset):
+        """Initialize the model based on the dataset and model type."""
         if model == 'resnet18' and dataset == 'mnist':
             resnet18 = models.resnet18(pretrained=False)
             # Modify the first convolutional layer to accept 1 channel input
@@ -396,110 +387,156 @@ class FlowerClient(fl.client.NumPyClient):
             self.model = LeNet()
         else: #default:
             self.model = Net()
-        
-        # Determine device
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.model.to(self.device)  # send model to device
-
-        self.start_net = start_net
-        self.end_net = end_net
 
     def set_parameters(self, params):
         """Set model weights from a list of NumPy ndarrays."""
         params_dict = zip(self.model.state_dict().keys(), params)
         state_dict = OrderedDict(
             {
-                k: torch.Tensor(v) if v.shape != torch.Size([]) else torch.Tensor([0])
+                k: torch.Tensor(v) if v.shape != torch.Size([]) else torch.Tensor([0]) 
                 for k, v in params_dict
             }
         )
         self.model.load_state_dict(state_dict, strict=True)
 
-    def get_parameters(self, config):
+    def get_parameters(self):
+        """Get model weights as a list of NumPy ndarrays."""
         return [val.cpu().numpy() for _, val in self.model.state_dict().items()]
 
+    def get_network_usage(self):
+        """Get the current network usage for the specified interface."""
+        net_io = psutil.net_io_counters(pernic=True)
+        if self.interface in net_io:
+            return {"bytes_sent": net_io[self.interface].bytes_sent, "bytes_recv": net_io[self.interface].bytes_recv}
+        else:
+            raise ValueError(f"Interface {self.interface} not found.")
+
     def fit(self, parameters, config):
+        """Train the model on the training set."""
         logger.info(f"[{time.time()}] Client sampled for fit()")
 
-        start_time = time.time()
-        if start_net != 0:
-            logger.info([f'[{time.time()}] Communication end: {start_time - end_time}'])
-            #global wlan_interf, start_net, end_net
-            self.end_net = get_network_usage(wlan_interf)
-            net_usage_sent = self.end_net["bytes_sent"] - self.start_net["bytes_sent"]
-            net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
-            logger.info([f'[{time.time()}] Computation phase (evaluation) ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
-        else:
-            logger.info(f"[{time.time()}] Client initialization")
+        # 네트워크 사용량 기록
+        self.end_net = self.get_network_usage()
+        net_usage_sent = self.end_net["bytes_sent"] - self.start_net["bytes_sent"]
+        net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
+        logger.info(f"Network usage during fit: [sent: {net_usage_sent}, recv: {net_usage_recv}]")
 
+        # 모델 파라미터 설정
         self.set_parameters(parameters)
-        # Read hyperparameters from config set by the server
-        batch, epochs = config["batch_size"], config["epochs"]
-        # Construct dataloader
-        #   Shuffle=True 
-        trainloader = DataLoader(self.trainset, batch_size=batch, shuffle=True)
-        # Define optimizer
-        #   momentum: after step calculation, we keep the inertia of SGD to deal with fast training speed and local minima problems.
-        optimizer = torch.optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
-        
-        logger.info(f"[{time.time()}] Computation phase (fit) started")
-        start_time = time.time()
-        
-        # Train
-        train(self.model, trainloader, optimizer, epochs=epochs, device=self.device)
-        
-        end_time = time.time()
-        self.start_net = get_network_usage(wlan_interf)
-        computation_time = end_time - start_time
-        logger.info(f"[{time.time()}] Computation pahse (fit) completed in {computation_time} seconds.")
-        logger.info([f'[{time.time()}] Communication start: {end_time}'])
 
-        # Return local model and statistics
+        # 하이퍼파라미터 읽기
+        batch_size, epochs = config["batch_size"], config["epochs"]
+
+        # 데이터 로더 생성
+        trainloader = DataLoader(self.trainset, batch_size=batch_size, shuffle=True)
+
+        # 옵티마이저 정의
+        optimizer = torch.optim.SGD(self.model.parameters(), lr=0.01, momentum=0.9)
+
+        # 모델 학습
+        logger.info(f"[{time.time()}] Starting training...")
+        train(self.model, trainloader, optimizer, epochs, self.device)
+        logger.info(f"[{time.time()}] Training completed.")
+
+        # 학습 후 네트워크 상태 업데이트
+        self.start_net = self.get_network_usage()
+
+        # 로컬 모델과 통계 반환
         return self.get_parameters({}), len(trainloader.dataset), {}
 
     def evaluate(self, parameters, config):
+        """Evaluate the model on the validation set."""
         logger.info(f"[{time.time()}] Client sampled for evaluate()")
 
-        start_time = time.time()
-        logger.info([f'[{time.time()}] Communication end: {start_time - end_time}'])
-
-        #global wlan_interf, start_net, end_net
-        self.end_net = get_network_usage(wlan_interf)
-        net_usage_sent = self.end_net["bytes_sent"] - self.start_net["bytes_sent"]
-        net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
-        logger.info([f'[{time.time()}] Computation phase (fit) ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
-        
-
+        # 모델 파라미터 설정
         self.set_parameters(parameters)
-        # Construct dataloader
+
+        # 데이터 로더 생성
         valloader = DataLoader(self.valset, batch_size=64)
 
-        start_time = time.time()
-        
+        # 모델 평가
+        logger.info(f"[{time.time()}] Starting evaluation...")
+        loss, accuracy = test(self.model, valloader, self.device)
+        logger.info(f"[{time.time()}] Evaluation completed with accuracy: {accuracy}")
 
-        # Evaluate
-        loss, accuracy = test(self.model, valloader, device=self.device)
-
-        global start_net
-        end_time = time.time()
-        self.start_net = get_network_usage(wlan_interf)
-        computation_time = end_time - start_time
-        logger.info(f"[{time.time()}] Computation pahse (evaluation) completed in {computation_time} seconds.")
-
-        logger.info([f'[{time.time()}] Communication start: {end_time}'])
-        # Return statistics
+        # 평가 결과 반환
         return float(loss), len(valloader.dataset), {"accuracy": float(accuracy)}
-
-def measure_power_during_function(logger, duration):
-    start_power = Monitor.PowreMon(node = 'rpi5', vout = 5.0, mode = 'PMIC')
-    if start_power is None:
-        logger.error("PMIC FAILED")
-        exit(1)
-    time.sleep(duration)
-    end_power = Monitor.PowreMon(node = 'rpi5', vout = 5.0, mode = 'PMIC')
-
-def main():
     
+    def measure_power_during_function(self, duration):
+        """Measure power consumption during a specific duration."""
+        try:
+            logger.info(f"Starting power measurement for {duration} seconds.")
+            start_power = Monitor.PowreMon(node='rpi5', vout=5.0, mode='PMIC')
+            if start_power is None:
+                logger.error("PMIC initialization failed.")
+                return None
+            time.sleep(duration)
+            end_power = Monitor.PowreMon(node='rpi5', vout=5.0, mode='PMIC')
+            power_consumed = end_power - start_power
+            logger.info(f"Power consumed: {power_consumed} mW.")
+            return power_consumed
+        except Exception as e:
+            logger.error(f"Error during power measurement: {e}")
+            return None
+
+    def measure_power_during_function(self, duration, power_monitor):
+        """Measure power consumption during a specific duration."""
+        if power_monitor is None:
+            logger.info("Power monitoring is disabled.")
+            return None
+
+        try:
+            logger.info(f"Starting power measurement for {duration} seconds.")
+            power_monitor.start(freq=1)  # Start monitoring with 1-second intervals
+            time.sleep(duration)
+            elapsed_time, data_size = power_monitor.stop()
+            logger.info(f"Power monitoring completed. Duration: {elapsed_time}s, Data size: {data_size} samples.")
+            return elapsed_time, data_size
+        except Exception as e:
+            logger.error(f"Error during power measurement: {e}")
+            return None
+
+def validate_network_interface(interface):
+    """
+    Validate if the given network interface exists on the system.
+    :param interface: Network interface name to validate.
+    :return: True if the interface exists, False otherwise.
+    """
+    if interface in psutil.net_if_addrs():
+        return True
+    else:
+        logging.error(f"Invalid network interface: {interface}")
+        return False
+
+def validate_and_get_network_interface(interface):
+    """
+    Validate if the given network interface exists on the system.
+    If not, return the first available interface.
+    :param interface: Network interface name to validate.
+    :return: Valid network interface name.
+    """
+    available_interfaces = psutil.net_if_addrs().keys()
+    if interface in available_interfaces:
+        return interface
+    else:
+        logging.warning(f"Invalid network interface '{interface}'. Using the first available interface.")
+        return next(iter(available_interfaces), None)
+
+if __name__ == "__main__":
+    # Set up logger
+    logger = logging.getLogger("test")
+    logger.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(CustomFormatter())
+    logger.addHandler(ch)
+    start_net, end_net, wlan_interf = 0, 0, 'wlan0'
+    
+    warnings.filterwarnings("ignore", category=UserWarning)
+    NUM_CLIENTS = 50
+
+    
+    print("Client Start!")
     args = parser.parse_args()
     logger.info(args)
     pid = psutil.Process().ppid()
@@ -517,27 +554,46 @@ def main():
     root_path = os.path.abspath(os.getcwd())+'/'
     arg_dataset = args.dataset
     trainsets, valsets, _ = prepare_dataset(arg_dataset)
-    global wlan_interf, start_net, end_net
-    wlan_interf = args.interface
+    wlan_interf = args.interface if validate_network_interface(args.interface) else "wlan0"
+    logger.info(f"Using network interface: {wlan_interf}")
     start_net = get_network_usage(wlan_interf)
     
 
     # Prepare a bucket to store the results.
     usage_record = {}
     if 'PMIC' in args.power:
-        thread = threading.Thread(target = measure_power_during_function)
-        start_time = time.time()
-        thread.start()
-        thread.join()
-        end_time = time.time()
-        logger.info()
-        
+        power_monitor = FlowerClient(None, None, None, None, None)
+        power_consumed = power_monitor.measure_power_during_function(duration=10)
+        if power_consumed is not None:
+            logger.info(f"Measured power consumption: {power_consumed} mW.")
+
+    # Initialize power monitor based on the --power argument and device name
+    power_monitor = None
+    if args.power != "None":
+        power_monitor = get_power_monitor(args.power, device_name=socket.gethostname())
+
+    # Measure power consumption if a power monitor is initialized
+    if power_monitor:
+        logger.info("Starting power monitoring...")
+        power_monitor.start(freq=1)  # Start monitoring with 1-second intervals
+        time.sleep(10)  # Example duration for monitoring
+        elapsed_time, data_size = power_monitor.stop()
+        if elapsed_time is not None:
+            logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
+        else:
+            logger.warning("Power monitoring failed or returned no data.")
+
     # Start Flower client setting its associated data partition
+    print(f"Client {args.cid} connecting to {args.server_address}")
     fl.client.start_client(
         server_address=args.server_address,
         client=FlowerClient(
-            trainset=trainsets[args.cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
-        ).to_client(),
+            trainset=trainsets[args.cid],
+            valset=valsets[args.cid],
+            dataset=arg_dataset,
+            model=args.model,
+            interface=wlan_interf
+        ),
     )
 
     end_time = time.time()
