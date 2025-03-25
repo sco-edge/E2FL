@@ -265,132 +265,126 @@ class FlowerClient(fl.client.NumPyClient):
         self.valset = valset
         self.dataset = dataset
         self.interface = interface  # 네트워크 인터페이스
-
-        # 네트워크 상태 초기화
-        self.start_net = None
+        self.start_net = self.get_network_usage()  # 초기 네트워크 상태
         self.end_net = None
 
         # 모델 초기화
         self.model = self.initialize_model(model, dataset)
-        if self.model is None:
-            raise ValueError(f"Failed to initialize model '{model}' for dataset '{dataset}'.")
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.model.to(self.device)  # send model to device
+        self.model.to(self.device) # send model to device
 
     # https://pytorch.org/vision/main/models.html
     # https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html
     def initialize_model(self, model, dataset):
         """Initialize the model based on the dataset and model type."""
-        try:
-            if model == 'resnet18' and dataset == 'mnist':
-                resnet18 = models.resnet18(pretrained=False)
-                # Modify the first convolutional layer to accept 1 channel input
-                resnet18.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-                return resnet18
-            elif model == 'resnet18':
-                return models.resnet18(pretrained=False)
-            elif model == 'resnext50':
-                return models.resnext50_32x4d(pretrained=False)
-            elif model == 'resnet50':
-                return models.wide_resnet50_2(pretrained=False)
-            elif model == 'vgg16' and dataset == 'mnist':
-                vgg16 = models.vgg16(pretrained=False)
-                vgg16.features[0] = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
-                return vgg16
-            elif model == 'vgg16':
-                return models.vgg16(pretrained=False)
-            elif model == 'alexnet' and dataset == 'mnist':
-                # Pretrained AlexNet model
-                alexnet = models.alexnet(pretrained=False)
-                # Modify the first convolutional layer to accept 1 channel input
-                alexnet.features[0] = nn.Conv2d(1, 64, kernel_size=11, stride=4, padding=2, bias=False)
-                return alexnet
-            elif model == 'alexnet':
-                return models.alexnet(pretrained=False)
-            elif model == 'convnext_tiny' and dataset == 'mnist':
-                # Create a ConvNeXt Tiny model
-                convnext_tiny = models.convnext_tiny(pretrained=False)
-                # Modify the first convolutional layer to accept 1 channel input
-                convnext_tiny.stem[0] = nn.Conv2d(1, 96, kernel_size=4, stride=4, padding=0)
-                return convnext_tiny
-            elif model == 'convnext_tiny':
-                return models.convnext_tiny(pretrained=False)
-            elif model == 'squeezenet1' and dataset == 'mnist':
-                # Pretrained SqueezeNet1 model
-                squeezenet = models.squeezenet1_0(pretrained=False)
-                # Modify the first convolutional layer to accept 1 channel input
-                squeezenet.features[0] = nn.Conv2d(1, 96, kernel_size=7, stride=2, padding=3, bias=False)
-                squeezenet.classifier[1] = nn.Conv2d(512, 10, kernel_size=1)
-                return squeezenet
-            elif model == 'squeezenet1':
-                return models.squeezenet1_0(pretrained=False)
-            elif model == 'densenet121' and dataset == 'mnist':
-                # Pretrained DenseNet model
-                densenet = models.densenet121(pretrained=False)
-                # Modify the first convolutional layer to accept 1 channel input
-                densenet.features.conv0 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-                return densenet
-            elif model == 'densenet121':
-                return models.densenet121(pretrained=False)
-            elif model == 'densenet161':
-                return models.densenet161(pretrained=False)
-            elif model == 'inception_v3' and dataset == 'mnist':
-                # Pretrained Inception V3 model
-                inception_v3 = models.inception_v3(pretrained=False, aux_logits=False)
-                # Modify the first convolutional layer to accept 1 channel input
-                inception_v3.Conv2d_1a_3x3.conv = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=0, bias=False)
-                return inception_v3
-            elif model == 'inception_v3':
-                return models.inception_v3(pretrained=False)
-            elif model == 'googlenet' and dataset == 'mnist':
-                # Pretrained GoogleNet model
-                googlenet = models.googlenet(pretrained=False)
-                # Modify the first convolutional layer to accept 1 channel input
-                googlenet.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-                return googlenet
-            elif model == 'googlenet':
-                return models.googlenet(pretrained=False)
-            elif model == 'shufflenet_v2' and dataset == 'mnist':
-                # Pretrained ShuffleNet V2 model
-                shufflenet_v2 = models.shufflenet_v2_x1_0(pretrained=False)
-                # Modify the first convolutional layer to accept 1 channel input
-                shufflenet_v2.conv1[0] = nn.Conv2d(1, 24, kernel_size=3, stride=2, padding=1, bias=False)
-                shufflenet_v2.fc = nn.Linear(1024, 10)
-                return shufflenet_v2
-            elif model == 'shufflenet_v2':
-                return models.shufflenet_v2_x1_0(pretrained=False)
-            elif model == 'mobilenet_v2' and dataset == 'mnist':
-                # Pretrained MobileNet V2 model
-                mobilenet_v2 = models.mobilenet_v2(pretrained=False)
-                # Modify the first convolutional layer to accept 1 channel input
-                mobilenet_v2.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
-                mobilenet_v2.classifier[1] = nn.Linear(mobilenet_v2.last_channel, 10)
-                return mobilenet_v2
-            elif model == 'mobilenet_v2':
-                return models.mobilenet_v2(pretrained=False)
-            elif model == 'mobilenet_v3_small' and dataset == 'mnist':
-                mobilenet_v3 = models.mobilenet_v3_small(pretrained=False)
-                mobilenet_v3.features[0][0] = nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1, bias=False)
-                mobilenet_v3.classifier[3] = nn.Linear(mobilenet_v3.classifier[3].in_features, 10)
-                return mobilenet_v3
-            elif model == 'mobilenet_v3_small':
-                return models.mobilenet_v3_small(pretrained=False)
-            elif model == 'mnasnet1' and dataset == 'mnist':
-                # Pretrained MNASNet model
-                mnasnet = models.mnasnet1_0(pretrained=False)
-                # Modify the first convolutional layer to accept 1 channel input
-                mnasnet.layers[0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
-                return mnasnet
-            elif model == 'mnasnet1':
-                return models.mnasnet1_0(pretrained=False)
-            elif model == 'lenet':
-                return LeNet()
-            else:
-                logging.warning(f"Model '{model}' is not recognized. Using default model 'Net'.")
-                return Net()
-        except Exception as e:
-            logging.error(f"Error initializing model '{model}': {e}")
-            return None
+        if model == 'resnet18' and dataset == 'mnist':
+            resnet18 = models.resnet18(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            resnet18.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            self.model = resnet18
+        elif model == 'resnet18':
+            # Pretrained ResNet model
+            self.model = models.resnet18(pretrained=False)
+        elif model == 'resnext50':
+            self.model = models.resnext50_32x4d(pretrained=False)
+        elif model == 'resnet50':
+            self.model = models.wide_resnet50_2(pretrained=False)
+        elif model == 'vgg16' and dataset == 'mnist':
+            # Pretrained VGG model
+            vgg16 = models.vgg16(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            vgg16.features[0] = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
+            self.model = vgg16
+        elif model == 'vgg16':
+            self.model = models.vgg16(pretrained=False)
+        elif model == 'alexnet' and dataset == 'mnist':
+            # Pretrained AlexNet model
+            alexnet = models.alexnet(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            alexnet.features[0] = nn.Conv2d(1, 64, kernel_size=11, stride=4, padding=2, bias=False)
+            self.model = alexnet
+        elif model == 'alexnet':
+            self.model = models.alexnet(pretrained=False)
+        elif model == 'convnext_tiny' and dataset == 'mnist':
+            # Create a ConvNeXt Tiny model
+            convnext_tiny = models.convnext_tiny(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            convnext_tiny.stem[0] = nn.Conv2d(1, 96, kernel_size=4, stride=4, padding=0)
+            self.model = convnext_tiny
+        elif model == 'convnext_tiny':
+            self.model = models.convnext_tiny(pretrained=False)
+        elif model == 'squeezenet1' and dataset == 'mnist':
+            # Pretrained SqueezeNet1 model
+            squeezenet = models.squeezenet1_0(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            squeezenet.features[0] = nn.Conv2d(1, 96, kernel_size=7, stride=2, padding=3, bias=False)
+            squeezenet.classifier[1] = nn.Conv2d(512, 10, kernel_size=1)
+            self.model = squeezenet
+        elif model == 'squeezenet1':
+            self.model = models.squeezenet1_0(pretrained=False)
+        elif model == 'densenet121' and dataset == 'mnist':
+            # Pretrained DenseNet model
+            densenet = models.densenet121(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            densenet.features.conv0 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            self.model = densenet
+        elif model == 'densenet121':
+            self.model = models.densenet121(pretrained=False)
+        elif model == 'densenet161':
+            self.model = models.densenet161(pretrained=False)
+        elif model == 'inception_v3' and dataset == 'mnist':
+            # Pretrained Inception V3 model
+            inception_v3 = models.inception_v3(pretrained=False, aux_logits=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            inception_v3.Conv2d_1a_3x3.conv = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=0, bias=False)
+            self.model = inception_v3
+        elif model == 'inception_v3':
+            self.model = models.inception_v3(pretrained=False)
+        elif model == 'googlenet' and dataset == 'mnist':
+            # Pretrained GoogleNet model
+            googlenet = models.googlenet(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            googlenet.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            self.model = googlenet
+        elif model == 'googlenet':
+            self.model = models.googlenet(pretrained=False)
+        elif model == 'shufflenet_v2' and dataset == 'mnist':
+            # Pretrained ShuffleNet V2 model
+            shufflenet_v2 = models.shufflenet_v2_x1_0(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            shufflenet_v2.conv1[0] = nn.Conv2d(1, 24, kernel_size=3, stride=2, padding=1, bias=False)
+            shufflenet_v2.fc = nn.Linear(1024, 10)
+            self.model = shufflenet_v2
+        elif model == 'shufflenet_v2':
+            self.model = models.shufflenet_v2_x1_0(pretrained=False)
+        elif model == 'mobilenet_v2' and dataset == 'mnist':
+            # Pretrained MobileNet V2 model
+            mobilenet_v2 = models.mobilenet_v2(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            mobilenet_v2.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
+            mobilenet_v2.classifier[1] = nn.Linear(mobilenet_v2.last_channel, 10)
+            self.model = mobilenet_v2
+        elif model == 'mobilenet_v2':
+            self.model = models.mobilenet_v2(pretrained=False)
+        elif model == 'mobilenet_v3_small' and dataset == 'mnist':
+            mobilenet_v3 = models.mobilenet_v3_small(pretrained=False)
+            mobilenet_v3.features[0][0] = nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1, bias=False)
+            mobilenet_v3.classifier[3] = nn.Linear(mobilenet_v3.classifier[3].in_features, 10)
+            self.model = mobilenet_v3
+        elif model == 'mobilenet_v3_small':
+            self.model = models.mobilenet_v3_small(pretrained=False)
+        elif model == 'mnasnet1' and dataset == 'mnist':
+            # Pretrained MNASNet model
+            mnasnet = models.mnasnet1_0(pretrained=False)
+            # Modify the first convolutional layer to accept 1 channel input
+            mnasnet.layers[0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
+            self.model = mnasnet
+        elif model == 'mnasnet1':
+            self.model = models.mnasnet1_0(pretrained=False)
+        elif model == 'lenet':
+            self.model = LeNet()
+        else: #default:
+            self.model = Net()
 
     def set_parameters(self, params):
         """Set model weights from a list of NumPy ndarrays."""
@@ -512,20 +506,6 @@ def validate_network_interface(interface):
         logging.error(f"Invalid network interface: {interface}")
         return False
 
-def validate_and_get_network_interface(interface):
-    """
-    Validate if the given network interface exists on the system.
-    If not, return the first available interface.
-    :param interface: Network interface name to validate.
-    :return: Valid network interface name.
-    """
-    available_interfaces = psutil.net_if_addrs().keys()
-    if interface in available_interfaces:
-        return interface
-    else:
-        logging.warning(f"Invalid network interface '{interface}'. Using the first available interface.")
-        return next(iter(available_interfaces), None)
-
 if __name__ == "__main__":
     # Set up logger
     logger = logging.getLogger("test")
@@ -565,6 +545,11 @@ if __name__ == "__main__":
 
     # Prepare a bucket to store the results.
     usage_record = {}
+    if 'PMIC' in args.power:
+        power_monitor = FlowerClient(None, None, None, None, None)
+        power_consumed = power_monitor.measure_power_during_function(duration=10)
+        if power_consumed is not None:
+            logger.info(f"Measured power consumption: {power_consumed} mW.")
 
     # Initialize power monitor based on the --power argument and device name
     power_monitor = None
@@ -587,12 +572,8 @@ if __name__ == "__main__":
     fl.client.start_client(
         server_address=args.server_address,
         client=FlowerClient(
-            trainset=trainsets[args.cid],
-            valset=valsets[args.cid],
-            dataset=arg_dataset,
-            model=args.model,
-            interface=wlan_interf
-        ),
+            trainset=trainsets[args.cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
+        ).to_client(),
     )
 
     end_time = time.time()
