@@ -1,5 +1,5 @@
-from PMIC import PMICMonitor # power.
-from INA3221 import INA3221 # power.
+from power.PMIC import PMICMonitor # power.
+from power.INA3221 import INA3221 # power.
 
 def get_power_monitor(power_mode, device_name=None):
     """
