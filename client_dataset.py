@@ -514,15 +514,14 @@ if __name__ == "__main__":
     ch.setLevel(logging.DEBUG)
     ch.setFormatter(CustomFormatter())
     logger.addHandler(ch)
-    start_net, end_net, wlan_interf = 0, 0, 'wlan0'
-    
+
     warnings.filterwarnings("ignore", category=UserWarning)
     NUM_CLIENTS = 50
 
-    
     print("Client Start!")
     args = parser.parse_args()
     logger.info(args)
+
     pid = psutil.Process().ppid()
     logger.info(f"[{time.time()}] PPID: {pid}")
     current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -534,22 +533,13 @@ if __name__ == "__main__":
 
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    # default parameters
-    root_path = os.path.abspath(os.getcwd())+'/'
+    # Prepare dataset
+    root_path = os.path.abspath(os.getcwd()) + '/'
     arg_dataset = args.dataset
     trainsets, valsets, _ = prepare_dataset(arg_dataset)
     wlan_interf = args.interface if validate_network_interface(args.interface) else "wlan0"
     logger.info(f"Using network interface: {wlan_interf}")
     start_net = get_network_usage(wlan_interf)
-    
-
-    # Prepare a bucket to store the results.
-    usage_record = {}
-    if 'PMIC' in args.power:
-        power_monitor = FlowerClient(None, None, None, None, None)
-        power_consumed = power_monitor.measure_power_during_function(duration=10)
-        if power_consumed is not None:
-            logger.info(f"Measured power consumption: {power_consumed} mW.")
 
     # Initialize power monitor based on the --power argument and device name
     power_monitor = None
@@ -567,34 +557,37 @@ if __name__ == "__main__":
         else:
             logger.warning("Power monitoring failed or returned no data.")
 
-    # Start Flower client setting its associated data partition
-    print(f"Client {args.cid} connecting to {args.server_address}")
-    fl.client.start_client(
-        server_address=args.server_address,
-        client=FlowerClient(
-            trainset=trainsets[args.cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
-        ).to_client(),
+    # Start Flower client
+    logger.info(f"Client {args.cid} connecting to {args.server_address}")
+    client = FlowerClient(
+        trainset=trainsets[args.cid],
+        valset=valsets[args.cid],
+        dataset=arg_dataset,
+        model=args.model,
+        interface=wlan_interf
     )
 
+    # Use flwr.client.Client to start the cliented data partition
+    fl.client.start_numpy_client(server_address=args.server_address, client=client)t(f"Client {args.cid} connecting to {args.server_address}")
+
+    # Log the end of the script
     end_time = time.time()
-    logger.info([f'[{time.time()}] Communication end: {end_time}'])
+    logger.info([f'[{time.time()}] Communication end: {end_time}']).cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
 
     # Log the network IO
     end_net = get_network_usage(wlan_interf)
     net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
-    net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
+    net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]e()}] Communication end: {end_time}'])
     logger.info([f'[{time.time()}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
-
-    '''
-    usage_record["execution_time"] = end_time - start_time
-    usage_record["bytes_sent"] = end_net["bytes_sent"] - start_net["bytes_sent"]
-    usage_record["bytes_recv"] = end_net["bytes_recv"] - start_net["bytes_recv"]
-
+etwork IO
+    '''usage(wlan_interf)
+    usage_record["execution_time"] = end_time - start_timesent"]
+    usage_record["bytes_sent"] = end_net["bytes_sent"] - start_net["bytes_sent"]ecv = end_net["bytes_recv"] - start_net["bytes_recv"]
+    usage_record["bytes_recv"] = end_net["bytes_recv"] - start_net["bytes_recv"]    logger.info([f'[{time.time()}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
 
     # Save the data.
-    
-    filename = f"data_{args.cid}_{current_time}.pickle"
-    with open(filename, 'wb') as handle:
-        pickle.dump(usage_record, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    filename = f"data_{args.cid}_{current_time}.pickle"_time"] = end_time - start_time
+    with open(filename, 'wb') as handle:ytes_sent"] - start_net["bytes_sent"]
+        pickle.dump(usage_record, handle, protocol=pickle.HIGHEST_PROTOCOL)"] = end_net["bytes_recv"] - start_net["bytes_recv"]
     logger.info(f"The measurement data is saved as {filename}.")
     '''
