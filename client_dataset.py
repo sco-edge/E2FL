@@ -11,8 +11,8 @@ from power.powermon import get_power_monitor
 import threading
 
 import flwr as fl
-from fl.client import ClientApp, NumPyClient
-from fl.common import Context
+from flwr.client import ClientApp, NumPyClient
+from flwr.common import Context
 import torch
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
