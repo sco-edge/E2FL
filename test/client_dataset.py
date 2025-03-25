@@ -506,6 +506,20 @@ def validate_network_interface(interface):
         logging.error(f"Invalid network interface: {interface}")
         return False
 
+def validate_and_get_network_interface(interface):
+    """
+    Validate if the given network interface exists on the system.
+    If not, return the first available interface.
+    :param interface: Network interface name to validate.
+    :return: Valid network interface name.
+    """
+    available_interfaces = psutil.net_if_addrs().keys()
+    if interface in available_interfaces:
+        return interface
+    else:
+        logging.warning(f"Invalid network interface '{interface}'. Using the first available interface.")
+        return next(iter(available_interfaces), None)
+
 if __name__ == "__main__":
     # Set up logger
     logger = logging.getLogger("test")
