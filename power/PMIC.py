@@ -7,7 +7,7 @@ import threading
 import csv
 import datetime
 import logging
-from _power_monitor_interface import PowerMonitor
+from power._power_monitor_interface import PowerMonitor
 
 class PMICMonitor(PowerMonitor):
     def __init__(self):
