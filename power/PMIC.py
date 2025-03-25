@@ -24,11 +24,11 @@ class PMICMonitor(PowerMonitor):
 
     def _read_power(self, timeout=5):
         """
-        Executes the 'vgencmd pmmic_read_adc' command to retrieve the power consumption.
+        Executes the 'vcgencmd pmmic_read_adc' command to retrieve the power consumption.
         :return: Power consumption in mW (float)
         """
         try:
-            result = subprocess.run(['vgencmd', 'pmmic_read_adc'], stdout=subprocess.PIPE, text=True, check=True, timeout=timeout)
+            result = subprocess.run(['vcgencmd', 'pmmic_read_adc'], stdout=subprocess.PIPE, text=True, check=True, timeout=timeout)
             power = result.stdout.strip()
             logging.info(f"Power read: {power} mW")
             return float(power)
