@@ -172,18 +172,16 @@ def server_fn(context: Context):
     # Define the strategy
     strategy = FedAvg(
         fraction_fit=1.0,
-        fraction_evaluate=context.run_config["fraction-evaluate"],
-        min_available_clients=context.run_config["min-clients"],
+        fraction_evaluate=context.run_config.get("fraction-evaluate", 1.0),
+        min_available_clients=context.run_config.get("min-clients", 2),
         evaluate_metrics_aggregation_fn=weighted_average,
         initial_parameters=parameters,
         #on_fit_config_fn=lambda rnd: {"round": rnd},
     )
     config = ServerConfig(num_rounds=num_rounds)
-    
     return ServerAppComponents(strategy=strategy, config=config)
 
 if __name__ == "__main__":
-    # default parameters
     root_path = os.path.abspath(os.getcwd())+'/'
     node_A_name = 'RPi3B+'
     node_A_mode = "PyMonsoon"
@@ -216,5 +214,5 @@ if __name__ == "__main__":
         # Wait for server to start fl properly.
         time.sleep(5)
     except Exception as e:
-        logger.error('FL is failed: ', e)
+        logger.error(f"FL is failed: {e}")
         exit(1)
