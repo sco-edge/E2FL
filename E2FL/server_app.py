@@ -20,35 +20,10 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
 
-from core.task import Net, get_weights
-
-
-
 parser = argparse.ArgumentParser(description="Flower Embedded devices")
-parser.add_argument(
-    "--server_address",
-    type=str,
-    default="0.0.0.0:8080",
-    help=f"gRPC server address (deafault '0.0.0.0:8080')",
-)
-parser.add_argument(
-    "--rounds",
-    type=int,
-    default=5,
-    help="Number of rounds of federated learning (default: 5)",
-)
-parser.add_argument(
-    "--sample_fraction",
-    type=float,
-    default=1.0,
-    help="Fraction of available clients used for fit/evaluate (default: 1.0)",
-)
-parser.add_argument(
-    "--min_num_clients",
-    type=int,
-    default=2,
-    help="Minimum number of available clients required for sampling (default: 2)",
-)
+from E2FL.task import Net, get_weights
+
+
 _UPTIME_RPI3B = 500
 
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')

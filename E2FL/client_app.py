@@ -27,7 +27,7 @@ import torch.nn.functional as F
 from tqdm import tqdm
 from flwr_datasets import FederatedDataset
 
-from core.task import (
+from E2FL.task import (
     Net,
     get_weights,
     load_data_from_disk,
