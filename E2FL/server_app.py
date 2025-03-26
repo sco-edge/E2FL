@@ -20,7 +20,6 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
 
-parser = argparse.ArgumentParser(description="Flower Embedded devices")
 from E2FL.task import Net, get_weights
 
 
