@@ -157,119 +157,119 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Aggregate and return custom metric (weighted average)
     return {"accuracy": sum(accuracies) / sum(examples)}
 
-def server_fn(server_address, num_clients=4, sample_frac=1.0, round=3):
+def fl_server(server_address, num_clients=4, sample_frac=1.0, round=3):
     num_rounds = context.run_config["num-sever-rounds"]
 
+if __name__ == "__main__":
+    # default parameters
+    root_path = os.path.abspath(os.getcwd())+'/'
+    node_A_name = 'RPi3B+'
+    node_A_mode = "PyMonsoon"
+    client_ssh_id = 'pi'
+    ssh_port = 22
+    args = parser.parse_args()
+    print(args)
 
-# default parameters
-root_path = os.path.abspath(os.getcwd())+'/'
-node_A_name = 'RPi3B+'
-node_A_mode = "PyMonsoon"
-client_ssh_id = 'pi'
-ssh_port = 22
-args = parser.parse_args()
-print(args)
+    # FL parameters
+    FL_num_clients = 4
+    FL_sample_frac = 1.0
+    FL_round = 3
 
-# FL parameters
-FL_num_clients = 4
-FL_sample_frac = 1.0
-FL_round = 3
+    # Set up logger
+    logger = logging.getLogger("test")
+    logger.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(CustomFormatter())
+    logger.addHandler(ch)
+    current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_server_{current_time}.txt")
 
-# Set up logger
-logger = logging.getLogger("test")
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-ch.setFormatter(CustomFormatter())
-logger.addHandler(ch)
-current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_server_{current_time}.txt")
+    # Read the YAML config file.
+    with open(root_path+'config.yaml', 'r') as file:
+        config = yaml.safe_load(file)  # Read YAML from the file and convert the structure of the python's dictionary.
 
-# Read the YAML config file.
-with open(root_path+'config.yaml', 'r') as file:
-    config = yaml.safe_load(file)  # Read YAML from the file and convert the structure of the python's dictionary.
+    # Get IP addresses.
+    server_ip = config['server']['host']  # Extract 'host' key's value from the 'server' key
+    client_ip1 = config['Jetson']['host']
+    client_ip2 = config['RPi5_1']['host']
+    client_ip3 = config['RPi5_2']['host']
+    client_ip4 = config['RPi5_3']['host']
+    private_key_path = root_path + config['RPi3B+']['ssh_key']
+    client_interf = config['RPi3B+']['interface']
 
-# Get IP addresses.
-server_ip = config['server']['host']  # Extract 'host' key's value from the 'server' key
-client_ip1 = config['Jetson']['host']
-client_ip2 = config['RPi5_1']['host']
-client_ip3 = config['RPi5_2']['host']
-client_ip4 = config['RPi5_3']['host']
-private_key_path = root_path + config['RPi3B+']['ssh_key']
-client_interf = config['RPi3B+']['interface']
-
-if server_ip or client_ip1:
-    print(f"The IP address of the server is: {server_ip}")
-    print(f"The IP address of the client is: {client_ip1}, {client_ip2}, {client_ip3}, {client_ip4}")
-    print(f"The ID of the client is: {client_ssh_id}")
-else:
-    print("IP address could not be determined")
-    exit(1)
-
-
-# set client_SSH
-#client_shells = []
-#for c_ip in [client_ip1, client_ip2, client_ip3, client_ip4]:
-#    client_shells.append(get_client_SSH(client_ip = c_ip, wait_time = _UPTIME_RPI3B))
+    if server_ip or client_ip1:
+        print(f"The IP address of the server is: {server_ip}")
+        print(f"The IP address of the client is: {client_ip1}, {client_ip2}, {client_ip3}, {client_ip4}")
+        print(f"The ID of the client is: {client_ssh_id}")
+    else:
+        print("IP address could not be determined")
+        exit(1)
 
 
-# Prepare a bucket to store the results.
-measurements_dict = []
-
-WiFi_rates = [1] #[1, 2, 5.5, 11, 6, 9, 12, 18, 24, 36, 48, 54]
-
-# Start the FL server.
-try:
-    fl_server(server_address=args.server_address, \
-            num_clients=args.min_num_clients, sample_frac=args.sample_fraction, round=args.rounds)
-    logger.info("Start FL server.")
-    # Wait for server to start fl properly.
-    time.sleep(5)
-except Exception as e:
-    logger.error('FL is failed: ', e)
-    exit(1)
+    # set client_SSH
+    #client_shells = []
+    #for c_ip in [client_ip1, client_ip2, client_ip3, client_ip4]:
+    #    client_shells.append(get_client_SSH(client_ip = c_ip, wait_time = _UPTIME_RPI3B))
 
 
-# Log the end time.
-#logger.info([f'Wi-Fi end(rate: {rate})',time.time()])
+    # Prepare a bucket to store the results.
+    measurements_dict = []
 
-# measurements_dict.append({'rate': rate, 'time': time_records, 'power': samples})
+    WiFi_rates = [1] #[1, 2, 5.5, 11, 6, 9, 12, 18, 24, 36, 48, 54]
 
-# Close the SSH connection.
-#for client_SSH in client_shells:
-#    client_SSH.close()
+    # Start the FL server.
+    try:
+        fl_server(server_address=args.server_address, \
+                num_clients=args.min_num_clients, sample_frac=args.sample_fraction, round=args.rounds)
+        logger.info("Start FL server.")
+        # Wait for server to start fl properly.
+        time.sleep(5)
+    except Exception as e:
+        logger.error('FL is failed: ', e)
+        exit(1)
 
 
-# Save the data.
-#current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-#filename = f"data_{current_time}.pickle"
-#with open(filename, 'wb') as handle:
-#    pickle.dump(measurements_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
-#logger.info(f"The measurement data is saved as {filename}.")
+    # Log the end time.
+    #logger.info([f'Wi-Fi end(rate: {rate})',time.time()])
 
-'''
+    # measurements_dict.append({'rate': rate, 'time': time_records, 'power': samples})
 
-import grpc
-import logging
-import time
+    # Close the SSH connection.
+    #for client_SSH in client_shells:
+    #    client_SSH.close()
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
-class LoggingInterceptor(grpc.ServerInterceptor):
-    def intercept_service(self, continuation, handler_call_details):
-        method = handler_call_details.method
-        def log_and_continue(request, context):
-            start_time = time.time()
-            response = continuation(request, context)
-            end_time = time.time()
-            logger.info(f"Method: {method}, Start: {start_time}, End: {end_time}, Duration: {end_time - start_time}")
-            return response
-        return log_and_continue
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), interceptors=[LoggingInterceptor()])
-    
-    server.add_insecure_port('[::]:8080')
-    server.start()
-    server.wait_for_termination()
-'''
+    # Save the data.
+    #current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    #filename = f"data_{current_time}.pickle"
+    #with open(filename, 'wb') as handle:
+    #    pickle.dump(measurements_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    #logger.info(f"The measurement data is saved as {filename}.")
+
+    '''
+
+    import grpc
+    import logging
+    import time
+
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
+    class LoggingInterceptor(grpc.ServerInterceptor):
+        def intercept_service(self, continuation, handler_call_details):
+            method = handler_call_details.method
+            def log_and_continue(request, context):
+                start_time = time.time()
+                response = continuation(request, context)
+                end_time = time.time()
+                logger.info(f"Method: {method}, Start: {start_time}, End: {end_time}, Duration: {end_time - start_time}")
+                return response
+            return log_and_continue
+    def serve():
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), interceptors=[LoggingInterceptor()])
+        
+        server.add_insecure_port('[::]:8080')
+        server.start()
+        server.wait_for_termination()
+    '''
