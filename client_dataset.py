@@ -268,7 +268,7 @@ def prepare_dataset(dataset):
 
 
 # Flower client, adapted from Pytorch quickstart/simulation example
-class FlowerClient(NumpyClient):
+class FlowerClient(NumPyClient):
     """A FlowerClient that trains a model and manages network usage."""
 
     def __init__(self, trainloader, valloader, local_epochs, learning_rate, interface):
