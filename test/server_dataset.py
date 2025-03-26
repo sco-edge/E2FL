@@ -158,7 +158,23 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     return {"accuracy": sum(accuracies) / sum(examples)}
 
 def fl_server(server_address, num_clients=4, sample_frac=1.0, round=3):
-    num_rounds = context.run_config["num-sever-rounds"]
+    # Define the strategy
+    strategy = FedAvg(
+        fraction_fit=sample_frac,
+        min_fit_clients=num_clients,
+        min_available_clients=num_clients,
+        on_fit_config_fn=lambda rnd: {"round": rnd},
+    )
+
+    # Configure the server
+    config = ServerConfig(num_rounds=round)
+
+    # Start the server directly with the strategy
+    fl.server.Server(
+        server_address=server_address,
+        config=config,
+        strategy=strategy,
+    ).start()
 
 if __name__ == "__main__":
     # default parameters
@@ -171,9 +187,9 @@ if __name__ == "__main__":
     print(args)
 
     # FL parameters
-    FL_num_clients = 4
-    FL_sample_frac = 1.0
-    FL_round = 3
+    FL_num_clients = args.min_num_clients
+    FL_sample_frac = args.sample_fraction
+    FL_round = args.rounds
 
     # Set up logger
     logger = logging.getLogger("test")
@@ -221,7 +237,7 @@ if __name__ == "__main__":
     # Start the FL server.
     try:
         fl_server(server_address=args.server_address, \
-                num_clients=args.min_num_clients, sample_frac=args.sample_fraction, round=args.rounds)
+                num_clients=FL_num_clients, sample_frac=FL_sample_frac, round=FL_round)
         logger.info("Start FL server.")
         # Wait for server to start fl properly.
         time.sleep(5)
