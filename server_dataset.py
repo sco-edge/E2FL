@@ -173,7 +173,7 @@ def server_fn(context: Context):
         initial_parameters=parameters,
         #on_fit_config_fn=lambda rnd: {"round": rnd},
     )
-    config = ServerConfig(num_rounds=round)
+    config = ServerConfig(num_rounds=num_rounds)
     
     return ServerAppComponents(strategy=strategy, config=config)
 
