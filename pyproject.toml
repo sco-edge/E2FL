@@ -39,8 +39,8 @@ learning-rate = 0.1
 batch-size = 32
 
 [tool.flwr.federations]
-default = "embedded-federation"
+default = "E2FL"
 
-[tool.flwr.federations.embedded-federation]
+[tool.flwr.federations.E2FL]
 address = "192.168.0.17:8080"
 insecure = true
