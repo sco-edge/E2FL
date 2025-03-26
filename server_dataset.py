@@ -207,7 +207,7 @@ if __name__ == "__main__":
     # Start the FL server.
     try:
         logger.info("Start FL server.")
-        app = ServerApp(sever_fn=fl_server)
+        app = ServerApp(fl_server)
         # Wait for server to start fl properly.
         time.sleep(5)
     except Exception as e:
