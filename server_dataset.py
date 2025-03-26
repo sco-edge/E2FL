@@ -206,6 +206,7 @@ if __name__ == "__main__":
         config = yaml.safe_load(file)  # Read YAML from the file and convert the structure of the python's dictionary.
 
     # Get IP addresses.
+    '''
     server_ip = config['server']['host']  # Extract 'host' key's value from the 'server' key
     client_ip1 = config['Jetson']['host']
     client_ip2 = config['RPi5_1']['host']
@@ -213,7 +214,6 @@ if __name__ == "__main__":
     client_ip4 = config['RPi5_3']['host']
     private_key_path = root_path + config['RPi3B+']['ssh_key']
     client_interf = config['RPi3B+']['interface']
-
     if server_ip or client_ip1:
         print(f"The IP address of the server is: {server_ip}")
         print(f"The IP address of the client is: {client_ip1}, {client_ip2}, {client_ip3}, {client_ip4}")
@@ -221,6 +221,7 @@ if __name__ == "__main__":
     else:
         print("IP address could not be determined")
         exit(1)
+    '''
 
 
     # set client_SSH
