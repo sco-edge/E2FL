@@ -158,27 +158,24 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     return {"accuracy": sum(accuracies) / sum(examples)}
 
 def server_fn(context: Context):
-    # Log context values before starting the server
-    logger.info("Context values:")
-    for key, value in context.run_config.items():
-        logger.info(f"{key}: {value}")
-
     # Configure the server
     num_rounds = context.run_config["num-server-rounds"]  # Default to 5 if the key is not present
+    fraction_fit = context.run_config["fraction-fit"]
 
     ndarrays = get_weights(Net())
     parameters = ndarrays_to_parameters(ndarrays)
     
     # Define the strategy
     strategy = FedAvg(
-        fraction_fit=1.0,
-        fraction_evaluate=context.run_config["fraction-evaluate"],
-        min_available_clients=context.run_config["min-clients"],
-        evaluate_metrics_aggregation_fn=weighted_average,
-        initial_parameters=parameters,
+        fraction_fit = fraction_fit,
+        fraction_evaluate = context.run_config["fraction-evaluate"],
+        min_available_clients = context.run_config["min-clients"],
+        evaluate_metrics_aggregation_fn = weighted_average,
+        initial_parameters = parameters,
         #on_fit_config_fn=lambda rnd: {"round": rnd},
     )
-    config = ServerConfig(num_rounds=num_rounds)
+    config = ServerConfig(num_rounds = num_rounds)
+    
     return ServerAppComponents(strategy=strategy, config=config)
 
 if __name__ == "__main__":
