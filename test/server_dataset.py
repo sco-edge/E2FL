@@ -9,7 +9,9 @@ from typing import List, Tuple
 import argparse
 from typing import List, Tuple
 import flwr as fl
-from flwr.common import Metrics
+from flwr.common import Context, Metrics, ndarrays_to_parameters
+from flwr.server import ServerApp, ServerAppComponents, ServerConfig
+from flwr.server.strategy import FedAvg
 
 import torch
 import torchvision.transforms as transforms
@@ -17,6 +19,9 @@ from torchvision.datasets import MNIST
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
+
+from core.task import Net, get_weights
+
 
 
 parser = argparse.ArgumentParser(description="Flower Embedded devices")
@@ -144,10 +149,7 @@ def get_client_SSH(client_ip, wait_time):
     return client_shell
 
 # FL; define metric aggregation function
-def weighted_average(metrics: List[Tuple[int, Metrics]]):
-    """This function averages teh `accuracy` metric sent by the clients in a `evaluate`
-    stage (i.e. clients received the global model and evaluate it on their local
-    validation sets)."""
+def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Multiply accuracy of each client by number of examples used
     accuracies = [num_examples * m["accuracy"] for num_examples, m in metrics]
     examples = [num_examples for num_examples, _ in metrics]
@@ -155,37 +157,13 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]):
     # Aggregate and return custom metric (weighted average)
     return {"accuracy": sum(accuracies) / sum(examples)}
 
+def server_fn(server_address, num_clients=4, sample_frac=1.0, round=3):
+    num_rounds = context.run_config["num-sever-rounds"]
 
-def fit_config(server_round: int):
-    """Return a configuration with static batch size and (local) epochs."""
-    config = {
-        "epochs": 3,  # Number of local epochs done by clients
-        "batch_size": 16,  # Batch size to use by clients during fit()
-    }
-    return config
-
-
-def fl_server(server_address, num_clients=4, sample_frac=1.0, round=3):
-    # Define strategy
-    strategy = fl.server.strategy.FedAvg(
-        fraction_fit=sample_frac,
-        fraction_evaluate=sample_frac,
-        min_fit_clients=num_clients,
-        min_available_clients=num_clients,
-        min_evaluate_clients=num_clients,
-        on_fit_config_fn=fit_config,
-        evaluate_metrics_aggregation_fn=weighted_average,
-    )
-    # Start Flower server
-    fl.server.start_server(
-        server_address=server_address,
-        config=fl.server.ServerConfig(num_rounds=round),
-        strategy=strategy,
-    )
 
 # default parameters
 root_path = os.path.abspath(os.getcwd())+'/'
-node_A_name = 'rpi3B+'
+node_A_name = 'RPi3B+'
 node_A_mode = "PyMonsoon"
 client_ssh_id = 'pi'
 ssh_port = 22
@@ -213,10 +191,10 @@ with open(root_path+'config.yaml', 'r') as file:
 
 # Get IP addresses.
 server_ip = config['server']['host']  # Extract 'host' key's value from the 'server' key
-client_ip1 = config['RPi3B+']['host']
-client_ip2 = config['RPi3B+_b']['host']
-client_ip3 = config['RPi4B']['host']
-client_ip4 = config['RPi5']['host']
+client_ip1 = config['Jetson']['host']
+client_ip2 = config['RPi5_1']['host']
+client_ip3 = config['RPi5_2']['host']
+client_ip4 = config['RPi5_3']['host']
 private_key_path = root_path + config['RPi3B+']['ssh_key']
 client_interf = config['RPi3B+']['interface']
 
@@ -269,7 +247,7 @@ except Exception as e:
 #    pickle.dump(measurements_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
 #logger.info(f"The measurement data is saved as {filename}.")
 
-
+'''
 
 import grpc
 import logging
@@ -294,3 +272,4 @@ def serve():
     server.add_insecure_port('[::]:8080')
     server.start()
     server.wait_for_termination()
+'''
