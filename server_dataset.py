@@ -175,7 +175,7 @@ def server_fn(context: Context):
     )
     config = ServerConfig(num_rounds=round)
     
-    ServerAppComponents(strategy=strategy, config=config)
+    return ServerAppComponents(strategy=strategy, config=config)
 
 if __name__ == "__main__":
     # default parameters
