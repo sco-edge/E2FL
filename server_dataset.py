@@ -164,7 +164,7 @@ def server_fn(context: Context):
         logger.info(f"{key}: {value}")
 
     # Configure the server
-    num_rounds = context.run_config.get("num-server-rounds", 3)  # Default to 5 if the key is not present
+    num_rounds = context.run_config["num-server-rounds"]  # Default to 5 if the key is not present
 
     ndarrays = get_weights(Net())
     parameters = ndarrays_to_parameters(ndarrays)
@@ -172,8 +172,8 @@ def server_fn(context: Context):
     # Define the strategy
     strategy = FedAvg(
         fraction_fit=1.0,
-        fraction_evaluate=context.run_config.get("fraction-evaluate", 1.0),
-        min_available_clients=context.run_config.get("min-clients", 2),
+        fraction_evaluate=context.run_config["fraction-evaluate"],
+        min_available_clients=context.run_config["min-clients"],
         evaluate_metrics_aggregation_fn=weighted_average,
         initial_parameters=parameters,
         #on_fit_config_fn=lambda rnd: {"round": rnd},
