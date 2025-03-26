@@ -157,7 +157,7 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Aggregate and return custom metric (weighted average)
     return {"accuracy": sum(accuracies) / sum(examples)}
 
-def fl_server(context: Context):
+def sever_fn(context: Context):
     # Configure the server
     num_rounds = context.run_config["num-server-rounds"]
 
@@ -207,7 +207,7 @@ if __name__ == "__main__":
     # Start the FL server.
     try:
         logger.info("Start FL server.")
-        app = ServerApp(fl_server)
+        app = ServerApp(sever_fn=sever_fn)
         # Wait for server to start fl properly.
         time.sleep(5)
     except Exception as e:
