@@ -222,13 +222,12 @@ start_net = get_network_usage(wlan_interf)
 app = ClientApp(client_fn)
 
 end_time = time.time()
-logger.info([f'[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Communication end: {end_time}'])
 
 # Log the network IO
 end_net = get_network_usage(wlan_interf)
 net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
 net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
-logger.info([f'[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
+logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]"])
 
 '''
 if power_monitor:
