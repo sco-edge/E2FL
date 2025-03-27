@@ -222,6 +222,7 @@ start_net = get_network_usage(wlan_interf)
 app = ClientApp(client_fn)
 
 end_time = time.time()
+logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Communication end: {end_time}"])
 
 # Log the network IO
 end_net = get_network_usage(wlan_interf)
