@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "Federated AI with Embedded Devices using Flower"
 license = "Apache-2.0"
 dependencies = [
-    "flwr>=1.15.2",
+    "flwr>=1.17.0",
     "flwr-datasets[vision]>=0.5.0",
     "torch==2.5.1",
     "torchvision==0.20.1",
@@ -39,8 +39,20 @@ learning-rate = 0.1
 batch-size = 32
 
 [tool.flwr.federations]
-default = "E2FL"
+default = "remote"
 
-[tool.flwr.federations.E2FL]
-address = "192.168.0.17:8080"
+[tool.flwr.federations.local-sim]
+options.num-supernodes = 10
+options.backend.client-resources.num-cpus = 1
+options.backend.client-resources.num-gpus = 0
+options.backend.init-args.log-to-driver = false
+
+[tool.flwr.federations.local-sim-gpu]
+options.num-supernodes = 10
+options.backend.client-resources.num-cpus = 2
+options.backend.client-resources.num-gpus = 0.2
+options.backend.init-args.log-to-driver = false
+
+[tool.flwr.federations.remote]
+address = '192.168.0.17:9093'
 insecure = true
