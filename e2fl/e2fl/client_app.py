@@ -140,7 +140,7 @@ def client_fn(context: Context):
         power_monitor.start(freq=1)  # Start monitoring with 1-second intervals
         time.sleep(10)  # Example duration for monitoring
 
-    return FlowerClient(net, trainloader, valloader, local_epochs, interface = wlan_interf, power = power_monitor).to_client()
+    return FlowerClient(net, trainloader, valloader, local_epochs, interface = wlan_interf).to_client()
 
 interfaces = get_network_interface()
 if 'eth0' in interfaces:
