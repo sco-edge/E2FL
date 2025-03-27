@@ -187,9 +187,7 @@ if power != "None":
     power_monitor = get_power_monitor(power, device_name=socket.gethostname())
 
 # Flower ClientApp
-app = ClientApp(
-    client_fn,
-)
+app = ClientApp(client_fn)
 
 end_time = time.time()
 logger.info([f'[{time.time()}] Communication end: {end_time}'])
