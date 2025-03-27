@@ -130,6 +130,9 @@ def validate_network_interface(interface):
         logging.error(f"Invalid network interface: {interface}")
         return False
 
+def get_network_interface():
+    interfaces = psutil.net_if_addrs().keys()
+    return list[interfaces]
 
 def get_network_usage(interf):
     net_io = psutil.net_io_counters(pernic=True)
@@ -153,6 +156,20 @@ def client_fn(context: Context):
 
     return FlowerClient(net, trainloader, valloader, local_epochs, interface = wlan_interf, power = power_monitor).to_client()
 
+interfaces = get_network_interface()
+if 'eth0' in interfaces:
+    wlan_interf = 'eth0' if validate_network_interface('eth0') else "wlan0"
+    device_name = 'jetson'
+    power = "INA3221"
+elif 'wlp1s0' in interfaces:
+    wlan_interf = 'wlp1s0' if validate_network_interface('wlp1s0') else "wlan0"
+    device_name = 'RPi5'
+    power = "PMIC"
+else:
+    wlan_interf = 'wlan0'
+    device_name = 'RPi3'
+    power = "None"
+
 
 logger = logging.getLogger("test")
 logger.setLevel(logging.DEBUG)
@@ -161,23 +178,20 @@ ch.setLevel(logging.DEBUG)
 ch.setFormatter(CustomFormatter())
 logger.addHandler(ch)
 
-args = parser.parse_args()
-logger.info(args)
-
 pid = psutil.Process().ppid()
 logger.info(f"[{time.time()}] PPID: {pid}")
 current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-logging.basicConfig(filename=f"fl_info_{args.cid}_{args.dataset}_{current_time}.txt")
-fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{args.cid}_{args.dataset}_{current_time}.txt")
+logging.basicConfig(filename=f"fl_info_{current_time}_{device_name}.txt")
+fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{current_time}.txt")
 logger.info([f'[{time.time()}] Client Start!'])
 
-wlan_interf = args.interface if validate_network_interface(args.interface) else "wlan0"
+
 logger.info(f"Using network interface: {wlan_interf}")
 start_net = get_network_usage(wlan_interf)
 
 power_monitor = None
-if args.power != "None":
-    power_monitor = get_power_monitor(args.power, device_name=socket.gethostname())
+if power != "None":
+    power_monitor = get_power_monitor(power, device_name=socket.gethostname())
 
 # Flower ClientApp
 app = ClientApp(
