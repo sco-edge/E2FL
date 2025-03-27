@@ -69,7 +69,7 @@ class FlowerClient(NumPyClient):
     
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.net.to(self.device)
-
+        '''
         # Return Client instance
         # Measure power consumption if a power monitor is initialized
         self.power_monitor = None
@@ -79,6 +79,7 @@ class FlowerClient(NumPyClient):
             logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting power monitoring...")
             self.power_monitor.start(freq=0.01)  # Start monitoring with 1-second intervals
             time.sleep(5)  # Example duration for monitoring
+        '''
 
     def get_network_interface(self):
         interfaces = psutil.net_if_addrs().keys()
@@ -126,7 +127,7 @@ class FlowerClient(NumPyClient):
 
         # 학습 후 네트워크 상태 업데이트
         self.start_net = self.get_network_usage()
-
+        '''
         if self.power_monitor:
             elapsed_time, data_size = self.power_monitor.stop()
             if elapsed_time is not None:
@@ -135,7 +136,7 @@ class FlowerClient(NumPyClient):
                 self.power_monitor.close()
             else:
                 logger.warning("Power monitoring failed or returned no data.")
-
+        '''
         return (
             get_weights(self.net),
             len(self.trainloader.dataset),
@@ -149,7 +150,7 @@ class FlowerClient(NumPyClient):
         logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting evaluation...")
         loss, accuracy = test(self.net, self.valloader, self.device)
         logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation completed with accuracy: {accuracy}")
-
+        '''
         if self.power_monitor:
             elapsed_time, data_size = self.power_monitor.stop()
             if elapsed_time is not None:
@@ -158,7 +159,7 @@ class FlowerClient(NumPyClient):
                 self.power_monitor.close()
             else:
                 logger.warning("Power monitoring failed or returned no data.")
-
+        '''
         return loss, len(self.valloader.dataset), {"accuracy": accuracy}
 
 def validate_network_interface(interface):
@@ -225,7 +226,15 @@ logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Client Start!
 logger.info(f"Using network interface: {wlan_interf}")
 start_net = get_network_usage(wlan_interf)
 
-
+# Return Client instance
+# Measure power consumption if a power monitor is initialized
+power_monitor = None
+if power != "None":
+    power_monitor = get_power_monitor(power, device_name=socket.gethostname())
+if power_monitor:
+    logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting power monitoring...")
+    power_monitor.start(freq=0.01)  # Start monitoring with 1-second intervals
+    time.sleep(5)  # Example duration for monitoring
 
 # Flower ClientApp
 app = ClientApp(client_fn)
@@ -238,6 +247,17 @@ end_net = get_network_usage(wlan_interf)
 net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
 net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
 logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]"])
+
+time.sleep(5)
+
+if power_monitor:
+    elapsed_time, data_size = power_monitor.stop()
+    if elapsed_time is not None:
+        logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
+        power_monitor.save(f"power_{device_name}_{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}.csv")
+        power_monitor.close()
+    else:
+        logger.warning("Power monitoring failed or returned no data.")
 
 '''
 if power_monitor:
