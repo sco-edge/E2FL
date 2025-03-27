@@ -10,6 +10,7 @@ import psutil
 import warnings
 import threading
 import subprocess, os, logging, time, socket, pickle
+import atexit
 
 import torch
 
@@ -159,7 +160,7 @@ class FlowerClient(NumPyClient):
                 self.power_monitor.close()
             else:
                 logger.warning("Power monitoring failed or returned no data.")
-        '''
+        '''_
         return loss, len(self.valloader.dataset), {"accuracy": accuracy}
 
 def validate_network_interface(interface):
@@ -182,6 +183,17 @@ def get_network_usage(interf):
     net_io = psutil.net_io_counters(pernic=True)
     #net_io = psutil.net_io_counters(pernic=True)
     return {"bytes_sent": net_io[interf].bytes_sent, "bytes_recv": net_io[interf].bytes_recv}
+
+def cleanup_power_monitor(power_monitor):
+    logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Stopping power monitor via atexit...")
+    if power_monitor:
+        elapsed_time, data_size = power_monitor.stop()
+        if elapsed_time is not None:
+            logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
+            power_monitor.save(f"power_{device_name}_{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}.csv")
+            power_monitor.close()
+        else:
+            logger.warning("Power monitoring failed or returned no data.")
 
 def client_fn(context: Context):
     # Load model and data
@@ -235,6 +247,7 @@ if power_monitor:
     logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting power monitoring...")
     power_monitor.start(freq=0.01)  # Start monitoring with 1-second intervals
     time.sleep(5)  # Example duration for monitoring
+    atexit.register(cleanup_power_monitor, power_monitor)
 
 # Flower ClientApp
 app = ClientApp(client_fn)
@@ -250,14 +263,7 @@ logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation ph
 
 time.sleep(5)
 
-if power_monitor:
-    elapsed_time, data_size = power_monitor.stop()
-    if elapsed_time is not None:
-        logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
-        power_monitor.save(f"power_{device_name}_{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}.csv")
-        power_monitor.close()
-    else:
-        logger.warning("Power monitoring failed or returned no data.")
+
 
 '''
 if power_monitor:
