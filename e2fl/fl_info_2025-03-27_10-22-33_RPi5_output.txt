@@ -1,0 +1,107 @@
+
+(E2FL) ubuntu@ubuntu:~/E2FL/e2fl$ flower-supernode --insecure --superlink 192.168.0.17:9092 --node-config "num-partitions=2 partition-id=1"
+INFO :      Starting Flower SuperNode
+WARNING :   Option `--insecure` was set. Starting insecure HTTP channel to 192.168.0.17:9092.
+INFO :      Starting Flower ClientAppIo gRPC server on 0.0.0.0:9094
+INFO :
+INFO :      [RUN 10112041137525228989, ROUND 1]
+INFO :      Received: train message e8deda1c-42b9-4863-9af2-e8b589b831de
+INFO :      Start `flwr-clientapp` process
+INFO :      [flwr-clientapp] Pull `ClientAppInputs` for token 4365246641056799015
+🎊 Successfully installed e2fl to /home/ubuntu/.flwr/apps/wwjang.e2fl.1.0.0.9c02a357.
+2025-03-27 10:19:26,034 - INFO - [1743070766.0346296] PPID: 64359
+2025-03-27 10:19:26,035 - INFO - ['[1743070766.0352778] Client Start!']
+2025-03-27 10:19:26,035 - INFO - Using network interface: wlp1s0
+2025-03-27 10:19:26,035 - INFO - ['[1743070766.0359724] Communication end: 1743070766.0359716']
+2025-03-27 10:19:26,036 - INFO - ['[1743070766.0363605] Evaluation phase (wlp1s0): [sent: 0, recv: 0]']
+2025-03-27 10:19:31,489 - INFO - Starting power monitoring...
+2025-03-27 10:19:41,506 - INFO - [1743070781.5065167] Client sampled for fit()
+2025-03-27 10:19:41,507 - INFO - Network usage during fit: [sent: 218, recv: 0]
+2025-03-27 10:19:41,509 - INFO - [1743070781.509483] Starting training...
+2025-03-27 10:20:08,495 - INFO - [1743070808.495186] Training completed.
+INFO :      [flwr-clientapp] Push `ClientAppOutputs` for token 4365246641056799015
+INFO :      Sent reply
+INFO :
+INFO :      [RUN 10112041137525228989, ROUND 1]
+INFO :      Received: evaluate message 3aaa38de-be8c-4112-80cf-159a1cc07c01
+INFO :      Start `flwr-clientapp` process
+INFO :      [flwr-clientapp] Pull `ClientAppInputs` for token 9522535777418032712
+2025-03-27 10:20:22,813 - INFO - [1743070822.8131902] PPID: 64359
+2025-03-27 10:20:22,813 - INFO - ['[1743070822.8138297] Client Start!']
+2025-03-27 10:20:22,814 - INFO - Using network interface: wlp1s0
+2025-03-27 10:20:22,814 - INFO - ['[1743070822.8145442] Communication end: 1743070822.814543']
+2025-03-27 10:20:22,814 - INFO - ['[1743070822.814927] Evaluation phase (wlp1s0): [sent: 0, recv: 0]']
+2025-03-27 10:20:28,329 - INFO - Starting power monitoring...
+2025-03-27 10:20:38,346 - INFO - [1743070838.3463502] Client sampled for evaluate()
+2025-03-27 10:20:38,348 - INFO - [1743070838.3488533] Starting evaluation...
+2025-03-27 10:20:42,721 - INFO - [1743070842.7217577] Evaluation completed with accuracy: 0.1552
+INFO :      [flwr-clientapp] Push `ClientAppOutputs` for token 9522535777418032712
+INFO :      Sent reply
+INFO :
+INFO :      [RUN 10112041137525228989, ROUND 2]
+INFO :      Received: train message 3a57408f-a30f-4ee0-a242-1ccc04352921
+INFO :      Start `flwr-clientapp` process
+INFO :      [flwr-clientapp] Pull `ClientAppInputs` for token 1261620717026040943
+2025-03-27 10:20:56,685 - INFO - [1743070856.685606] PPID: 64359
+2025-03-27 10:20:56,686 - INFO - ['[1743070856.6862311] Client Start!']
+2025-03-27 10:20:56,686 - INFO - Using network interface: wlp1s0
+2025-03-27 10:20:56,686 - INFO - ['[1743070856.6869767] Communication end: 1743070856.686976']
+2025-03-27 10:20:56,687 - INFO - ['[1743070856.687368] Evaluation phase (wlp1s0): [sent: 0, recv: 0]']
+2025-03-27 10:21:02,330 - INFO - Starting power monitoring...
+2025-03-27 10:21:12,347 - INFO - [1743070872.3476982] Client sampled for fit()
+2025-03-27 10:21:12,348 - INFO - Network usage during fit: [sent: 218, recv: 0]
+2025-03-27 10:21:12,350 - INFO - [1743070872.350849] Starting training...
+2025-03-27 10:21:43,404 - INFO - [1743070903.404543] Training completed.
+INFO :      [flwr-clientapp] Push `ClientAppOutputs` for token 1261620717026040943
+INFO :      Sent reply
+INFO :
+INFO :      [RUN 10112041137525228989, ROUND 2]
+INFO :      Received: evaluate message 4b8df0c9-fdc6-4097-acb3-129deddf4ae9
+INFO :      Start `flwr-clientapp` process
+INFO :      [flwr-clientapp] Pull `ClientAppInputs` for token 5468957836061104701
+2025-03-27 10:21:58,477 - INFO - [1743070918.477146] PPID: 64359
+2025-03-27 10:21:58,478 - INFO - ['[1743070918.4780068] Client Start!']
+2025-03-27 10:21:58,478 - INFO - Using network interface: wlp1s0
+2025-03-27 10:21:58,479 - INFO - ['[1743070918.4790049] Communication end: 1743070918.4790037']
+2025-03-27 10:21:58,479 - INFO - ['[1743070918.4795866] Evaluation phase (wlp1s0): [sent: 0, recv: 0]']
+2025-03-27 10:22:04,900 - INFO - Starting power monitoring...
+2025-03-27 10:22:14,917 - INFO - [1743070934.9178464] Client sampled for evaluate()
+2025-03-27 10:22:14,920 - INFO - [1743070934.920523] Starting evaluation...
+2025-03-27 10:22:19,346 - INFO - [1743070939.3469276] Evaluation completed with accuracy: 0.2712
+INFO :      [flwr-clientapp] Push `ClientAppOutputs` for token 5468957836061104701
+INFO :      Sent reply
+INFO :
+INFO :      [RUN 10112041137525228989, ROUND 3]
+INFO :      Received: train message e1b31743-29e3-4553-b8b3-bd2b18fb392f
+INFO :      Start `flwr-clientapp` process
+INFO :      [flwr-clientapp] Pull `ClientAppInputs` for token 2656533763134179143
+2025-03-27 10:22:33,552 - INFO - [1743070953.5529146] PPID: 64359
+2025-03-27 10:22:33,553 - INFO - ['[1743070953.5535538] Client Start!']
+2025-03-27 10:22:33,553 - INFO - Using network interface: wlp1s0
+2025-03-27 10:22:33,554 - INFO - ['[1743070953.5542269] Communication end: 1743070953.5542262']
+2025-03-27 10:22:33,554 - INFO - ['[1743070953.5546222] Evaluation phase (wlp1s0): [sent: 0, recv: 0]']
+2025-03-27 10:22:39,615 - INFO - Starting power monitoring...
+2025-03-27 10:22:49,632 - INFO - [1743070969.632368] Client sampled for fit()
+2025-03-27 10:22:49,633 - INFO - Network usage during fit: [sent: 218, recv: 0]
+2025-03-27 10:22:49,635 - INFO - [1743070969.635438] Starting training...
+2025-03-27 10:23:22,671 - INFO - [1743071002.6711626] Training completed.
+INFO :      [flwr-clientapp] Push `ClientAppOutputs` for token 2656533763134179143
+INFO :      Sent reply
+INFO :
+INFO :      [RUN 10112041137525228989, ROUND 3]
+INFO :      Received: evaluate message b1fdeb39-dcda-496d-a54d-b03d76d528b2
+INFO :      Start `flwr-clientapp` process
+INFO :      [flwr-clientapp] Pull `ClientAppInputs` for token 11245214704502133286
+2025-03-27 10:23:38,219 - INFO - [1743071018.2190938] PPID: 64359
+2025-03-27 10:23:38,219 - INFO - ['[1743071018.219737] Client Start!']
+2025-03-27 10:23:38,219 - INFO - Using network interface: wlp1s0
+2025-03-27 10:23:38,220 - INFO - ['[1743071018.220435] Communication end: 1743071018.220434']
+2025-03-27 10:23:38,220 - INFO - ['[1743071018.2208211] Evaluation phase (wlp1s0): [sent: 0, recv: 0]']
+2025-03-27 10:23:44,951 - INFO - Starting power monitoring...
+2025-03-27 10:23:54,968 - INFO - [1743071034.9688697] Client sampled for evaluate()
+2025-03-27 10:23:54,971 - INFO - [1743071034.9714456] Starting evaluation...
+2025-03-27 10:23:59,714 - INFO - [1743071039.7147918] Evaluation completed with accuracy: 0.3564
+INFO :      [flwr-clientapp] Push `ClientAppOutputs` for token 11245214704502133286
+INFO :      Sent reply
+^CINFO :      SuperNode terminated gracefully.
+
