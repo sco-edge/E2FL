@@ -3,21 +3,14 @@ import logging
 import threading
 
 class PowerMonitor(ABC):
-    def __init__(self, device_name, logging_config=None):
-        self.device_name = device_name  # Name of the device
-        self.freq = 1  # Sampling interval in seconds
+    def __init__(self):
         self.power_data = []  # List to store power data [(timestamp, power)]
         self.thread = None
         self.monitoring = False  # Flag to track if monitoring is ongoing
-        self.start_time = None  # Time when monitoring started (for relative time calculations)
-        self.end_time = None  # Time when monitoring endded (for relative time calculations)
         self.lock = threading.Lock()
+        self.thread = None
 
-        if logging_config:
-            logging.basicConfig(**logging_config)
-        else:
-            # Default logging configuration (prints to console, level set to INFO)
-            logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     
     @abstractmethod
     def start(self, freq):
@@ -63,5 +56,5 @@ class PowerMonitor(ABC):
         Handle errors during power monitoring.
         :param error_message: Error message to log.
         """
-        logging.error(f"{self.device_name}: {error_message}")
+        logging.error(f"RPi5: {error_message}")
         self.stop()

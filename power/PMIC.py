@@ -13,7 +13,15 @@ from datetime import datetime  # 추가: datetime.now()를 사용하기 위해 d
 
 class PMICMonitor(PowerMonitor):
     def __init__(self):
-        super().__init__('PMIC')    
+        super().__init__('PMIC')
+        self.monitoring = False
+        self.power_data = []
+        self.lock = threading.Lock()
+        self.thread = None
+        self.start_time = 0
+
+        # Configure logging
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     def read_power(self):
         """
@@ -75,15 +83,15 @@ class PMICMonitor(PowerMonitor):
         """
         Monitor the energy usage in a separate thread
         """
-        logging.info(f"{self.device_name}: Power monitoring started.")
+        logging.info(f"RPi5: Power monitoring started.")
         while self.monitoring:
-            power = self._read_power()
-            current_time = datetime.now() - self.start_time  # 수정: datetime.now() 사용
+            timestamp = (datetime.now() - self.start_time).total_seconds()
+            power = self.read_power()
             if power is not None:
                 with self.lock:
-                    self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
+                    self.power_data.append((timestamp, power))
             time.sleep(self.freq)
-        logging.info(f"{self.device_name}: Power monitoring stopped.")
+        #logging.info(f"RPi5: Power monitoring stopped.")
 
     def get_clock(self, name):
         res = subprocess.run(["vcgencmd","measure_clock",name], capture_output=True)
@@ -95,17 +103,19 @@ class PMICMonitor(PowerMonitor):
         Start energy monitoring at the specified frequency
         :param freq: Frequency in seconds to sample energy data
         """
-        if self.monitoring:
-            print("Energy monitoring is already running.")
-            return
+        with self.lock:
+            if self.monitoring:
+                logging.warning(f"RPi5: Monitoring is already running.")
+                return
 
-        self.freq = freq
-        self.monitoring = True
-        self.power_data = []
-        self.start_time = datetime.now()  # 수정: datetime.now() 사용
-        self.thread = threading.Thread(target=self._monitor)
+            self.freq = freq
+            self.monitoring = True
+            self.power_data = []
+            self.start_time = datetime.now()
+
+        self.thread = threading.Thread(target=self._monitor, daemon=True)
         self.thread.start()
-        logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.start_time} (UTC).")
+        logging.info(f"RPi5: Monitoring started with frequency {self.freq}s at {self.start_time}.")
 
     def stop(self):
         """
@@ -113,7 +123,7 @@ class PMICMonitor(PowerMonitor):
         """
         with self.lock:
             if not self.monitoring:
-                logging.warning(f"{self.device_name}: Monitoring is not running.")
+                logging.warning(f"RPi5: Monitoring is not running.")
                 return None, None
 
             self.monitoring = False
@@ -122,7 +132,7 @@ class PMICMonitor(PowerMonitor):
             self.thread.join()  # Ensure the thread is properly joined
         elapsed_time = (datetime.now() - self.start_time).total_seconds()
         data_size = len(self.power_data)
-        logging.info(f"{self.device_name}: Monitoring stopped. Duration: {elapsed_time:.2f}s, Data size: {data_size}.")
+        logging.info(f"RPi5: Monitoring stopped. Duration: {elapsed_time:.2f}s, Data size: {data_size}.")
         return elapsed_time, data_size
 
     def save(self, filepath):
@@ -137,7 +147,7 @@ class PMICMonitor(PowerMonitor):
                 with self.lock:
                     for timestamp, power in self.power_data:
                         writer.writerow([f"{timestamp:.2f}", power])
-            logging.info(f"{self.device_name}: Data saved to {filepath}.")
+            logging.info(f"RPi5: Data saved to {filepath}.")
         except Exception as e:
             logging.error(f"Failed to save data to {filepath}: {e}")
 
@@ -147,4 +157,4 @@ class PMICMonitor(PowerMonitor):
             elapsed_time, data_size = self.stop()
         if elapsed_time == None:
             return
-        logging.info(f"{self.device_name}: Resources (data_size: {data_size}, elapsed_time: {elapsed_time}) cleaned up.")
+        logging.info(f"RPi5: Resources (data_size: {data_size}, elapsed_time: {elapsed_time}) cleaned up.")
