@@ -76,9 +76,9 @@ class FlowerClient(NumPyClient):
         if power != "None":
             self.power_monitor = get_power_monitor(self.power, device_name=socket.gethostname())
         if self.power_monitor:
-            logger.info("Starting power monitoring...")
+            logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting power monitoring...")
             self.power_monitor.start(freq=0.01)  # Start monitoring with 1-second intervals
-            time.sleep(10)  # Example duration for monitoring
+            time.sleep(5)  # Example duration for monitoring
 
     def get_network_interface(self):
         interfaces = psutil.net_if_addrs().keys()
@@ -127,6 +127,15 @@ class FlowerClient(NumPyClient):
         # 학습 후 네트워크 상태 업데이트
         self.start_net = self.get_network_usage()
 
+        if self.power_monitor:
+            elapsed_time, data_size = self.power_monitor.stop()
+            if elapsed_time is not None:
+                logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
+                self.power_monitor.save(f"power_{self.device_name}_{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}.csv")
+                self.power_monitor.close()
+            else:
+                logger.warning("Power monitoring failed or returned no data.")
+
         return (
             get_weights(self.net),
             len(self.trainloader.dataset),
@@ -144,7 +153,7 @@ class FlowerClient(NumPyClient):
         if self.power_monitor:
             elapsed_time, data_size = self.power_monitor.stop()
             if elapsed_time is not None:
-                logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
+                logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
                 self.power_monitor.save(f"power_{self.device_name}_{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}.csv")
                 self.power_monitor.close()
             else:
