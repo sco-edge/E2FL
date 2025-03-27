@@ -95,7 +95,7 @@ class INA3221(PowerMonitor):
                     value = f.read().strip()
                 return float(value)
             except Exception as e:
-                logging.error(f"{self.device_name}: Error reading {path}: {e}")
+                logging.error(f"Jetson: Error reading {path}: {e}")
                 return None
 
     def read_power(self):
@@ -111,14 +111,14 @@ class INA3221(PowerMonitor):
 
         # Convert mV * mA to mW
         power_mw = (voltage / 1000.0) * (current / 1000.0) * 1000  # Convert to mW
-        logging.debug(f"{self.device_name}: Voltage={voltage}mV, Current={current}mA, Power={power_mw:.2f}mW")
+        logging.debug(f"Jetson: Voltage={voltage}mV, Current={current}mA, Power={power_mw:.2f}mW")
         return power_mw
 
     def _monitor(self):
         """
         Background thread function that records timestamped power data.
         """
-        logging.info(f"{self.device_name}: Power monitoring started.")
+        logging.info(f"Jetson: Power monitoring started.")
         while self.monitoring:
             timestamp = (datetime.now() - self.start_time).total_seconds()
             power = self.read_power()
@@ -134,7 +134,7 @@ class INA3221(PowerMonitor):
         """
         with self.lock:
             if self.monitoring:
-                logging.warning(f"{self.device_name}: Monitoring is already running.")
+                logging.warning(f"Jetson: Monitoring is already running.")
                 return
 
             self.freq = freq
@@ -144,7 +144,7 @@ class INA3221(PowerMonitor):
 
         self.thread = threading.Thread(target=self._monitor, daemon=True)
         self.thread.start()
-        logging.info(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.start_time}.")
+        logging.info(f"Jetson: Monitoring started with frequency {self.freq}s at {self.start_time}.")
 
     def stop(self):
         """
@@ -153,7 +153,7 @@ class INA3221(PowerMonitor):
         """
         with self.lock:
             if not self.monitoring:
-                logging.warning(f"{self.device_name}: Monitoring is not running.")
+                logging.warning(f"Jetson: Monitoring is not running.")
                 return None, None
 
             self.monitoring = False
@@ -161,7 +161,7 @@ class INA3221(PowerMonitor):
         self.thread.join()
         elapsed_time = (datetime.now() - self.start_time).total_seconds()
         data_size = len(self.power_data)
-        logging.info(f"{self.device_name}: Monitoring stopped. Duration: {elapsed_time:.2f}s, Data size: {data_size} samples.")
+        logging.info(f"Jetson: Monitoring stopped. Duration: {elapsed_time:.2f}s, Data size: {data_size} samples.")
         return elapsed_time, data_size
 
     def save(self, filepath):
@@ -171,7 +171,7 @@ class INA3221(PowerMonitor):
         """
         with self.lock:
             if not self.power_data:
-                logging.warning(f"{self.device_name}: No power data to save.")
+                logging.warning(f"Jetson: No power data to save.")
                 return
 
             try:
@@ -180,9 +180,9 @@ class INA3221(PowerMonitor):
                     writer.writerow(["Timestamp (s)", "Power (mW)"])
                     for timestamp, power in self.power_data:
                         writer.writerow([f"{timestamp:.2f}", f"{power:.2f}"])
-                logging.info(f"{self.device_name}: Data saved to {filepath}.")
+                logging.info(f"Jetson: Data saved to {filepath}.")
             except Exception as e:
-                logging.error(f"{self.device_name}: Failed to save power data: {e}")
+                logging.error(f"Jetson: Failed to save power data: {e}")
 
     def close(self):
         """
@@ -193,7 +193,7 @@ class INA3221(PowerMonitor):
             elapsed_time, data_size = self.stop()
 
         if elapsed_time is None:
-            logging.info(f"{self.device_name}: No active monitoring to clean up.")
+            logging.info(f"Jetson: No active monitoring to clean up.")
             return
 
-        logging.info(f"{self.device_name}: Resources cleaned up (Elapsed Time: {elapsed_time:.2f}s, Data Size: {data_size} samples).")
+        logging.info(f"Jetson: Resources cleaned up (Elapsed Time: {elapsed_time:.2f}s, Data Size: {data_size} samples).")

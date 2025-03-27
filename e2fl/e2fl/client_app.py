@@ -52,17 +52,33 @@ class FlowerClient(NumPyClient):
 
         interfaces = self.get_network_interface()
         if 'wlp1s0' in interfaces:
-            self.interface = 'wlp1s0' if validate_network_interface('wlp1s0') else "wlan0"
+            self.interface = 'wlp1s0' if self.validate_network_interface('wlp1s0') else "wlan0"
+            self.device_name = 'RPi5'
+            self.power = "PMIC"
         elif 'eth0' in interfaces:
-            self.interface = 'eth0' if validate_network_interface('eth0') else "wlan0"
+            self.interface = 'eth0' if self.validate_network_interface('eth0') else "wlan0"
+            self.device_name = 'jetson'
+            self.power = "INA3221"
         else:
             self.interface = 'wlan0'
+            self.device_name = 'RPi3'
+            self.power = "None"
 
         self.start_net = self.get_network_usage()
         self.end_net = None
     
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.net.to(self.device)
+
+        # Return Client instance
+        # Measure power consumption if a power monitor is initialized
+        power_monitor = None
+        if power != "None":
+            power_monitor = get_power_monitor(self.power, device_name=socket.gethostname())
+        if power_monitor:
+            logger.info("Starting power monitoring...")
+            power_monitor.start(freq=1)  # Start monitoring with 1-second intervals
+            time.sleep(10)  # Example duration for monitoring
 
     def get_network_interface(self):
         interfaces = psutil.net_if_addrs().keys()
@@ -75,6 +91,18 @@ class FlowerClient(NumPyClient):
             return {"bytes_sent": net_io[self.interface].bytes_sent, "bytes_recv": net_io[self.interface].bytes_recv}
         else:
             raise ValueError(f"Interface {self.interface} not found.")
+    
+    def validate_network_interface(self, interface):
+        """
+        Validate if the given network interface exists on the system.
+        :param interface: Network interface name to validate.
+        :return: True if the interface exists, False otherwise.
+        """
+        if interface in psutil.net_if_addrs():
+            return True
+        else:
+            logging.error(f"Invalid network interface: {interface}")
+            return False
 
     def fit(self, parameters, config):
         logger.info(f"[{time.time()}] Client sampled for fit()")
@@ -113,6 +141,15 @@ class FlowerClient(NumPyClient):
         loss, accuracy = test(self.net, self.valloader, self.device)
         logger.info(f"[{time.time()}] Evaluation completed with accuracy: {accuracy}")
 
+        if self.power_monitor:
+            elapsed_time, data_size = self.power_monitor.stop()
+            if elapsed_time is not None:
+                logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
+                self.power_monitor.save(f"power_{self.device_name}_{time.time()}.csv")
+                self.power_monitor.close()
+            else:
+                logger.warning("Power monitoring failed or returned no data.")
+
         return loss, len(self.valloader.dataset), {"accuracy": accuracy}
 
 def validate_network_interface(interface):
@@ -143,13 +180,6 @@ def client_fn(context: Context):
     num_partitions = context.node_config["num-partitions"]
     trainloader, valloader = load_data(partition_id, num_partitions)
     local_epochs = context.run_config["local-epochs"]
-
-    # Return Client instance
-    # Measure power consumption if a power monitor is initialized
-    if power_monitor:
-        logger.info("Starting power monitoring...")
-        power_monitor.start(freq=1)  # Start monitoring with 1-second intervals
-        time.sleep(10)  # Example duration for monitoring
 
     return FlowerClient(net, trainloader, valloader, local_epochs).to_client()
 
@@ -186,9 +216,7 @@ logger.info([f'[{time.time()}] Client Start!'])
 logger.info(f"Using network interface: {wlan_interf}")
 start_net = get_network_usage(wlan_interf)
 
-power_monitor = None
-if power != "None":
-    power_monitor = get_power_monitor(power, device_name=socket.gethostname())
+
 
 # Flower ClientApp
 app = ClientApp(client_fn)

@@ -141,12 +141,12 @@ class PMICMonitor(PowerMonitor):
             with open(filepath, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 # Write the global start time in the header
-                writer.writerow([f"start_time", f"{self.start_time}"])
-                writer.writerow(["timestamp", "power_mW"])
+                #writer.writerow([f"start_time", f"{self.start_time}"])
+                writer.writerow(["Timestamp (s)", "Power (mW)"])
                 # Write each (timestamp, power) pair into the file
                 with self.lock:
                     for timestamp, power in self.power_data:
-                        writer.writerow([f"{timestamp:.2f}", power])
+                        writer.writerow([f"{timestamp:.2f}", f"{power:.2f}"])
             logging.info(f"RPi5: Data saved to {filepath}.")
         except Exception as e:
             logging.error(f"Failed to save data to {filepath}: {e}")
