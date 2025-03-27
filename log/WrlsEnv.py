@@ -1,6 +1,7 @@
 import subprocess
 import re
 from pprint import pprint 
+import datetime
 
 
 class Timer():
@@ -90,29 +91,29 @@ class WiFi():
                     interfaces[current_interface]['ESSID'] = essid.group(1)
             # Quality 추출 Signal level 추출
             elif "Link Quality" in line:
-                quality = re.search('Link Quality=(\d+)/(\d+)  Signal level=(-?\d+) dBm', line)
+                quality = re.search(r'Link Quality=(\d+)/(\d+)  Signal level=(-?\d+) dBm', line)
                 if quality:
                     interfaces[current_interface]['Link Quality'] = quality.group(1)
                     interfaces[current_interface]['Signal level'] = quality.group(3)
             # Bit Rate와 Tx-Power추출
             elif "Bit Rate" in line: # and Tx-Power
-                TX_power = re.search('Bit Rate=(\d+[.]?\d?) Mb/s   Tx-Power=(\d+) dBm', line)
+                TX_power = re.search(r'Bit Rate=(\d+[.]?\d?) Mb/s   Tx-Power=(\d+) dBm', line)
                 if TX_power:
                     interfaces[current_interface]['Bit Rate'] = TX_power.group(1)
                     interfaces[current_interface]['Tx-Power'] = TX_power.group(2)
             # Retry short limit 추출
             elif "Retry short limit" in line:
-                retry_limit = re.search('Retry short limit:(\d)', line)
+                retry_limit = re.search(r'Retry short limit:(\d)', line)
                 if retry_limit:
                     interfaces[current_interface]['Retry short limit'] = retry_limit.group(1)
             # Frequency 추출
             elif "Frequency" in line:
-                freq = re.search('Frequency:(\d+.+\d) GHz', line)
+                freq = re.search(r'Frequency:(\d+.+\d) GHz', line)
                 if freq:
                     interfaces[current_interface]['Frequency'] = freq.group(1)
             # RX invalid nwid 추출
             elif "Rx invalid nwid" in line:
-                rx_nwid = re.search('Rx invalid nwid:(\d)', line)
+                rx_nwid = re.search(r'Rx invalid nwid:(\d)', line)
                 if rx_nwid:
                     interfaces[current_interface]['Rx invalid nwid'] = rx_nwid.group(1)
         return interfaces

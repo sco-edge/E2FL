@@ -3,6 +3,7 @@
 import subprocess
 import time
 import threading
+import re
 
 import csv
 import datetime
@@ -24,34 +25,70 @@ class PMICMonitor(PowerMonitor):
 
     def _read_power(self, timeout=5):
         """
-        Executes the 'vcgencmd pmmic_read_adc' command to retrieve the power consumption.
+        Executes the 'vcgencmd pmic_read_adc' command to retrieve the power consumption.
         :return: Power consumption in mW (float)
+
+        $ sudo mknod /dev/vcio c 100 0
+        $ sudo chmod 666 /dev/vcio
+
         """
         try:
-            result = subprocess.run(['vcgencmd', 'pmmic_read_adc'], stdout=subprocess.PIPE, text=True, check=True, timeout=timeout)
-            power = result.stdout.strip()
+            result = subprocess.run(['vcgencmd', 'pmic_read_adc'], stdout=subprocess.PIPE, text=True, check=True, timeout=timeout)
+            lines = result.stdout.splitlines()
+            
+            volt_dict = {}
+            curr_dict = {}
+
+            for line in lines:
+                match = re.search(r'([A-Z0-9_]+)_[VA] (current|volt)\((\d+)\)=([\d.]+)', line)
+                if match:
+                    name = match.group(1)
+                    typ = match.group(2)  # current or volt
+                    value = float(match.group(4))
+                    if typ == "current":
+                        curr_dict[name] = value
+                    elif typ == "volt":
+                        volt_dict[name] = value
+
+            # 공통 key 기준으로 전력 계산
+            power = 0
+            for key in curr_dict:
+                if key in volt_dict:
+                    power += curr_dict[key] * volt_dict[key]
+
             logging.info(f"Power read: {power} mW")
             return float(power)
         except subprocess.CalledProcessError as e:
-            self.handle_error(f"Command failed: {e}")
+            logging.error(f"Command failed: {e}")
+            return None
         except ValueError:
-            self.handle_error("Invalid power value received.")
+            logging.error("Invalid power value received.")
+            return None
         except subprocess.TimeoutExpired:
-            self.handle_error("Command timed out.")
+            logging.error("Command timed out.")
+            return None
         except Exception as e:
-            self.handle_error(f"Unexpected error: {e}")
-        return None
+            logging.error(f"Unexpected error: {e}")
+            return None
 
     def _monitor(self):
         """
         Monitor the energy usage in a separate thread
         """
+        logging.info(f"{self.device_name}: Power monitoring started.")
         while self.monitoring:
             power = self._read_power()
             current_time = datetime.now() - self.start_time  # 수정: datetime.now() 사용
             if power is not None:
-                self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
+                with self.lock:
+                    self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
             time.sleep(self.freq)
+        logging.info(f"{self.device_name}: Power monitoring stopped.")
+
+    def get_clock(self, name):
+        res = subprocess.run(["vcgencmd","measure_clock",name], capture_output=True)
+        res = re.search('=([0-9]+)', res.stdout.decode("utf-8"))
+        return res.group(1)
 
     def start(self, freq):
         """
@@ -71,16 +108,21 @@ class PMICMonitor(PowerMonitor):
         logging.debug(f"{self.device_name}: Monitoring started with frequency {self.freq}s at {self.start_time} (UTC).")
 
     def stop(self):
-        if not self.monitoring:
-            logging.info("Energy monitoring is not running.")
-            return None, None
+        """
+        Stop power monitoring and return elapsed time and data size.
+        """
+        with self.lock:
+            if not self.monitoring:
+                logging.warning(f"{self.device_name}: Monitoring is not running.")
+                return None, None
 
-        self.monitoring = False
-        self.thread.join()
-        self.end_time = datetime.now()
-        elapsed_time = self.end_time - self.start_time
+            self.monitoring = False
+
+        if self.thread and self.thread.is_alive():
+            self.thread.join()  # Ensure the thread is properly joined
+        elapsed_time = (datetime.now() - self.start_time).total_seconds()
         data_size = len(self.power_data)
-        logging.debug(f"{self.device_name}: Monitoring stopped. Time: {elapsed_time}s, Data size: {data_size}.")
+        logging.info(f"{self.device_name}: Monitoring stopped. Duration: {elapsed_time:.2f}s, Data size: {data_size}.")
         return elapsed_time, data_size
 
     def save(self, filepath):
