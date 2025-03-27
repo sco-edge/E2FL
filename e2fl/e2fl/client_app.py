@@ -154,14 +154,14 @@ def client_fn(context: Context):
     return FlowerClient(net, trainloader, valloader, local_epochs).to_client()
 
 interfaces = get_network_interface()
-if 'eth0' in interfaces:
-    wlan_interf = 'eth0' if validate_network_interface('eth0') else "wlan0"
-    device_name = 'jetson'
-    power = "INA3221"
-elif 'wlp1s0' in interfaces:
+if 'wlp1s0' in interfaces:
     wlan_interf = 'wlp1s0' if validate_network_interface('wlp1s0') else "wlan0"
     device_name = 'RPi5'
     power = "PMIC"
+elif 'eth0' in interfaces:
+    wlan_interf = 'eth0' if validate_network_interface('eth0') else "wlan0"
+    device_name = 'jetson'
+    power = "INA3221"
 else:
     wlan_interf = 'wlan0'
     device_name = 'RPi3'
