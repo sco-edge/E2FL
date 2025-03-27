@@ -39,7 +39,11 @@ learning-rate = 0.1
 batch-size = 32
 
 [tool.flwr.federations]
-default = "remote"
+default = "local-deployment"
+
+[tool.flwr.federations.local-deployment]
+address = '192.168.0.17:8080'
+insecure = true
 
 [tool.flwr.federations.local-sim]
 options.num-supernodes = 10
