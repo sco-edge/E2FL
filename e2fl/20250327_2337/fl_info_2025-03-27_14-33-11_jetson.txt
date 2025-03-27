@@ -1,0 +1,11 @@
+INFO:test:['[2025-03-27 14:33:11.699320] Client Start!']
+INFO:test:Using network interface: eth0
+INFO:test:['[2025-03-27 14:33:11.700088] Communication end: 1743085991.700087']
+INFO:test:['[2025-03-27 14:33:11.700498] Evaluation phase (eth0): [sent: 0, recv: 0]']
+INFO:test:Starting power monitoring...
+INFO:test:[2025-03-27 14:33:27.341016] Client sampled for evaluate()
+INFO:test:[2025-03-27 14:33:27.346993] Starting evaluation...
+INFO:test:[2025-03-27 14:33:31.686523] Evaluation completed with accuracy: 0.1358
+INFO:test:Measured power consumption: Duration=14.361201s, Data size=1232 samples.
+ERROR:root:Jetson: Failed to save power data: Unknown format code 'f' for object of type 'str'
+INFO:flwr:[flwr-clientapp] Push `ClientAppOutputs` for token 3530205196547362973
