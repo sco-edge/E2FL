@@ -1,0 +1,11 @@
+INFO:test:['[2025-03-27 14:34:49.561812] Client Start!']
+INFO:test:Using network interface: wlp1s0
+INFO:test:['[2025-03-27 14:34:49.562478] Communication end: 1743086089.5624764']
+INFO:test:['[2025-03-27 14:34:49.562883] Evaluation phase (wlp1s0): [sent: 0, recv: 0]']
+INFO:test:Starting power monitoring...
+INFO:test:[2025-03-27 14:35:05.072751] Client sampled for evaluate()
+INFO:test:[2025-03-27 14:35:05.075352] Starting evaluation...
+INFO:test:[2025-03-27 14:35:09.827960] Evaluation completed with accuracy: 0.217
+INFO:test:Measured power consumption: Duration=14.783275s, Data size=410 samples.
+ERROR:root:Failed to save data to power_RPi5_2025-03-27 14:35:09.842865.csv: Unknown format code 'f' for object of type 'str'
+INFO:flwr:[flwr-clientapp] Push `ClientAppOutputs` for token 8513088213970161617

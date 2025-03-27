@@ -1,0 +1,10 @@
+INFO:test:['[2025-03-27 14:35:23.951714] Client Start!']
+INFO:test:Using network interface: wlp1s0
+INFO:test:['[2025-03-27 14:35:23.952394] Communication end: 1743086123.9523923']
+INFO:test:['[2025-03-27 14:35:23.952806] Evaluation phase (wlp1s0): [sent: 0, recv: 0]']
+INFO:test:Starting power monitoring...
+INFO:test:[2025-03-27 14:35:39.376210] Client sampled for fit()
+INFO:test:Network usage during fit: [sent: 3331, recv: 7194]
+INFO:test:[2025-03-27 14:35:39.379177] Starting training...
+INFO:test:[2025-03-27 14:36:14.336877] Training completed.
+INFO:flwr:[flwr-clientapp] Push `ClientAppOutputs` for token 315150630660009991
