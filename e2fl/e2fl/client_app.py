@@ -1,7 +1,7 @@
 """E2FL: A Flower / PyTorch app."""
-from log import WrlsEnv
-from power import _power_monitor_interface
-from power.powermon import get_power_monitor
+from e2fl.log import WrlsEnv
+from e2fl.power import _power_monitor_interface
+from e2fl.power.powermon import get_power_monitor
 
 from datetime import datetime
 from collections import OrderedDict
