@@ -50,7 +50,7 @@ class FlowerClient(NumPyClient):
         self.valloader = valloader
         self.local_epochs = local_epochs
 
-        interfaces = get_network_interface()
+        interfaces = self.get_network_interface()
         if 'eth0' in interfaces:
             self.interface = 'eth0' if validate_network_interface('eth0') else "wlan0"
         elif 'wlp1s0' in interfaces:
@@ -63,6 +63,10 @@ class FlowerClient(NumPyClient):
     
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.net.to(self.device)
+
+    def get_network_interface():
+        interfaces = psutil.net_if_addrs().keys()
+        return list(interfaces)
 
     def get_network_usage(self):
         """Get the current network usage for the specified interface."""
@@ -125,7 +129,7 @@ def validate_network_interface(interface):
 
 def get_network_interface():
     interfaces = psutil.net_if_addrs().keys()
-    return list[interfaces]
+    return list(interfaces)
 
 def get_network_usage(interf):
     net_io = psutil.net_io_counters(pernic=True)
