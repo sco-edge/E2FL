@@ -202,9 +202,11 @@ net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
 net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
 logger.info([f'[{time.time()}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
 
+'''
 if power_monitor:
     elapsed_time, data_size = power_monitor.stop()
     if elapsed_time is not None:
         logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
     else:
         logger.warning("Power monitoring failed or returned no data.")
+'''
