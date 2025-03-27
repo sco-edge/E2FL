@@ -160,7 +160,7 @@ class FlowerClient(NumPyClient):
                 self.power_monitor.close()
             else:
                 logger.warning("Power monitoring failed or returned no data.")
-        '''_
+        '''
         return loss, len(self.valloader.dataset), {"accuracy": accuracy}
 
 def validate_network_interface(interface):
