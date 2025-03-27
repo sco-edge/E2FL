@@ -44,12 +44,19 @@ class CustomFormatter(logging.Formatter):
 
 # Define Flower Client and client_fn
 class FlowerClient(NumPyClient):
-    def __init__(self, net, trainloader, valloader, local_epochs, interface):
+    def __init__(self, net, trainloader, valloader, local_epochs):
         self.net = net
         self.trainloader = trainloader
         self.valloader = valloader
         self.local_epochs = local_epochs
-        self.interface = interface
+
+        interfaces = get_network_interface()
+        if 'eth0' in interfaces:
+            self.interface = 'eth0' if validate_network_interface('eth0') else "wlan0"
+        elif 'wlp1s0' in interfaces:
+            self.interface = 'wlp1s0' if validate_network_interface('wlp1s0') else "wlan0"
+        else:
+            self.interface = 'wlan0'
 
         self.start_net = self.get_network_usage(self.interface)
         self.end_net = None
@@ -140,7 +147,7 @@ def client_fn(context: Context):
         power_monitor.start(freq=1)  # Start monitoring with 1-second intervals
         time.sleep(10)  # Example duration for monitoring
 
-    return FlowerClient(net, trainloader, valloader, local_epochs, interface = wlan_interf).to_client()
+    return FlowerClient(net, trainloader, valloader, local_epochs).to_client()
 
 interfaces = get_network_interface()
 if 'eth0' in interfaces:
