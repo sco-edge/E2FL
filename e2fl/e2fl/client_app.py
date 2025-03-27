@@ -51,14 +51,14 @@ class FlowerClient(NumPyClient):
         self.local_epochs = local_epochs
 
         interfaces = self.get_network_interface()
-        if 'eth0' in interfaces:
-            self.interface = 'eth0' if validate_network_interface('eth0') else "wlan0"
-        elif 'wlp1s0' in interfaces:
+        if 'wlp1s0' in interfaces:
             self.interface = 'wlp1s0' if validate_network_interface('wlp1s0') else "wlan0"
+        elif 'eth0' in interfaces:
+            self.interface = 'eth0' if validate_network_interface('eth0') else "wlan0"
         else:
             self.interface = 'wlan0'
 
-        self.start_net = self.get_network_usage(self.interface)
+        self.start_net = self.get_network_usage()
         self.end_net = None
     
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
