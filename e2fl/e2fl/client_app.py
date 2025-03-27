@@ -29,7 +29,7 @@ parser.add_argument(
     "--power",
     type=str,
     default='None',
-    help="\{None, PMIC, INA3221\}",
+    help="None, PMIC, INA3221",
 )
 
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
