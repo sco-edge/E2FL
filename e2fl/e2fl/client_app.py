@@ -184,7 +184,7 @@ def get_network_usage(interf):
     #net_io = psutil.net_io_counters(pernic=True)
     return {"bytes_sent": net_io[interf].bytes_sent, "bytes_recv": net_io[interf].bytes_recv}
 
-def cleanup_power_monitor(power_monitor):
+def cleanup_power_monitor(power_monitor, start_net):
     logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Stopping power monitor via atexit...")
     if power_monitor:
         elapsed_time, data_size = power_monitor.stop()
@@ -194,6 +194,16 @@ def cleanup_power_monitor(power_monitor):
             power_monitor.close()
         else:
             logger.warning("Power monitoring failed or returned no data.")
+    
+    end_time = time.time()
+    logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Communication end: {end_time}"])
+
+    # Log the network IO
+    end_net = get_network_usage(wlan_interf)
+    net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
+    net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
+    logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]"])
+
 
 def client_fn(context: Context):
     # Load model and data
@@ -247,19 +257,10 @@ if power_monitor:
     logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting power monitoring...")
     power_monitor.start(freq=0.01)  # Start monitoring with 1-second intervals
     time.sleep(5)  # Example duration for monitoring
-    atexit.register(cleanup_power_monitor, power_monitor)
+    atexit.register(cleanup_power_monitor, power_monitor, start_net)
 
 # Flower ClientApp
 app = ClientApp(client_fn)
-
-end_time = time.time()
-logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Communication end: {end_time}"])
-
-# Log the network IO
-end_net = get_network_usage(wlan_interf)
-net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
-net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
-logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]"])
 
 time.sleep(5)
 
