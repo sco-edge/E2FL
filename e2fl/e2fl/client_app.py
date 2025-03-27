@@ -18,20 +18,6 @@ from flwr.client import ClientApp, NumPyClient
 from flwr.common import Context
 from e2fl.task import Net, get_weights, load_data, set_weights, test, train
 
-parser = argparse.ArgumentParser(description="Flower Embedded devices")
-parser.add_argument(
-    "--interface",
-    type=str,
-    default="wlan0",
-    help="Wi-Fi Interface",
-)
-parser.add_argument(
-    "--power",
-    type=str,
-    default='None',
-    help="None, PMIC, INA3221",
-)
-
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
 class CustomFormatter(logging.Formatter):
