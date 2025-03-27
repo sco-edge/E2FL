@@ -64,7 +64,7 @@ class FlowerClient(NumPyClient):
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.net.to(self.device)
 
-    def get_network_interface():
+    def get_network_interface(self):
         interfaces = psutil.net_if_addrs().keys()
         return list(interfaces)
 
