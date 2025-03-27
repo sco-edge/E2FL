@@ -181,7 +181,7 @@ class INA3221(PowerMonitor):
                     writer = csv.writer(csvfile)
                     writer.writerow(["Timestamp (s)", "Power (mW)"])
                     for timestamp, power in self.power_data:
-                        writer.writerow([f"{timestamp:.2f}", f"{power:.2f}"])
+                        writer.writerow([f"{timestamp}", f"{power:.2f}"])
                 logging.info(f"Jetson: Data saved to {filepath}.")
             except Exception as e:
                 logging.error(f"Jetson: Failed to save power data: {e}")

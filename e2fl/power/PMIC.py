@@ -148,7 +148,7 @@ class PMICMonitor(PowerMonitor):
                 # Write each (timestamp, power) pair into the file
                 with self.lock:
                     for timestamp, power in self.power_data:
-                        writer.writerow([f"{timestamp:.2f}", f"{power:.2f}"])
+                        writer.writerow([f"{timestamp}", f"{power:.2f}"])
             logging.info(f"RPi5: Data saved to {filepath}.")
         except Exception as e:
             logging.error(f"Failed to save data to {filepath}: {e}")
