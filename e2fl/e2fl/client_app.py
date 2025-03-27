@@ -186,12 +186,12 @@ app = ClientApp(
 )
 
 end_time = time.time()
-logger.info([f'[{time.time()}] Communication end: {end_time}']).cid], valset=valsets[args.cid], dataset=arg_dataset, model=args.model, start_net=start_net, end_net=end_net
+logger.info([f'[{time.time()}] Communication end: {end_time}'])
 
 # Log the network IO
 end_net = get_network_usage(wlan_interf)
 net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
-net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]e()}] Communication end: {end_time}'])
+net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
 logger.info([f'[{time.time()}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
 
 if power_monitor:
