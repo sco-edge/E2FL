@@ -105,7 +105,7 @@ class FlowerClient(NumPyClient):
             return False
 
     def fit(self, parameters, config):
-        logger.info(f"[{time.time()}] Client sampled for fit()")
+        logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Client sampled for fit()")
 
         # 네트워크 사용량 기록
         self.end_net = self.get_network_usage()
@@ -115,14 +115,14 @@ class FlowerClient(NumPyClient):
 
         set_weights(self.net, parameters)
 
-        logger.info(f"[{time.time()}] Starting training...")
+        logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting training...")
         train_loss = train(
             self.net,
             self.trainloader,
             self.local_epochs,
             self.device,
         )
-        logger.info(f"[{time.time()}] Training completed.")
+        logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Training completed.")
 
         # 학습 후 네트워크 상태 업데이트
         self.start_net = self.get_network_usage()
@@ -134,18 +134,18 @@ class FlowerClient(NumPyClient):
         )
 
     def evaluate(self, parameters, config):
-        logger.info(f"[{time.time()}] Client sampled for evaluate()")
+        logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Client sampled for evaluate()")
         set_weights(self.net, parameters)
 
-        logger.info(f"[{time.time()}] Starting evaluation...")
+        logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting evaluation...")
         loss, accuracy = test(self.net, self.valloader, self.device)
-        logger.info(f"[{time.time()}] Evaluation completed with accuracy: {accuracy}")
+        logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation completed with accuracy: {accuracy}")
 
         if self.power_monitor:
             elapsed_time, data_size = self.power_monitor.stop()
             if elapsed_time is not None:
                 logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
-                self.power_monitor.save(f"power_{self.device_name}_{time.time()}.csv")
+                self.power_monitor.save(f"power_{self.device_name}_{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}.csv")
                 self.power_monitor.close()
             else:
                 logger.warning("Power monitoring failed or returned no data.")
@@ -206,11 +206,11 @@ ch.setFormatter(CustomFormatter())
 logger.addHandler(ch)
 
 pid = psutil.Process().ppid()
-logger.info(f"[{time.time()}] PPID: {pid}")
+logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] PPID: {pid}")
 current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 logging.basicConfig(filename=f"fl_info_{current_time}_{device_name}.txt")
 fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{current_time}.txt")
-logger.info([f'[{time.time()}] Client Start!'])
+logger.info([f'[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Client Start!'])
 
 
 logger.info(f"Using network interface: {wlan_interf}")
@@ -222,13 +222,13 @@ start_net = get_network_usage(wlan_interf)
 app = ClientApp(client_fn)
 
 end_time = time.time()
-logger.info([f'[{time.time()}] Communication end: {end_time}'])
+logger.info([f'[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Communication end: {end_time}'])
 
 # Log the network IO
 end_net = get_network_usage(wlan_interf)
 net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
 net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
-logger.info([f'[{time.time()}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
+logger.info([f'[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]'])
 
 '''
 if power_monitor:

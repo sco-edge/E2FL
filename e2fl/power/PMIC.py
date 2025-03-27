@@ -85,7 +85,9 @@ class PMICMonitor(PowerMonitor):
         """
         logging.info(f"RPi5: Power monitoring started.")
         while self.monitoring:
-            timestamp = (datetime.now() - self.start_time).total_seconds()
+            #timestamp = (datetime.now() - self.start_time).total_seconds()
+            now = datetime.now()
+            timestamp = now.strftime('%Y-%m-%d %H:%M:%S.%f')
             power = self.read_power()
             if power is not None:
                 with self.lock:
