@@ -77,7 +77,7 @@ class FlowerClient(NumPyClient):
             self.power_monitor = get_power_monitor(self.power, device_name=socket.gethostname())
         if self.power_monitor:
             logger.info("Starting power monitoring...")
-            self.power_monitor.start(freq=1)  # Start monitoring with 1-second intervals
+            self.power_monitor.start(freq=0.01)  # Start monitoring with 1-second intervals
             time.sleep(10)  # Example duration for monitoring
 
     def get_network_interface(self):
