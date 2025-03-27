@@ -1,0 +1,216 @@
+(flower) wwjang@wwjang-System-Product-Name:~/E2FL/e2fl$ flower-superlink --insecure
+INFO :      Starting Flower SuperLink
+WARNING :   Option `--insecure` was set. Starting insecure HTTP server with unencrypted communication (TLS disabled). Proceed only if you understand the risks.
+INFO :      Flower Deployment Engine: Starting Exec API on 0.0.0.0:9093
+INFO :      Flower ECE: Starting ServerAppIo API (gRPC-rere) on 0.0.0.0:9091
+INFO :      Flower ECE: Starting Fleet API (gRPC-rere) on 0.0.0.0:9092
+INFO :      [Fleet.CreateNode] Request ping_interval=30.0
+INFO :      [Fleet.CreateNode] Created node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.CreateNode] Request ping_interval=30.0
+INFO :      [Fleet.CreateNode] Created node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      ExecServicer.StartRun
+INFO :      Created run 10112041137525228989
+INFO :      ExecServicer.StreamLogs
+INFO :      Launching flwr-serverapp subprocess. Connects to SuperLink on 127.0.0.1:9091
+INFO :      Start `flwr-serverapp` process
+INFO :      Starting run 10112041137525228989
+🎊 Successfully installed e2fl to /home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.9c02a357.
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+/home/wwjang/.local/lib/python3.10/site-packages/matplotlib/projections/__init__.py:63: UserWarning: Unable to import Axes3D. This may be due to multiple versions of Matplotlib being installed (e.g. as a system package and as a pip package). As a result, the 3D projection is not available.
+  warnings.warn("Unable to import Axes3D. This may be due to multiple versions of "
+INFO :      Starting Flower ServerApp, config: num_rounds=3, no round_timeout
+INFO :
+INFO :      [INIT]
+INFO :      Using initial global parameters provided by strategy
+INFO :      Starting evaluation of initial global parameters
+INFO :      Evaluation returned no results (`None`)
+INFO :
+INFO :      [ROUND 1]
+INFO :      configure_fit: strategy sampled 2 clients (out of 2)
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.GetRun] Requesting `Run` for run_id=10112041137525228989
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.GetRun] Requesting `Run` for run_id=10112041137525228989
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      [Fleet.PushMessages] Push replies from node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PushMessages] Push replies from node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      aggregate_fit: received 2 results and 0 failures
+WARNING :   No fit_metrics_aggregation_fn provided
+INFO :      configure_evaluate: strategy sampled 2 clients (out of 2)
+INFO :      ExecServicer.StreamLogs
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      [Fleet.PushMessages] Push replies from node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PushMessages] Push replies from node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      aggregate_evaluate: received 2 results and 0 failures
+WARNING :   No evaluate_metrics_aggregation_fn provided
+INFO :
+INFO :      [ROUND 2]
+INFO :      configure_fit: strategy sampled 2 clients (out of 2)
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      ExecServicer.StreamLogs
+INFO :      [Fleet.PushMessages] Push replies from node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PushMessages] Push replies from node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      aggregate_fit: received 2 results and 0 failures
+INFO :      configure_evaluate: strategy sampled 2 clients (out of 2)
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      ExecServicer.StreamLogs
+INFO :      [Fleet.PushMessages] Push replies from node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PushMessages] Push replies from node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      aggregate_evaluate: received 2 results and 0 failures
+INFO :
+INFO :      [ROUND 3]
+INFO :      configure_fit: strategy sampled 2 clients (out of 2)
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      [Fleet.PushMessages] Push replies from node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      ExecServicer.StreamLogs
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PushMessages] Push replies from node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      aggregate_fit: received 2 results and 0 failures
+INFO :      configure_evaluate: strategy sampled 2 clients (out of 2)
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.GetFab] Requesting FAB for fab_hash=9c02a357a2d1c5533248fd3873fe9b989ce1f9dc354923090c4ee3d27292003c
+INFO :      [Fleet.PushMessages] Push replies from node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PushMessages] Push replies from node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      aggregate_evaluate: received 2 results and 0 failures
+INFO :
+INFO :      [SUMMARY]
+INFO :      Run finished 3 round(s) in 288.59s
+INFO :          History (loss, distributed):
+INFO :                  round 1: 2.2365817203643217
+INFO :                  round 2: 1.8990513974693932
+INFO :                  round 3: 1.7228988838043942
+INFO :
+INFO :      All logs for run ID `10112041137525228989` returned
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.PullMessages] node_id=458036160511640197
+INFO :      [Fleet.PullMessages] node_id=16305214406726912
+INFO :      [Fleet.DeleteNode] Delete node_id=458036160511640197
+INFO :      [Fleet.DeleteNode] Delete node_id=16305214406726912
+^CINFO :      SuperLink terminated gracefully.
+
