@@ -23,6 +23,32 @@ import torch.optim as optim
 from E2FL.task import Net, get_weights
 
 
+
+parser = argparse.ArgumentParser(description="Flower Embedded devices")
+parser.add_argument(
+    "--server_address",
+    type=str,
+    default="0.0.0.0:8080",
+    help=f"gRPC server address (deafault '0.0.0.0:8080')",
+)
+parser.add_argument(
+    "--rounds",
+    type=int,
+    default=5,
+    help="Number of rounds of federated learning (default: 5)",
+)
+parser.add_argument(
+    "--sample_fraction",
+    type=float,
+    default=1.0,
+    help="Fraction of available clients used for fit/evaluate (default: 1.0)",
+)
+parser.add_argument(
+    "--min_num_clients",
+    type=int,
+    default=2,
+    help="Minimum number of available clients required for sampling (default: 2)",
+)
 _UPTIME_RPI3B = 500
 
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -48,7 +74,80 @@ class CustomFormatter(logging.Formatter):
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
+
+def get_ip_address():
+    try:
+        hostname = socket.gethostname()
+        ip_addr = socket.gethostbyname(hostname)
+        return ip_addr
+    except socket.error as e:
+        print(f'Unable to get IP address: {e}')
+        return None
+
+def change_WiFi_interface(interf = 'wlan0', channel = 11, rate = '11M', txpower = 15):
+    # change Wi-Fi interface 
+    result = subprocess.run([f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    return result
+
+def change_WiFi_interface_client(client_ssh, interf = 'wlan0', channel = 11, rate = '11M', txpower = 15):
+    # change Wi-Fi interface 
+    stdin, stdout, stderr = client_ssh.send(f"iwconfig {interf} channel {channel} rate {rate} txpower {txpower}") # exec_command
+    time.sleep(2)
     
+    # Receive the output
+    output = client_ssh.recv(65535).decode() # 65535 is the maximum bytes that can read by recv() method.
+
+    if 'error' in output.lower() or 'command not found' in output.lower():
+            logger.error("Error detected in the command output.")
+            return False
+    else:
+        logger.info("iwconfig executed successfully.")
+        logger.info(output)
+    
+    return True
+
+def get_client_SSH(client_ip, wait_time):
+    # Wait for boot up
+    print(f"Wait {wait_time} seconds for the edge device to boot.")
+
+    # Set up SSH service
+    client_SSH = paramiko.SSHClient()
+    client_SSH.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Add the host key automatically AutoAddPolicy()
+    mykey = paramiko.RSAKey.from_private_key_file(private_key_path)
+
+    # ssh -i {rsa} {USER}@{IP_ADDRESS}
+    try_count = 0
+    start_time = time.time()
+    while 1:
+        print(f'{try_count} try ...')
+        try:
+            client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", pkey=mykey, look_for_keys=False)
+            break
+        except:
+            try_count = try_count + 1
+            pass
+        time.sleep(10)
+        if time.time() - start_time > _UPTIME_RPI3B:
+            try:
+                client_SSH.connect(hostname = client_ip, port = ssh_port, username = client_ssh_id, passphrase="", pkey=mykey, look_for_keys=False)
+            except Exception as e:
+                logger.error("SSH is failed: ", e)
+                logger.error(private_key_path)
+                exit(1)
+
+    if client_SSH.get_transport() is not None and client_SSH.get_transport().is_active():
+        logger.info('An SSH connection for the client is established.')
+        # Enable Keep Alive
+        client_SSH.get_transport().set_keepalive(30)
+        logger.debug("Set the client_SSH's keepalive option.")
+    else:
+        logger.debug("client_SSH is closed. exit()")
+        exit()
+
+    client_shell = client_SSH.invoke_shell()
+
+    return client_shell
+
 # FL; define metric aggregation function
 def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
     # Multiply accuracy of each client by number of examples used

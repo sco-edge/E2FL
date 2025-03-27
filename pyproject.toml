@@ -28,7 +28,7 @@ publisher = "flwrlabs"
 
 [tool.flwr.app.components]
 serverapp = "E2FL.server_app:app"
-clientapp = "E2FL.client_app:ap
+clientapp = "E2FL.client_app:app"  # Fixed typo here
 
 [tool.flwr.app.config]
 num-server-rounds = 3
