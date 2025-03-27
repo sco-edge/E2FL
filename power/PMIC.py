@@ -3,6 +3,7 @@
 import subprocess
 import time
 import threading
+import re
 
 import csv
 import datetime
@@ -33,7 +34,28 @@ class PMICMonitor(PowerMonitor):
         """
         try:
             result = subprocess.run(['vcgencmd', 'pmic_read_adc'], stdout=subprocess.PIPE, text=True, check=True, timeout=timeout)
-            power = result.stdout.strip()
+            lines = result.stdout.splitlines()
+            
+            volt_dict = {}
+            curr_dict = {}
+
+            for line in lines:
+                match = re.search(r'([A-Z0-9_]+)_[VA] (current|volt)\((\d+)\)=([\d.]+)', line)
+                if match:
+                    name = match.group(1)
+                    typ = match.group(2)  # current or volt
+                    value = float(match.group(4))
+                    if typ == "current":
+                        curr_dict[name] = value
+                    elif typ == "volt":
+                        volt_dict[name] = value
+
+            # 공통 key 기준으로 전력 계산
+            power = 0
+            for key in curr_dict:
+                if key in volt_dict:
+                    power += curr_dict[key] * volt_dict[key]
+
             logging.info(f"Power read: {power} mW")
             return float(power)
         except subprocess.CalledProcessError as e:
@@ -62,6 +84,11 @@ class PMICMonitor(PowerMonitor):
                     self.power_data.append((current_time, float(power)))  # (timestamp, power) 형태로 저장
             time.sleep(self.freq)
         logging.info(f"{self.device_name}: Power monitoring stopped.")
+
+    def get_clock(self, name):
+        res = subprocess.run(["vcgencmd","measure_clock",name], capture_output=True)
+        res = re.search('=([0-9]+)', res.stdout.decode("utf-8"))
+        return res.group(1)
 
     def start(self, freq):
         """
