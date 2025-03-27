@@ -1,7 +1,7 @@
 """E2FL: A Flower / PyTorch app."""
-from e2fl.log import WrlsEnv
-from e2fl.power import _power_monitor_interface
-from e2fl.power.powermon import get_power_monitor
+from log import WrlsEnv
+from power import _power_monitor_interface
+from power.powermon import get_power_monitor
 
 from datetime import datetime
 from collections import OrderedDict
@@ -58,13 +58,12 @@ class CustomFormatter(logging.Formatter):
 
 # Define Flower Client and client_fn
 class FlowerClient(NumPyClient):
-    def __init__(self, net, trainloader, valloader, local_epochs, interface, power):
+    def __init__(self, net, trainloader, valloader, local_epochs, interface):
         self.net = net
         self.trainloader = trainloader
         self.valloader = valloader
         self.local_epochs = local_epochs
         self.interface = interface
-        self.power = power
 
         self.start_net = self.get_network_usage(self.interface)
         self.end_net = None

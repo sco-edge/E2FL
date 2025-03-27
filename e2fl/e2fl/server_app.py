@@ -1,5 +1,5 @@
 """E2FL: A Flower / PyTorch app."""
-from e2fl.log import WrlsEnv
+from log import WrlsEnv
 from datetime import datetime
 import subprocess, os, logging, time, socket, pickle
 import paramiko, yaml
