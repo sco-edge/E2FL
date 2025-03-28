@@ -64,7 +64,7 @@ class FlowerClient(NumPyClient):
             self.interface = 'wlan0'
             self.device_name = 'RPi3'
             self.power = "None"
-        self.fl_csv_fname = f'fl_{datetime.now().strftime('%Y%m%d')}_{self.device_name}.csv'
+        self.fl_csv_fname = f"fl_{datetime.now().strftime('%Y%m%d')}_{self.device_name}.csv"
 
         self.start_net = self.get_network_usage()
         self.end_net = None
