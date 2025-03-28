@@ -145,7 +145,7 @@ ax.set_xlabel("Time")
 ax.set_ylabel("Bytes")
 
 # Adjust legend to be horizontal
-ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=4)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=4)
 plt.grid(True)
 
 # Format x-axis for time
