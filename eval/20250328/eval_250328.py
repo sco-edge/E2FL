@@ -77,57 +77,37 @@ ts_net_rpi5, net_sent_rpi5, net_recv_rpi5 = load_net_data(fl_state_rpi5)
 # 시각화
 import matplotlib.dates as mdates
 # Plot for Jetson Power
-fig1, ax1 = plt.subplots(figsize=(10, 6))
+fig1, ax1 = plt.subplots(figsize=(12, 6))
 ax1.plot(ts_power_jetson, pw_jetson)
-#ax1.set_title("Jetson Power Consumption Over Time")
-ax1.set_xlabel("Time")
-ax1.set_ylabel("Power (W)")
+# ax1.set_title("Jetson Power Consumption Over Time", fontsize=18)
+ax1.set_xlabel("Time", fontsize=18)
+ax1.set_ylabel("Power (W)", fontsize=18)
+plt.xticks(fontsize=18)  # Increase xticks font size
+plt.yticks(fontsize=18)  # Increase yticks font size
 plt.grid(True)
-#ax1.legend()
+# ax1.legend(fontsize=18)
 ax1.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
-#plt.show()
+# plt.show()
+plt.tight_layout()
 plt.savefig("fig_power_jetson.png")
 plt.close()
 
 # Plot for RPi5 Power
-fig2, ax2 = plt.subplots(figsize=(10, 6))
+fig2, ax2 = plt.subplots(figsize=(12, 6))
 ax2.plot(ts_power_rpi5, pw_rpi5)
-#ax2.set_title("RPi5 Power Consumption Over Time")
-ax2.set_xlabel("Time")
-ax2.set_ylabel("Power (W)")
+# ax2.set_title("RPi5 Power Consumption Over Time", fontsize=18)
+ax2.set_xlabel("Time", fontsize=18)
+ax2.set_ylabel("Power (W)", fontsize=18)
+plt.xticks(fontsize=18)  # Increase xticks font size
+plt.yticks(fontsize=18)  # Increase yticks font size
 plt.grid(True)
-#ax2.legend()
+# ax2.legend(fontsize=18)
 ax2.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
-#plt.show()
+# plt.show()
+plt.tight_layout()
 plt.savefig("fig_power_rpi5.png")
 plt.close()
-'''
-# Plot for Jetson Network Usage
-fig3, ax3 = plt.subplots()
-ax3.plot(ts_net_jetson, net_sent_jetson, label="Sent")
-ax3.plot(ts_net_jetson, net_recv_jetson, label="Recv")
-#ax3.set_title("Jetson Network Usage Over Time")
-ax3.set_xlabel("Time")
-ax3.set_ylabel("Bytes")
-ax3.legend()
-ax3.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
-#plt.show()
-plt.savefig("fig_jetson_network.png")
-plt.close()
 
-# Plot for RPi5 Network Usage
-fig4, ax4 = plt.subplots()
-ax4.plot(ts_net_rpi5, net_sent_rpi5, label="Sent")
-ax4.plot(ts_net_rpi5, net_recv_rpi5, label="Recv")
-#ax4.set_title("RPi5 Network Usage Over Time")
-ax4.set_xlabel("Time")
-ax4.set_ylabel("Bytes")
-ax4.legend()
-ax4.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
-#plt.show()
-plt.savefig("fig_rpi5_network.png")
-plt.close()
-'''
 # Combined Plot for Jetson and RPi5 Network Usage
 fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -140,19 +120,21 @@ ax.plot(ts_net_rpi5, net_sent_rpi5, label="RPi5 Sent", linestyle='-', marker='x'
 ax.plot(ts_net_rpi5, net_recv_rpi5, label="RPi5 Recv", linestyle='--', marker='x', color='green')
 
 # Title and Labels
-#ax.set_title("Network Usage Over Time")
-ax.set_xlabel("Time")
-ax.set_ylabel("Bytes")
+# ax.set_title("Network Usage Over Time", fontsize=18)
+ax.set_xlabel("Time", fontsize=18)
+ax.set_ylabel("Bytes", fontsize=18)
+plt.xticks(fontsize=18)  # Increase xticks font size
+plt.yticks(fontsize=18)  # Increase yticks font size
 
 # Adjust legend to be horizontal
-ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=4)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=4, fontsize=18)
 plt.grid(True)
 
 # Format x-axis for time
 ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
 
 # Save and close the plot
-#plt.show()
+plt.tight_layout()
 plt.savefig("fig_network_usage.png", bbox_inches="tight")
 plt.close()
 
