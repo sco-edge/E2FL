@@ -133,7 +133,7 @@ class FlowerClient(NumPyClient):
             elapsed_time, data_size = self.power_monitor.stop()
             if elapsed_time is not None:
                 logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
-                self.power_monitor.save(f"power_{self.device_name}_{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}.csv")
+                self.power_monitor.save(f"power_{self.device_name}_{datetime.now().strftime('%Y-%m-%d_%H%M%S.%f')}.csv")
                 self.power_monitor.close()
             else:
                 logger.warning("Power monitoring failed or returned no data.")
@@ -156,7 +156,7 @@ class FlowerClient(NumPyClient):
             elapsed_time, data_size = self.power_monitor.stop()
             if elapsed_time is not None:
                 logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
-                self.power_monitor.save(f"power_{self.device_name}_{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}.csv")
+                self.power_monitor.save(f"power_{self.device_name}_{datetime.now().strftime('%Y-%m-%d_%H%M%S.%f')}.csv")
                 self.power_monitor.close()
             else:
                 logger.warning("Power monitoring failed or returned no data.")
@@ -190,7 +190,7 @@ def cleanup_power_monitor(power_monitor, start_net):
         elapsed_time, data_size = power_monitor.stop()
         if elapsed_time is not None:
             logger.info(f"Measured power consumption: Duration={elapsed_time}s, Data size={data_size} samples.")
-            power_monitor.save(f"power_{device_name}_{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}.csv")
+            power_monitor.save(f"power_{device_name}_{datetime.now().strftime('%Y-%m-%d_%H%M%S.%f')}.csv")
             power_monitor.close()
         else:
             logger.warning("Power monitoring failed or returned no data.")
