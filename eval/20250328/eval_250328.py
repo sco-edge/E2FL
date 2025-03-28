@@ -39,6 +39,9 @@ def load_power_data(file_list):
                     ts = datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S.%f")
                     power = float(row[1])
                     timestamps.append(ts)
+                    if 'RPi5' in fname:
+                        # https://github.com/jfikar/RPi5-power
+                        power = power  * 1.1451 + 0.5879
                     power_values.append(power)
                 except:
                     continue  # Skip header or invalid rows
@@ -70,26 +73,55 @@ ts_net_rpi5, net_sent_rpi5, net_recv_rpi5 = load_net_data(fl_state_rpi5)
 
 # 시각화
 import matplotlib.dates as mdates
+# Plot for Jetson Power
 fig1, ax1 = plt.subplots()
-ax1.plot(ts_power_jetson, pw_jetson, label="Jetson Power (mW)")
-ax1.plot(ts_power_rpi5, pw_rpi5, label="RPi5 Power (mW)")
-ax1.set_title("Power Consumption Over Time")
+ax1.plot(ts_power_jetson, pw_jetson)
+#ax1.set_title("Jetson Power Consumption Over Time")
 ax1.set_xlabel("Time")
 ax1.set_ylabel("Power (mW)")
-ax1.legend()
+#ax1.legend()
 ax1.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
+#plt.show()
+plt.savefig("jetson_power.png")
+plt.close()
 
+# Plot for RPi5 Power
 fig2, ax2 = plt.subplots()
-ax2.plot(ts_net_jetson, net_sent_jetson, label="Jetson Net Sent")
-ax2.plot(ts_net_jetson, net_recv_jetson, label="Jetson Net Recv")
-ax2.plot(ts_net_rpi5, net_sent_rpi5, label="RPi5 Net Sent")
-ax2.plot(ts_net_rpi5, net_recv_rpi5, label="RPi5 Net Recv")
-ax2.set_title("Network Usage Over Time")
+ax2.plot(ts_power_rpi5, pw_rpi5)
+#ax2.set_title("RPi5 Power Consumption Over Time")
 ax2.set_xlabel("Time")
-ax2.set_ylabel("Bytes")
-ax2.legend()
+ax2.set_ylabel("Power (mW)")
+#ax2.legend()
 ax2.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
+#plt.show()
+plt.savefig("rpi5_power.png")
+plt.close()
 
-import ace_tools as tools; tools.display_dataframe_to_user(name="Jetson & RPi5 Power and Network Timeseries", dataframe=None)
+# Plot for Jetson Network Usage
+fig3, ax3 = plt.subplots()
+ax3.plot(ts_net_jetson, net_sent_jetson, label="Sent")
+ax3.plot(ts_net_jetson, net_recv_jetson, label="Recv")
+#ax3.set_title("Jetson Network Usage Over Time")
+ax3.set_xlabel("Time")
+ax3.set_ylabel("Bytes")
+#ax3.legend()
+ax3.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
+#plt.show()
+plt.savefig("jetson_network.png")
+plt.close()
 
-plt.show()
+# Plot for RPi5 Network Usage
+fig4, ax4 = plt.subplots()
+ax4.plot(ts_net_rpi5, net_sent_rpi5, label="Sent")
+ax4.plot(ts_net_rpi5, net_recv_rpi5, label="Recv")
+#ax4.set_title("RPi5 Network Usage Over Time")
+ax4.set_xlabel("Time")
+ax4.set_ylabel("Bytes")
+#ax4.legend()
+ax4.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
+#plt.show()
+plt.savefig("rpi5_network.png")
+plt.close()
+
+
+
