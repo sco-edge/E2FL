@@ -82,10 +82,11 @@ ax1.plot(ts_power_jetson, pw_jetson)
 #ax1.set_title("Jetson Power Consumption Over Time")
 ax1.set_xlabel("Time")
 ax1.set_ylabel("Power (W)")
+plt.grid(True)
 #ax1.legend()
 ax1.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
 #plt.show()
-plt.savefig("jetson_power.png")
+plt.savefig("fig_power_jetson.png")
 plt.close()
 
 # Plot for RPi5 Power
@@ -94,12 +95,13 @@ ax2.plot(ts_power_rpi5, pw_rpi5)
 #ax2.set_title("RPi5 Power Consumption Over Time")
 ax2.set_xlabel("Time")
 ax2.set_ylabel("Power (W)")
+plt.grid(True)
 #ax2.legend()
 ax2.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
 #plt.show()
-plt.savefig("rpi5_power.png")
+plt.savefig("fig_power_rpi5.png")
 plt.close()
-
+'''
 # Plot for Jetson Network Usage
 fig3, ax3 = plt.subplots()
 ax3.plot(ts_net_jetson, net_sent_jetson, label="Sent")
@@ -110,7 +112,7 @@ ax3.set_ylabel("Bytes")
 ax3.legend()
 ax3.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
 #plt.show()
-plt.savefig("jetson_network.png")
+plt.savefig("fig_jetson_network.png")
 plt.close()
 
 # Plot for RPi5 Network Usage
@@ -123,7 +125,34 @@ ax4.set_ylabel("Bytes")
 ax4.legend()
 ax4.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
 #plt.show()
-plt.savefig("rpi5_network.png")
+plt.savefig("fig_rpi5_network.png")
+plt.close()
+'''
+# Combined Plot for Jetson and RPi5 Network Usage
+fig, ax = plt.subplots()
+
+# Jetson Network Usage
+ax.plot(ts_net_jetson, net_sent_jetson, label="Jetson Sent", linestyle='-', marker='o', color='blue')
+ax.plot(ts_net_jetson, net_recv_jetson, label="Jetson Recv", linestyle='--', marker='o', color='blue')
+
+# RPi5 Network Usage
+ax.plot(ts_net_rpi5, net_sent_rpi5, label="RPi5 Sent", linestyle='-', marker='x', color='green')
+ax.plot(ts_net_rpi5, net_recv_rpi5, label="RPi5 Recv", linestyle='--', marker='x', color='green')
+
+# Title and Labels
+#ax.set_title("Network Usage Over Time")
+ax.set_xlabel("Time")
+ax.set_ylabel("Bytes")
+
+# Adjust legend to be horizontal
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=4)
+plt.grid(True)
+
+# Format x-axis for time
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
+
+# Save and close the plot
+plt.savefig("fig_network_usage.png", bbox_inches="tight")
 plt.close()
 
 
