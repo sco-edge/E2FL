@@ -41,7 +41,10 @@ def load_power_data(file_list):
                     timestamps.append(ts)
                     if 'RPi5' in fname:
                         # https://github.com/jfikar/RPi5-power
-                        power = power  * 1.1451 + 0.5879
+                        power = power * 1.1451 + 0.5879
+                    elif 'jetson' in fname:
+                        # Convert Jetson power from mW to W
+                        power = power / 1000
                     power_values.append(power)
                 except:
                     continue  # Skip header or invalid rows
@@ -78,7 +81,7 @@ fig1, ax1 = plt.subplots()
 ax1.plot(ts_power_jetson, pw_jetson)
 #ax1.set_title("Jetson Power Consumption Over Time")
 ax1.set_xlabel("Time")
-ax1.set_ylabel("Power (mW)")
+ax1.set_ylabel("Power (W)")
 #ax1.legend()
 ax1.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
 #plt.show()
@@ -90,7 +93,7 @@ fig2, ax2 = plt.subplots()
 ax2.plot(ts_power_rpi5, pw_rpi5)
 #ax2.set_title("RPi5 Power Consumption Over Time")
 ax2.set_xlabel("Time")
-ax2.set_ylabel("Power (mW)")
+ax2.set_ylabel("Power (W)")
 #ax2.legend()
 ax2.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
 #plt.show()
