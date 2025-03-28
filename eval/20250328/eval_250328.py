@@ -77,7 +77,7 @@ ts_net_rpi5, net_sent_rpi5, net_recv_rpi5 = load_net_data(fl_state_rpi5)
 # 시각화
 import matplotlib.dates as mdates
 # Plot for Jetson Power
-fig1, ax1 = plt.subplots()
+fig1, ax1 = plt.subplots(figsize=(10, 6))
 ax1.plot(ts_power_jetson, pw_jetson)
 #ax1.set_title("Jetson Power Consumption Over Time")
 ax1.set_xlabel("Time")
@@ -90,7 +90,7 @@ plt.savefig("fig_power_jetson.png")
 plt.close()
 
 # Plot for RPi5 Power
-fig2, ax2 = plt.subplots()
+fig2, ax2 = plt.subplots(figsize=(10, 6))
 ax2.plot(ts_power_rpi5, pw_rpi5)
 #ax2.set_title("RPi5 Power Consumption Over Time")
 ax2.set_xlabel("Time")
@@ -145,15 +145,15 @@ ax.set_xlabel("Time")
 ax.set_ylabel("Bytes")
 
 # Adjust legend to be horizontal
-ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=4)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.1), ncol=4)
 plt.grid(True)
 
 # Format x-axis for time
 ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
 
 # Save and close the plot
-plt.show()
-#plt.savefig("fig_network_usage.png", bbox_inches="tight")
+#plt.show()
+plt.savefig("fig_network_usage.png", bbox_inches="tight")
 plt.close()
 
 
