@@ -1,0 +1,11 @@
+INFO:test:['[2025-03-28 01:56:53.498149] Client Start!']
+INFO:test:Using network interface: wlp1s0
+INFO:test:[2025-03-28 01:56:53.498745] Starting power monitoring...
+INFO:test:[2025-03-28 01:56:59.534538] Client sampled for evaluate()
+INFO:test:[2025-03-28 01:56:59.538564] Starting evaluation...
+INFO:test:[2025-03-28 01:57:04.102306] Evaluation completed with accuracy: 0.0916
+INFO:flwr:[flwr-clientapp] Push `ClientAppOutputs` for token 11056738777686705394
+INFO:test:[2025-03-28 01:57:04.562192] Stopping power monitor via atexit...
+INFO:test:Measured power consumption: Duration=11.086014s, Data size=296 samples.
+INFO:test:['[2025-03-28 01:57:04.586446] Communication end: 1743127024.5864449']
+INFO:test:['[2025-03-28 01:57:04.586951] Evaluation phase (wlp1s0): [sent: 19647, recv: 61296]']
