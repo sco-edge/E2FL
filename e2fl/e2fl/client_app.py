@@ -10,7 +10,7 @@ import psutil
 import warnings
 import threading
 import subprocess, os, logging, time, socket, pickle
-import atexit
+import atexit, csv
 
 import torch
 
@@ -64,12 +64,27 @@ class FlowerClient(NumPyClient):
             self.interface = 'wlan0'
             self.device_name = 'RPi3'
             self.power = "None"
+        self.fl_csv_fname = f'fl_{datetime.now().strftime('%Y%m%d')}_{self.device_name}.csv'
 
         self.start_net = self.get_network_usage()
         self.end_net = None
     
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.net.to(self.device)
+        
+
+        with open(self.fl_csv_fname, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+
+            now = datetime.now()
+            timestamp = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+            self.end_net = self.get_network_usage()
+            net_usage_sent = self.end_net["bytes_sent"] - self.start_net["bytes_sent"]
+            net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
+
+            # timestamp, FL state, sent, receive
+            writer.writerow([f"{timestamp}", "init", f"{net_usage_sent}", f"{net_usage_recv}"])
+
         '''
         # Return Client instance
         # Measure power consumption if a power monitor is initialized
@@ -79,7 +94,7 @@ class FlowerClient(NumPyClient):
         if self.power_monitor:
             logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting power monitoring...")
             self.power_monitor.start(freq=0.01)  # Start monitoring with 1-second intervals
-            time.sleep(5)  # Example duration for monitoring
+            time.sleep(0.5)  # Example duration for monitoring
         '''
 
     def get_network_interface(self):
@@ -115,6 +130,20 @@ class FlowerClient(NumPyClient):
         net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
         logger.info(f"Network usage during fit: [sent: {net_usage_sent}, recv: {net_usage_recv}]")
 
+
+        with open(self.fl_csv_fname, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+
+            now = datetime.now()
+            timestamp = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+            self.end_net = self.get_network_usage()
+            net_usage_sent = self.end_net["bytes_sent"] - self.start_net["bytes_sent"]
+            net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
+
+            # timestamp, FL state, sent, receive
+            writer.writerow([f"{timestamp}", "fit_init", f"{net_usage_sent}", f"{net_usage_recv}"])
+
+
         set_weights(self.net, parameters)
 
         logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting training...")
@@ -126,8 +155,23 @@ class FlowerClient(NumPyClient):
         )
         logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Training completed.")
 
+
+        with open(self.fl_csv_fname, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+
+            now = datetime.now()
+            timestamp = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+            self.end_net = self.get_network_usage()
+            net_usage_sent = self.end_net["bytes_sent"] - self.start_net["bytes_sent"]
+            net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
+
+            # timestamp, FL state, sent, receive
+            writer.writerow([f"{timestamp}", "fit_end", f"{net_usage_sent}", f"{net_usage_recv}"])
+
+
         # 학습 후 네트워크 상태 업데이트
         self.start_net = self.get_network_usage()
+        
         '''
         if self.power_monitor:
             elapsed_time, data_size = self.power_monitor.stop()
@@ -146,11 +190,41 @@ class FlowerClient(NumPyClient):
 
     def evaluate(self, parameters, config):
         logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Client sampled for evaluate()")
+
+
+        with open(self.fl_csv_fname, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+
+            now = datetime.now()
+            timestamp = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+            self.end_net = self.get_network_usage()
+            net_usage_sent = self.end_net["bytes_sent"] - self.start_net["bytes_sent"]
+            net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
+
+            # timestamp, FL state, sent, receive
+            writer.writerow([f"{timestamp}", "eval_init", f"{net_usage_sent}", f"{net_usage_recv}"])
+
+
         set_weights(self.net, parameters)
 
         logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting evaluation...")
         loss, accuracy = test(self.net, self.valloader, self.device)
         logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation completed with accuracy: {accuracy}")
+
+
+        with open(self.fl_csv_fname, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+
+            now = datetime.now()
+            timestamp = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+            self.end_net = self.get_network_usage()
+            net_usage_sent = self.end_net["bytes_sent"] - self.start_net["bytes_sent"]
+            net_usage_recv = self.end_net["bytes_recv"] - self.start_net["bytes_recv"]
+
+            # timestamp, FL state, sent, receive
+            writer.writerow([f"{timestamp}", "eval_end", f"{net_usage_sent}", f"{net_usage_recv}"])
+
+
         '''
         if self.power_monitor:
             elapsed_time, data_size = self.power_monitor.stop()
@@ -256,13 +330,13 @@ if power != "None":
 if power_monitor:
     logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Starting power monitoring...")
     power_monitor.start(freq=0.01)  # Start monitoring with 1-second intervals
-    time.sleep(5)  # Example duration for monitoring
+    time.sleep(0.5)  # Example duration for monitoring
     atexit.register(cleanup_power_monitor, power_monitor, start_net)
 
 # Flower ClientApp
 app = ClientApp(client_fn)
 
-time.sleep(5)
+time.sleep(0.5)
 
 
 
