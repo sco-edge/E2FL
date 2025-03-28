@@ -1,1 +1,0 @@
-🎊 Successfully installed e2fl to /home/ubuntu/.flwr/apps/wwjang.e2fl.1.0.0.6921d273.

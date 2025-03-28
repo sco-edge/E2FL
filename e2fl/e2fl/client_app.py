@@ -73,7 +73,7 @@ class FlowerClient(NumPyClient):
         self.net.to(self.device)
         
 
-        with open(self.fl_csv_fname, 'w', newline='') as csvfile:
+        with open(self.fl_csv_fname, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
 
             now = datetime.now()
@@ -131,7 +131,7 @@ class FlowerClient(NumPyClient):
         logger.info(f"Network usage during fit: [sent: {net_usage_sent}, recv: {net_usage_recv}]")
 
 
-        with open(self.fl_csv_fname, 'w', newline='') as csvfile:
+        with open(self.fl_csv_fname, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
 
             now = datetime.now()
@@ -156,7 +156,7 @@ class FlowerClient(NumPyClient):
         logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Training completed.")
 
 
-        with open(self.fl_csv_fname, 'w', newline='') as csvfile:
+        with open(self.fl_csv_fname, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
 
             now = datetime.now()
@@ -192,7 +192,7 @@ class FlowerClient(NumPyClient):
         logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Client sampled for evaluate()")
 
 
-        with open(self.fl_csv_fname, 'w', newline='') as csvfile:
+        with open(self.fl_csv_fname, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
 
             now = datetime.now()
@@ -212,7 +212,7 @@ class FlowerClient(NumPyClient):
         logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation completed with accuracy: {accuracy}")
 
 
-        with open(self.fl_csv_fname, 'w', newline='') as csvfile:
+        with open(self.fl_csv_fname, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
 
             now = datetime.now()
