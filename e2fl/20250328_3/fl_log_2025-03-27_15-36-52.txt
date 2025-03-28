@@ -1,1 +1,0 @@
-myFlowerExperiment | INFO flwr 2025-03-27 15:37:12,916 | app.py:222 | [flwr-clientapp] Push `ClientAppOutputs` for token 8174380908350311906

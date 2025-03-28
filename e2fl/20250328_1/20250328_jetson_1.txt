@@ -1,1 +1,0 @@
-🎊 Successfully installed e2fl to /root/.flwr/apps/wwjang.e2fl.1.0.0.bc67cfa6.
