@@ -129,7 +129,7 @@ plt.savefig("fig_rpi5_network.png")
 plt.close()
 '''
 # Combined Plot for Jetson and RPi5 Network Usage
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(12, 6))
 
 # Jetson Network Usage
 ax.plot(ts_net_jetson, net_sent_jetson, label="Jetson Sent", linestyle='-', marker='o', color='blue')
@@ -152,7 +152,8 @@ plt.grid(True)
 ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
 
 # Save and close the plot
-plt.savefig("fig_network_usage.png", bbox_inches="tight")
+plt.show()
+#plt.savefig("fig_network_usage.png", bbox_inches="tight")
 plt.close()
 
 
