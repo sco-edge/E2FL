@@ -48,6 +48,8 @@ def server_fn(context: Context):
     parameters = ndarrays_to_parameters(ndarrays)
 
     # Define strategy
+    # https://github.com/adap/flower/blob/main/framework/docs/source/tutorial-series-customize-the-client-pytorch.ipynb
+    # https://github.com/adap/flower/blob/main/examples/advanced-pytorch/pytorch_example/strategy.py
     strategy = FedAvg(
         fraction_fit=fraction_fit,
         fraction_evaluate=1.0,
