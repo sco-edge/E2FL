@@ -1,0 +1,12 @@
+INFO:test:['[2025-03-28 01:56:05.497161] Client Start!']
+INFO:test:Using network interface: eth0
+INFO:test:[2025-03-28 01:56:05.497895] Starting power monitoring...
+INFO:test:[2025-03-28 01:56:12.370995] Client sampled for fit()
+INFO:test:Network usage during fit: [sent: 232, recv: 293]
+INFO:test:[2025-03-28 01:56:12.376152] Starting training...
+INFO:test:[2025-03-28 01:56:32.710774] Training completed.
+INFO:flwr:[flwr-clientapp] Push `ClientAppOutputs` for token 11736235258769016740
+INFO:test:[2025-03-28 01:56:32.823823] Stopping power monitor via atexit...
+INFO:test:Measured power consumption: Duration=27.329069s, Data size=2321 samples.
+INFO:test:['[2025-03-28 01:56:32.835059] Communication end: 1743126992.8350565']
+INFO:test:['[2025-03-28 01:56:32.835710] Evaluation phase (eth0): [sent: 16612, recv: 60480]']
