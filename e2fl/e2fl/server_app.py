@@ -36,6 +36,12 @@ class CustomFormatter(logging.Formatter):
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
 
+'''
+strategy
+
+https://flower.ai/docs/baselines/how-to-use-baselines.html
+
+'''
 
 def server_fn(context: Context):
     # Read from config
