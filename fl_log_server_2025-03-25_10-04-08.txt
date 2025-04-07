@@ -1,5 +1,0 @@
-myFlowerExperiment | INFO flwr 2025-03-25 10:04:08,467 | app.py:150 | Starting Flower server, config: num_rounds=3, no round_timeout
-myFlowerExperiment | INFO flwr 2025-03-25 10:04:08,472 | app.py:163 | Flower ECE: gRPC server running (3 rounds), SSL is disabled
-myFlowerExperiment | INFO flwr 2025-03-25 10:04:08,472 | server.py:92 | [INIT]
-myFlowerExperiment | INFO flwr 2025-03-25 10:04:08,472 | server.py:279 | Requesting initial parameters from one random client
-myFlowerExperiment | INFO flwr 2025-03-26 10:04:08,473 | client_manager.py:196 | Sampling failed: number of available clients (0) is less than number of requested clients (1).
