@@ -33,6 +33,9 @@ class Net(nn.Module):
         return self.fc3(x)
 
 '''
+LLM Fine-tuning with Flower [https://github.com/adap/flower/tree/main/examples/flowertune-llm]
+Vision Transformer with Flower [https://github.com/adap/flower/tree/main/examples/flowertune-vit]
+
 def initialize_model(self, model, dataset):
     """Initialize the model based on the dataset and model type."""
     if model == 'resnet18' and dataset == 'mnist':
