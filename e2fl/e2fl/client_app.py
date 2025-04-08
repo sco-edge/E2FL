@@ -280,20 +280,24 @@ def cleanup_power_monitor(power_monitor, start_net):
 
 
 def client_fn(context: Context):
-    # Load model and data
+    # config
     model_name = context.node_config["model"]
     dataset_name = context.node_config["dataset"]
-
-    net = get_model(model_name, num_classes)
-    num_classes = get_num_classes(dataset_name)  # 핵심 포인트
-    trainset, testset = get_dataset(dataset_name)
-
-    #net = Net()
     partition_id = context.node_config["partition-id"]
     num_partitions = context.node_config["num-partitions"]
-    trainloader, valloader = load_data(partition_id, num_partitions)
+    batch_size = context.node_config.get("batch-size", 32)  # 기본값 32
     local_epochs = context.run_config["local-epochs"]
 
+    # load dataset and model
+    num_classes = get_num_classes(dataset_name)
+    net = get_model(model_name, num_classes)
+    trainloader, valloader = load_data(
+        dataset_name=dataset_name,
+        partition_id=partition_id,
+        num_partitions=num_partitions,
+        batch_size=batch_size
+    )
+    
     return FlowerClient(net, trainloader, valloader, local_epochs).to_client()
 
 interfaces = get_network_interface()

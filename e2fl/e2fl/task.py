@@ -68,48 +68,46 @@ def get_model(model_name: str, num_classes: int):
     else:
         raise ValueError(f"Unsupported model: {model_name}")
 
-def get_dataset(dataset_name: str, client_id: int):
-    # Optional: torchvision transform
-    transform = transforms.Compose([transforms.ToTensor()])
+def get_num_classes(dataset_name: str):
+    if dataset_name in ["cifar10", "mnist", "fashion_mnist"]:
+        return 10
+    elif dataset_name == "cifar100":
+        return 100
+    elif dataset_name == "imagenet":
+        return 1000
+    else:
+        raise ValueError(f"Unsupported dataset: {dataset_name}")
 
-    # Flower FederatedDataset
-    fds = FederatedDataset(dataset_name)
-    partition = fds.load_partition(client_id)
+def get_transforms(dataset_name: str):
+    if dataset_name in ["cifar10", "cifar100"]:
+        return Compose([ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    elif dataset_name in ["mnist", "fashion_mnist"]:
+        return Compose([ToTensor(), Normalize((0.1307,), (0.3081,))])
+    else:
+        return Compose([ToTensor()])
 
-    # transforms 적용 (선택적)
-    if hasattr(partition, "with_transform"):
-        partition = partition.with_transform(transform)
-
-    trainset = partition.train
-    testset = partition.test
-
-    return trainset, testset
-
-def load_data(partition_id: int, num_partitions: int):
-    """Load partition CIFAR10 data."""
-    # Only initialize `FederatedDataset` once
+def load_data(dataset_name: str, partition_id: int, num_partitions: int, batch_size: int):
     global fds
     if fds is None:
         partitioner = IidPartitioner(num_partitions=num_partitions)
         fds = FederatedDataset(
-            dataset="uoft-cs/cifar10",
+            dataset=dataset_name,
             partitioners={"train": partitioner},
         )
+
     partition = fds.load_partition(partition_id)
-    # Divide data on each node: 80% train, 20% test
     partition_train_test = partition.train_test_split(test_size=0.2, seed=42)
-    pytorch_transforms = Compose(
-        [ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-    )
+    transforms = get_transforms(dataset_name)
 
     def apply_transforms(batch):
-        """Apply transforms to the partition from FederatedDataset."""
-        batch["img"] = [pytorch_transforms(img) for img in batch["img"]]
+        batch["img"] = [transforms(img) for img in batch["img"]]
         return batch
 
     partition_train_test = partition_train_test.with_transform(apply_transforms)
-    trainloader = DataLoader(partition_train_test["train"], batch_size=32, shuffle=True)
-    testloader = DataLoader(partition_train_test["test"], batch_size=32)
+
+    trainloader = DataLoader(partition_train_test["train"], batch_size=batch_size, shuffle=True)
+    testloader = DataLoader(partition_train_test["test"], batch_size=batch_size)
+
     return trainloader, testloader
 
 '''
