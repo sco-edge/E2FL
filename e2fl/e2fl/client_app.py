@@ -281,6 +281,15 @@ def cleanup_power_monitor(power_monitor, start_net):
 
 def client_fn(context: Context):
     # Load model and data
+    model_name = context.node_config["model"]["name"]
+    dataset_name = context.node_config["data"]["name"]
+    data_path = context.node_config["data"]["path"]
+
+    num_classes = get_num_classes(dataset_name, data_path)
+
+    model = get_model(model_name, num_classes)
+    trainset, testset = get_dataset(dataset_name, data_path)
+
     net = Net()
     partition_id = context.node_config["partition-id"]
     num_partitions = context.node_config["num-partitions"]
