@@ -17,7 +17,7 @@ import torch
 import flwr as fl
 from flwr.client import ClientApp, NumPyClient
 from flwr.common import Context
-from e2fl.task import Net, get_weights, load_data, set_weights, test, train
+from e2fl.task import Net, get_weights, load_data, set_weights, test, train, get_num_classes, get_model, get_dataset
 
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
@@ -281,16 +281,14 @@ def cleanup_power_monitor(power_monitor, start_net):
 
 def client_fn(context: Context):
     # Load model and data
-    model_name = context.node_config["model"]["name"]
-    dataset_name = context.node_config["data"]["name"]
-    data_path = context.node_config["data"]["path"]
+    model_name = context.node_config["model"]
+    dataset_name = context.node_config["dataset"]
 
-    num_classes = get_num_classes(dataset_name, data_path)
+    net = get_model(model_name, num_classes)
+    num_classes = get_num_classes(dataset_name)  # 핵심 포인트
+    trainset, testset = get_dataset(dataset_name)
 
-    model = get_model(model_name, num_classes)
-    trainset, testset = get_dataset(dataset_name, data_path)
-
-    net = Net()
+    #net = Net()
     partition_id = context.node_config["partition-id"]
     num_partitions = context.node_config["num-partitions"]
     trainloader, valloader = load_data(partition_id, num_partitions)
