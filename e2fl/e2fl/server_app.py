@@ -40,7 +40,8 @@ class CustomFormatter(logging.Formatter):
 strategy
 
 https://flower.ai/docs/baselines/how-to-use-baselines.html
-
+https://github.com/adap/flower/tree/v1.17.0/src/py/flwr/server/strategy
+#https://github.com/adap/flower/blob/main/framework/docs/source/tutorial-series-use-a-federated-learning-strategy-pytorch.ipynb
 '''
 
 def server_fn(context: Context):
@@ -56,6 +57,7 @@ def server_fn(context: Context):
     # Define strategy
     # https://github.com/adap/flower/blob/main/framework/docs/source/tutorial-series-customize-the-client-pytorch.ipynb
     # https://github.com/adap/flower/blob/main/examples/advanced-pytorch/pytorch_example/strategy.py
+    # https://github.com/adap/flower/blob/main/baselines/flwr_baselines/flwr_baselines/publications/adaptive_federated_optimization/main.py
     strategy = FedAvg(
         fraction_fit=fraction_fit,
         fraction_evaluate=1.0,
