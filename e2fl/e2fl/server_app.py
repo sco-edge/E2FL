@@ -11,7 +11,7 @@ import flwr as fl
 from flwr.common import Context, ndarrays_to_parameters
 from flwr.server import ServerApp, ServerAppComponents, ServerConfig
 from flwr.server.strategy import FedAvg
-from e2fl.task import Net, get_weights
+from e2fl.task import Net, get_weights, load_data, set_weights, test, train, get_num_classes, get_model, get_dataset
 
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
@@ -120,9 +120,13 @@ def server_fn(context: Context):
     """Server function to create server components."""
     # Read from config
     num_rounds = context.run_config["num-server-rounds"]
+    dataset_name = context.node_config["dataset"]
 
     # Initialize model parameters
-    ndarrays = get_weights(Net())
+    model_name = context.node_config["model"]
+    num_classes = get_num_classes(dataset_name)
+    net = get_model(model_name, num_classes)
+    ndarrays = get_weights(net)
     parameters = ndarrays_to_parameters(ndarrays)
 
     # Create strategy using the helper function
