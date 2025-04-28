@@ -10,7 +10,6 @@ from typing import List, Tuple
 import flwr as fl
 from flwr.common import Context, ndarrays_to_parameters
 from flwr.server import ServerApp, ServerAppComponents, ServerConfig
-from flwr.server.strategy import FedAvg
 from e2fl.task import Net, get_weights, load_data, set_weights, test, train, get_num_classes, get_model, get_dataset
 
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -52,6 +51,7 @@ def create_strategy(context: Context, parameters):
     min_clients = context.run_config["min-clients"]
 
     if strategy_name == "FedAvg":
+        from flwr.server.strategy import FedAvg
         return FedAvg(
             fraction_fit=fraction_fit,
             fraction_evaluate=1.0,
