@@ -120,10 +120,10 @@ def server_fn(context: Context):
     """Server function to create server components."""
     # Read from config
     num_rounds = context.run_config["num-server-rounds"]
-    dataset_name = context.node_config["dataset"]
+    dataset_name = context.run_config["dataset"]
 
     # Initialize model parameters
-    model_name = context.node_config["model"]
+    model_name = context.run_config["model"]
     num_classes = get_num_classes(dataset_name)
     net = get_model(model_name, num_classes)
     ndarrays = get_weights(net)
