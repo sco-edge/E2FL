@@ -10,7 +10,7 @@ from typing import List, Tuple
 import flwr as fl
 from flwr.common import Context, ndarrays_to_parameters
 from flwr.server import ServerApp, ServerAppComponents, ServerConfig
-from e2fl.task import Net, get_weights, load_data, set_weights, test, train, get_num_classes, get_model, get_dataset
+from e2fl.task import Net, get_weights, load_data, set_weights, test, train, get_num_classes, get_model
 
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 # logging.debug, logging.info, logging.warning, logging.error, logging.critical
