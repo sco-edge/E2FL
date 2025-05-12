@@ -81,18 +81,17 @@ pip install -e .
 
 ## Setting up a Jetson Orin NX
 
-> These steps have been validated for a Jetson Orin-NX Dev Kit.
+> These steps have been validated for a Jetson Orin NX Dev Kit.
 
-1. **Install JetPack 5.1.2 on your Jetson device**
+1. **Install JetPack 6.0 on your Jetson device**
 
-   - Download the JetPack 6.0 image from [NVIDIA-embedded](https://developer.nvidia.com/embedded/jetpack-sdk-60), note that you might need an NVIDIA developer account.
-   테스트에 사용한 reComputer J4012 모델은 [seeed studio](https://wiki.seeedstudio.com/reComputer_J4012_Flash_Jetpack/)에서 제공한 방식으로 JetPack 6.0을 설치하였다. JetPack 5.1.2까지도 NVIDIA 사이트에서 다운을 받아 설치할 수 있엇다. 
+   - Download the JetPack 6.0 image from [NVIDIA-embedded](https://developer.nvidia.com/embedded/jetpack-sdk-60), note that you might need an NVIDIA developer account. For our testing, we used the reComputer J4012 model and installed JetPack 6.0 by following the instructions provided by [Seeed Studio](https://wiki.seeedstudio.com/reComputer_J4012_Flash_Jetpack/). (Optional) If you are using an older Jetson model, you may still download and install JetPack 5.1.2 from NVIDIA’s website, although the current setup has been validated with JetPack 6.0.
+   
+   - Installation procedures may vary slightly depending on the Jetson model you own. Please refer to the appropriate instructions on the NVIDIA Embedded site or the Seeed Studio site for your specific board.
 
-   - 본인이 소유한 Jetson 모델에 따라 NVIDIA-embedded site에 있는 steps을 따르면 된다.
+2. **Set up the device.** The first time you boot your Orin NX you should plug it into a display to complete the installation process. After that, a display is no longer needed for this example but you could still use it instead of connecting to your device over ssh.
 
-2. **ㄴet up the device.** The first time you boot your Orin-NX you should plug it into a display to complete the installation process. After that, a display is no longer needed for this example but you could still use it instead of connecting to your device over ssh.
-
-3. **Setup Docker**: Docker comes pre-installed with the Ubuntu image provided by NVIDIA. But for convenience, we will create a new user group and add our user to it (with the idea of not having to use `sudo` for every command involving docker (e.g. `docker run`, `docker ps`, etc)). More details about what this entails can be found in the [Docker documentation](https://docs.docker.com/engine/install/linux-postinstall/). You can achieve this by doing:
+3. **Set up Docker**: Docker comes pre-installed with the Ubuntu image provided by NVIDIA. But for convenience, we will create a new user group and add our user to it (with the idea of not having to use `sudo` for every command involving docker (e.g. `docker run`, `docker ps`, etc)). More details about what this entails can be found in the [Docker documentation](https://docs.docker.com/engine/install/linux-postinstall/). You can achieve this by doing:
 
    ```bash
    sudo usermod -aG docker $USER
@@ -125,7 +124,7 @@ pip install -e .
 
      Now you have installed `jtop`, just launch it by running the `jtop` command on your terminal. An interactive panel similar to the one shown on the right will show up. `jtop` allows you to monitor and control many features of your Jetson device. Read more in the [jtop documentation](https://rnext.it/jetson_stats/jtop/jtop.html)
 
-   - [TMUX](https://github.com/tmux/tmux/wiki), a terminal multiplexer. As its name suggests, it allows you to device a single terminal window into multiple panels. In this way, you could (for example) use one panel to show your terminal and another to show `jtop`. That's precisely what the visualization on the right shows.
+   - [TMUX](https://github.com/tmux/tmux/wiki), a terminal multiplexer. As its name suggests, it allows you to divide a single terminal window into multiple panels. In this way, you could (for example) use one panel to show your terminal and another to show `jtop`. That's precisely what the visualization on the right shows.
 
      ```bash
      # install tmux
@@ -134,21 +133,22 @@ pip install -e .
      echo set -g mouse on > ~/.tmux.conf
      ```
 
-5. **Power modes**. The Jetson devices can operate at different power modes, each making use of more or less CPU cores clocked at different frequencies. The right power mode might very much depend on the application and scenario. When power consumption is not a limiting factor, we could use the highest 15W mode using all 6 CPU cores. On the other hand, if the devices are battery-powered we might want to make use of a low-power mode using 10W and 2 CPU cores. All the details regarding the different power modes of a Jetson Orin can be found [here](https://docs.nvidia.com/jetson/archives/r36.2/DeveloperGuide/SO/JetsonOrinSeries.html#power-modes-profiles). For this demo, we'll be setting the device to high-performance mode:
+5. **Power modes**. The Jetson devices can operate at different power modes, each making use of more or less CPU cores clocked at different frequencies. The right power mode might very much depend on the application and scenario. When power consumption is not a limiting factor, we could use the highest 30W mode using all 8 or 6 CPU cores. On the other hand, if the devices are battery-powered we might want to make use of a low-power mode using 10W and 2 CPU cores. All the details regarding the different power modes of a Jetson Orin can be found [here](https://docs.nvidia.com/jetson/archives/r36.2/DeveloperGuide/SO/JetsonOrinSeries.html#power-modes-profiles). For this demo, we'll be setting the device to high-performance mode:
 
    ```bash
-   sudo /usr/sbin/nvpmodel -m 2 # 15W with 6cpus @ 1.4GHz
+   sudo /usr/sbin/nvpmodel -m 2 # 15W with 4cpus @ 2.0GHz
    ```
 
    Jetson Stats (that you launch via `jtop`) also allows you to see and set the power mode on your device. Navigate to the `CTRL` panel and click on one of the `NVM modes` available.
 
-6. **Build base client image**. Before running a Flower client, we need to install `Flower` and other ML dependencies (i.e. Pytorch or Tensorflow). Instead of installing this manually via `pip3 install ...`, let's use the pre-built Docker images provided by NVIDIA. In this way, we can be confident that the ML infrastructure is optimized for these devices. Build your Flower client image with:
+6. **Build base client image**. Before running a Flower client, we need to install `Flower` and other ML dependencies (i.e. PyTorch or Tensorflow). Instead of installing this manually via `pip3 install ...`, you can use the pre-built Docker images provided by NVIDIA. In this way, we can be confident that the ML infrastructure is optimized for these devices. Build your Flower client image with:
 
    ```bash
    # On your Jetson's terminal run
    ./build_jetson_flower_client.sh --pytorch # or --tensorflow
-   # Bear in mind this might take a few minutes since the base images need to be donwloaded (~7GB) and decompressed.
+   # Bear in mind this might take a few minutes since the base images need to be downloaded (~7GB) and decompressed.
    # To the above script pass the additional flag `--no-cache` to re-build the image.
+   # We use the DustyNV’s base image that supports JetPack 6.0 to ensure compatibility with PyTorch v2.0.0 and above.
    ```
 
    Once your script is finished, verify your `flower_client` Docker image is present. If you type `docker images` you'll see something like the following:
@@ -163,7 +163,7 @@ pip install -e .
    ```bash
    # first ensure you are in the `embedded-devices` directory. If you are not, use the `cd` command to navigate to it
 
-   # run the client container (this won't launch your Flower client, it will just "take you inside docker". The client can be run following the steps in the next section of the readme)
+   # run the client container (This command does not launch the Flower client. It simply opens an interactive shell inside the Docker container. The client can be run following the steps in the next section of the readme)
    docker run -it --rm --runtime nvidia -v `pwd`:/client flower_client
    # this will take you to a shell that looks something like this:
    root@6e6ce826b8bb:/client# <here you can run python commands or any command as usual>
