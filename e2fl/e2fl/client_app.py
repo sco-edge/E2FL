@@ -278,15 +278,38 @@ def cleanup_power_monitor(power_monitor, start_net):
     net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
     logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]"])
 
+import socket
+
+def get_partition_id_from_ip():
+    # 현재 로컬 IP 주소의 마지막 옥텟 추출
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    last_octet = int(ip_address.strip().split(".")[-1])
+    
+    # 사전 정의된 매핑 테이블
+    ip_to_partition = {
+        34: 0,
+        40: 1,
+        47: 2,
+        54: 3,
+        55: 4,
+    }
+
+    # 매핑이 없는 경우 예외 처리
+    if last_octet not in ip_to_partition:
+        raise ValueError(f"Unknown IP last octet: {last_octet}, no partition-id mapping found.")
+
+    return ip_to_partition[last_octet], len(ip_to_partition)
 
 def client_fn(context: Context):
     # config
     model_name = context.run_config["model"]
     dataset_name = context.run_config["dataset"]
-    partition_id = context.run_config["partition-id"]
-    num_partitions = context.run_config["num-partitions"]
-    batch_size = context.run_config.get("batch-size", 32)  # 기본값 32
+    batch_size = context.run_config.get("batch-size", 32)
     local_epochs = context.run_config["local-epochs"]
+
+    # 자동 partition 설정
+    partition_id, num_partitions = get_partition_id_from_ip()
 
     # load dataset and model
     num_classes = get_num_classes(dataset_name)
@@ -297,7 +320,7 @@ def client_fn(context: Context):
         num_partitions=num_partitions,
         batch_size=batch_size
     )
-    
+
     return FlowerClient(net, trainloader, valloader, local_epochs).to_client()
 
 interfaces = get_network_interface()
