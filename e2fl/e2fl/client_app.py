@@ -281,11 +281,11 @@ def cleanup_power_monitor(power_monitor, start_net):
 
 def client_fn(context: Context):
     # config
-    model_name = context.node_config["model"]
-    dataset_name = context.node_config["dataset"]
-    partition_id = context.node_config["partition-id"]
-    num_partitions = context.node_config["num-partitions"]
-    batch_size = context.node_config.get("batch-size", 32)  # 기본값 32
+    model_name = context.run_config["model"]
+    dataset_name = context.run_config["dataset"]
+    partition_id = context.run_config["partition-id"]
+    num_partitions = context.run_config["num-partitions"]
+    batch_size = context.run_config.get("batch-size", 32)  # 기본값 32
     local_epochs = context.run_config["local-epochs"]
 
     # load dataset and model
