@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-myFlowerExperiment | ERROR flwr 2025-05-14 03:09:28,362 | app.py:152 | ClientApp raised an exception
-=======
-myFlowerExperiment | ERROR flwr 2025-05-14 03:09:28,189 | app.py:152 | ClientApp raised an exception
->>>>>>> 59bd1221bbc4abd924ddd9866e5ee94e630f1a95
+myFlowerExperiment | ERROR flwr 2025-05-14 03:11:44,837 | app.py:152 | ClientApp raised an exception
 Traceback (most recent call last):
   File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/flwr/client/clientapp/app.py", line 137, in run_clientapp
     reply_message = client_app(message=message, context=context)
@@ -15,8 +11,4 @@ Traceback (most recent call last):
   File "/home/ubuntu/.flwr/apps/wwjang.e2fl.1.0.0.9ca534de/e2fl/client_app.py", line 284, in client_fn
     model_name = context.node_config["model"]
 KeyError: 'model'
-<<<<<<< HEAD
-myFlowerExperiment | INFO flwr 2025-05-14 03:09:28,363 | app.py:222 | [flwr-clientapp] Push `ClientAppOutputs` for token 13809221899095180567
-=======
-myFlowerExperiment | INFO flwr 2025-05-14 03:09:28,191 | app.py:222 | [flwr-clientapp] Push `ClientAppOutputs` for token 6866715565733642537
->>>>>>> 59bd1221bbc4abd924ddd9866e5ee94e630f1a95
+myFlowerExperiment | INFO flwr 2025-05-14 03:11:44,840 | app.py:222 | [flwr-clientapp] Push `ClientAppOutputs` for token 14754140292991411595

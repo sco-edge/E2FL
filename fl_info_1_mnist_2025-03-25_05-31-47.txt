@@ -1,0 +1,3 @@
+INFO:test:['[1742880707.7930477] Client Start!']
+INFO:test:Using network interface: wlp1s0
+INFO:test:Starting power monitoring...
