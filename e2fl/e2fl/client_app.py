@@ -11,6 +11,7 @@ import warnings
 import threading
 import subprocess, os, logging, time, socket, pickle
 import atexit, csv
+import socket
 
 import torch
 
@@ -64,7 +65,7 @@ class FlowerClient(NumPyClient):
             self.interface = 'wlan0'
             self.device_name = 'RPi3'
             self.power = "None"
-        self.fl_csv_fname = f"fl_{datetime.now().strftime('%Y%m%d')}_{self.device_name}.csv"
+        self.fl_csv_fname = f"fl_{datetime.now().strftime('%Y%m%d')}_{self.device_name}_{self.get_last_octet_from_ip()}.csv"
 
         self.start_net = self.get_network_usage()
         self.end_net = None
@@ -96,6 +97,14 @@ class FlowerClient(NumPyClient):
             self.power_monitor.start(freq=0.01)  # Start monitoring with 1-second intervals
             time.sleep(0.5)  # Example duration for monitoring
         '''
+    
+    def get_last_octet_from_ip():
+        # 현재 로컬 IP 주소의 마지막 옥텟 추출
+        hostname = socket.gethostname()
+        ip_address = socket.gethostbyname(hostname)
+        last_octet = int(ip_address.strip().split(".")[-1])
+        
+        return last_octet
 
     def get_network_interface(self):
         interfaces = psutil.net_if_addrs().keys()
@@ -278,13 +287,17 @@ def cleanup_power_monitor(power_monitor, start_net):
     net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
     logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation phase ({wlan_interf}): [sent: {net_usage_sent}, recv: {net_usage_recv}]"])
 
-import socket
 
-def get_partition_id_from_ip():
+def get_last_octet_from_ip():
     # 현재 로컬 IP 주소의 마지막 옥텟 추출
     hostname = socket.gethostname()
     ip_address = socket.gethostbyname(hostname)
     last_octet = int(ip_address.strip().split(".")[-1])
+    
+    return last_octet
+
+def get_partition_id_from_ip():
+    last_octet = get_last_octet_from_ip()
     
     # 사전 정의된 매핑 테이블
     ip_to_partition = {
@@ -348,8 +361,8 @@ logger.addHandler(ch)
 pid = psutil.Process().ppid()
 logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] PPID: {pid}")
 current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-logging.basicConfig(filename=f"fl_info_{current_time}_{device_name}.txt")
-fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{current_time}.txt")
+logging.basicConfig(filename=f"fl_info_{current_time}_{device_name}_{get_last_octet_from_ip()}.txt")
+fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_{current_time}_{device_name}_{get_last_octet_from_ip()}.txt")
 logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Client Start!"])
 
 
