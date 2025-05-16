@@ -1,0 +1,23 @@
+INFO:test:['[2025-05-16 02:54:14.530205] Client Start!']
+INFO:test:Using network interface: eth0
+INFO:test:[2025-05-16 02:54:14.530902] Starting power monitoring...
+ERROR:flwr:ClientApp raised an exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/clientapp/app.py", line 136, in run_clientapp
+    reply_message = client_app(message=message, context=context)
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/message_handler/message_handler.py", line 96, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+  File "/root/.flwr/apps/wwjang.e2fl.1.0.0.d13e1e42/e2fl/client_app.py", line 337, in client_fn
+    return FlowerClient(net, trainloader, valloader, local_epochs).to_client()
+  File "/root/.flwr/apps/wwjang.e2fl.1.0.0.d13e1e42/e2fl/client_app.py", line 68, in __init__
+    self.fl_csv_fname = f"fl_{datetime.now().strftime('%Y%m%d')}_{self.device_name}_{self.get_last_octet_from_ip()}.csv"
+TypeError: FlowerClient.get_last_octet_from_ip() takes 0 positional arguments but 1 was given
+INFO:flwr:[flwr-clientapp] Push `ClientAppOutputs` for token 2529183647233968066
+INFO:test:[2025-05-16 02:54:26.482515] Stopping power monitor via atexit...
+INFO:test:Measured power consumption: Duration=11.963467s, Data size=1002 samples.
+INFO:test:['[2025-05-16 02:54:26.498303] Communication end: 1747364066.4983003']
+INFO:test:['[2025-05-16 02:54:26.498969] Evaluation phase (eth0): [sent: 21937, recv: 70026]']
