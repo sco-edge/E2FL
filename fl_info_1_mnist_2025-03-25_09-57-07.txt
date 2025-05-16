@@ -1,0 +1,36 @@
+INFO:test:['[1742896627.5343432] Client Start!']
+INFO:test:Using network interface: wlp1s0
+INFO:test:Starting power monitoring...
+ERROR:root:PMIC: Command failed: Command '['vcgencmd', 'pmmic_read_adc']' returned non-zero exit status 255.
+WARNING:test:Power monitoring failed or returned no data.
+INFO:test:Client 1 connecting to 192.168.0.17
+WARNING:flwr:DEPRECATED FEATURE: flwr.client.start_numpy_client() is deprecated. 
+	Instead, use `flwr.client.start_client()` by ensuring you first call the `.to_client()` method as shown below: 
+	flwr.client.start_client(
+		server_address='<IP>:<PORT>',
+		client=FlowerClient().to_client(), # <-- where FlowerClient is of type flwr.client.NumPyClient object
+	)
+	Using `start_numpy_client()` is deprecated.
+
+            This is a deprecated feature. It will be removed
+            entirely in future versions of Flower.
+        
+WARNING:flwr:DEPRECATED FEATURE: flwr.client.start_client() is deprecated.
+	Instead, use the `flower-supernode` CLI command to start a SuperNode as shown below:
+
+		$ flower-supernode --insecure --superlink='<IP>:<PORT>'
+
+	To view all available options, run:
+
+		$ flower-supernode --help
+
+	Using `start_client()` is deprecated.
+
+            This is a deprecated feature. It will be removed
+            entirely in future versions of Flower.
+        
+ERROR:flwr:Exit Code: 600
+SuperLink address (192.168.0.17) cannot be parsed.
+Please provide a valid URL, IPv4 or IPv6 address.
+
+For more information, visit: <https://flower.ai/docs/framework/ref-exit-codes/600.html>

@@ -1,0 +1,129 @@
+[92mINFO [0m:      Start `flwr-serverapp` process
+🎊 Successfully installed e2fl to /home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.e04a1f98.
+[91mERROR [0m:     ServerApp raised an exception
+Traceback (most recent call last):
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/serverapp/app.py", line 186, in run_serverapp
+    updated_context = run_(
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/run_serverapp.py", line 59, in run
+    server_app = _load()
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/run_serverapp.py", line 46, in _load
+    server_app: ServerApp = load_app(
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/common/object_ref.py", line 170, in load_app
+    module = importlib.import_module(module_str)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.e04a1f98/e2fl/server_app.py", line 13, in <module>
+    from e2fl.task import Net, get_weights, load_data, set_weights, test, train, get_num_classes, get_model, get_dataset
+ImportError: cannot import name 'get_dataset' from 'e2fl.task' (/home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.e04a1f98/e2fl/task.py)
+[92mINFO [0m:      Start `flwr-serverapp` process
+[91mERROR [0m:     ServerApp raised an exception
+Traceback (most recent call last):
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/serverapp/app.py", line 186, in run_serverapp
+    updated_context = run_(
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/run_serverapp.py", line 59, in run
+    server_app = _load()
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/run_serverapp.py", line 46, in _load
+    server_app: ServerApp = load_app(
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/common/object_ref.py", line 170, in load_app
+    module = importlib.import_module(module_str)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.e04a1f98/e2fl/server_app.py", line 13, in <module>
+    from e2fl.task import Net, get_weights, load_data, set_weights, test, train, get_num_classes, get_model, get_dataset
+ImportError: cannot import name 'get_dataset' from 'e2fl.task' (/home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.e04a1f98/e2fl/task.py)
+[92mINFO [0m:      Start `flwr-serverapp` process
+[91mERROR [0m:     ServerApp raised an exception
+Traceback (most recent call last):
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/serverapp/app.py", line 186, in run_serverapp
+    updated_context = run_(
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/run_serverapp.py", line 59, in run
+    server_app = _load()
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/run_serverapp.py", line 46, in _load
+    server_app: ServerApp = load_app(
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/common/object_ref.py", line 170, in load_app
+    module = importlib.import_module(module_str)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.e04a1f98/e2fl/server_app.py", line 13, in <module>
+    from e2fl.task import Net, get_weights, load_data, set_weights, test, train, get_num_classes, get_model, get_dataset
+ImportError: cannot import name 'get_dataset' from 'e2fl.task' (/home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.e04a1f98/e2fl/task.py)
+[92mINFO [0m:      Start `flwr-serverapp` process
+🎊 Successfully installed e2fl to /home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.12c96d43.
+[91mERROR [0m:     ServerApp raised an exception
+Traceback (most recent call last):
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/serverapp/app.py", line 186, in run_serverapp
+    updated_context = run_(
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/run_serverapp.py", line 62, in run
+    server_app(grid=grid, context=context)
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/server_app.py", line 137, in __call__
+    components = self._server_fn(context)
+  File "/home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.12c96d43/e2fl/server_app.py", line 123, in server_fn
+    dataset_name = context.node_config["dataset"]
+KeyError: 'dataset'
+[92mINFO [0m:      Start `flwr-serverapp` process
+[91mERROR [0m:     ServerApp raised an exception
+Traceback (most recent call last):
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/serverapp/app.py", line 186, in run_serverapp
+    updated_context = run_(
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/run_serverapp.py", line 62, in run
+    server_app(grid=grid, context=context)
+  File "/home/wwjang/.local/lib/python3.10/site-packages/flwr/server/server_app.py", line 137, in __call__
+    components = self._server_fn(context)
+  File "/home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.12c96d43/e2fl/server_app.py", line 123, in server_fn
+    dataset_name = context.node_config["dataset"]
+KeyError: 'dataset'
+[92mINFO [0m:      Start `flwr-serverapp` process
+🎊 Successfully installed e2fl to /home/wwjang/.flwr/apps/wwjang.e2fl.1.0.0.375e2ca3.
+[92mINFO [0m:      Starting Flower ServerApp, config: num_rounds=10, no round_timeout
+[92mINFO [0m:      
+[92mINFO [0m:      [INIT]
+[92mINFO [0m:      Using initial global parameters provided by strategy
+[92mINFO [0m:      Starting evaluation of initial global parameters
+[92mINFO [0m:      Evaluation returned no results (`None`)
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 1]
+[92mINFO [0m:      Start `flwr-serverapp` process
+[92mINFO [0m:      Starting Flower ServerApp, config: num_rounds=10, no round_timeout
+[92mINFO [0m:      
+[92mINFO [0m:      [INIT]
+[92mINFO [0m:      Using initial global parameters provided by strategy
+[92mINFO [0m:      Starting evaluation of initial global parameters
+[92mINFO [0m:      Evaluation returned no results (`None`)
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 1]
+[92mINFO [0m:      Start `flwr-serverapp` process
+[92mINFO [0m:      Starting Flower ServerApp, config: num_rounds=10, no round_timeout
+[92mINFO [0m:      
+[92mINFO [0m:      [INIT]
+[92mINFO [0m:      Using initial global parameters provided by strategy
+[92mINFO [0m:      Starting evaluation of initial global parameters
+[92mINFO [0m:      Evaluation returned no results (`None`)
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 1]
+[92mINFO [0m:      Start `flwr-serverapp` process
+[92mINFO [0m:      Starting Flower ServerApp, config: num_rounds=10, no round_timeout
+[92mINFO [0m:      
+[92mINFO [0m:      [INIT]
+[92mINFO [0m:      Using initial global parameters provided by strategy
+[92mINFO [0m:      Starting evaluation of initial global parameters
+[92mINFO [0m:      Evaluation returned no results (`None`)
+[92mINFO [0m:      
+[92mINFO [0m:      [ROUND 1]
