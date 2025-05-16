@@ -1,0 +1,2 @@
+INFO:test:['[1742893394.86998] Client Start!']
+INFO:test:Using network interface: wlp1s0
