@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-INFO:test:['[2025-05-14 03:17:17.633352] Client Start!']
+INFO:test:['[2025-05-14 03:14:41.832971] Client Start!']
 INFO:test:Using network interface: wlp1s0
-INFO:test:[2025-05-14 03:17:17.634020] Starting power monitoring...
-=======
-INFO:test:['[2025-05-14 03:17:17.789662] Client Start!']
-INFO:test:Using network interface: wlp1s0
-INFO:test:[2025-05-14 03:17:17.790144] Starting power monitoring...
->>>>>>> 59bd1221bbc4abd924ddd9866e5ee94e630f1a95
+INFO:test:[2025-05-14 03:14:41.833583] Starting power monitoring...
 ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-zero exit status 255.
 ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-zero exit status 255.
 ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-zero exit status 255.
@@ -102,11 +96,7 @@ Traceback (most recent call last):
   File "/home/ubuntu/.flwr/apps/wwjang.e2fl.1.0.0.9ca534de/e2fl/client_app.py", line 284, in client_fn
     model_name = context.node_config["model"]
 KeyError: 'model'
-<<<<<<< HEAD
-INFO:flwr:[flwr-clientapp] Push `ClientAppOutputs` for token 4232843236755516072
-=======
-INFO:flwr:[flwr-clientapp] Push `ClientAppOutputs` for token 13468781137183465354
->>>>>>> 59bd1221bbc4abd924ddd9866e5ee94e630f1a95
+INFO:flwr:[flwr-clientapp] Push `ClientAppOutputs` for token 296830486081852371
 ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-zero exit status 255.
 ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-zero exit status 255.
 ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-zero exit status 255.
@@ -124,15 +114,7 @@ ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-
 ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-zero exit status 255.
 ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-zero exit status 255.
 ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-zero exit status 255.
-ERROR:root:Command failed: Command '['vcgencmd', 'pmic_read_adc']' returned non-zero exit status 255.
-<<<<<<< HEAD
-INFO:test:[2025-05-14 03:17:19.083631] Stopping power monitor via atexit...
-INFO:test:Measured power consumption: Duration=1.454632s, Data size=0 samples.
-INFO:test:['[2025-05-14 03:17:19.089359] Communication end: 1747192639.089358']
-INFO:test:['[2025-05-14 03:17:19.089863] Evaluation phase (wlp1s0): [sent: 860, recv: 204]']
-=======
-INFO:test:[2025-05-14 03:17:19.228821] Stopping power monitor via atexit...
-INFO:test:Measured power consumption: Duration=1.445881s, Data size=0 samples.
-INFO:test:['[2025-05-14 03:17:19.236688] Communication end: 1747192639.236686']
-INFO:test:['[2025-05-14 03:17:19.237184] Evaluation phase (wlp1s0): [sent: 1213, recv: 794]']
->>>>>>> 59bd1221bbc4abd924ddd9866e5ee94e630f1a95
+INFO:test:[2025-05-14 03:14:43.297198] Stopping power monitor via atexit...
+INFO:test:Measured power consumption: Duration=1.468407s, Data size=0 samples.
+INFO:test:['[2025-05-14 03:14:43.302678] Communication end: 1747192483.3026767']
+INFO:test:['[2025-05-14 03:14:43.303185] Evaluation phase (wlp1s0): [sent: 844, recv: 162]']
