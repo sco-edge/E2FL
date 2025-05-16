@@ -1,0 +1,6 @@
+INFO:test:['[1742894617.2513175] Client Start!']
+INFO:test:Using network interface: wlp1s0
+INFO:test:Starting power monitoring...
+ERROR:root:PMIC: Unexpected error: [Errno 2] No such file or directory: 'vgencmd'
+WARNING:test:Power monitoring failed or returned no data.
+INFO:test:Client 1 connecting to 192.168.0.17

@@ -1,0 +1,30 @@
+myFlowerExperiment | WARNING flwr 2025-03-25 09:57:29,624 | logger.py:226 | DEPRECATED FEATURE: flwr.client.start_numpy_client() is deprecated. 
+	Instead, use `flwr.client.start_client()` by ensuring you first call the `.to_client()` method as shown below: 
+	flwr.client.start_client(
+		server_address='<IP>:<PORT>',
+		client=FlowerClient().to_client(), # <-- where FlowerClient is of type flwr.client.NumPyClient object
+	)
+	Using `start_numpy_client()` is deprecated.
+
+            This is a deprecated feature. It will be removed
+            entirely in future versions of Flower.
+        
+myFlowerExperiment | WARNING flwr 2025-03-25 09:57:29,625 | logger.py:226 | DEPRECATED FEATURE: flwr.client.start_client() is deprecated.
+	Instead, use the `flower-supernode` CLI command to start a SuperNode as shown below:
+
+		$ flower-supernode --insecure --superlink='<IP>:<PORT>'
+
+	To view all available options, run:
+
+		$ flower-supernode --help
+
+	Using `start_client()` is deprecated.
+
+            This is a deprecated feature. It will be removed
+            entirely in future versions of Flower.
+        
+myFlowerExperiment | ERROR flwr 2025-03-25 09:57:29,626 | exit.py:78 | Exit Code: 600
+SuperLink address (192.168.0.17) cannot be parsed.
+Please provide a valid URL, IPv4 or IPv6 address.
+
+For more information, visit: <https://flower.ai/docs/framework/ref-exit-codes/600.html>
