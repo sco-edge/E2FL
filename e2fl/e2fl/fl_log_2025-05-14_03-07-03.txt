@@ -1,0 +1,14 @@
+myFlowerExperiment | ERROR flwr 2025-05-14 03:07:04,375 | app.py:151 | ClientApp raised an exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/clientapp/app.py", line 136, in run_clientapp
+    reply_message = client_app(message=message, context=context)
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/message_handler/message_handler.py", line 96, in handle_legacy_message_from_msgtype
+    client = client_fn(context)
+  File "/root/.flwr/apps/wwjang.e2fl.1.0.0.9ca534de/e2fl/client_app.py", line 284, in client_fn
+    model_name = context.node_config["model"]
+KeyError: 'model'
+myFlowerExperiment | INFO flwr 2025-05-14 03:07:04,377 | app.py:218 | [flwr-clientapp] Push `ClientAppOutputs` for token 15110668652475978172
