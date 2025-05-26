@@ -1,0 +1,50 @@
+INFO:test:['[2025-05-26 03:26:05.801202] Client Start!']
+INFO:test:Using network interface: eth0
+INFO:test:[2025-05-26 03:26:05.801902] Starting power monitoring...
+INFO:test:[2025-05-26 03:26:16.833742] Client sampled for fit()
+INFO:test:Network usage during fit: [sent: 153, recv: 293]
+INFO:test:[2025-05-26 03:26:16.887443] Starting training...
+ERROR:flwr:ClientApp raised an exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/clientapp/app.py", line 136, in run_clientapp
+    reply_message = client_app(message=message, context=context)
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/client_app.py", line 143, in __call__
+    return self._call(message, context)
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/client_app.py", line 126, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/message_handler/message_handler.py", line 128, in handle_legacy_message_from_msgtype
+    fit_res = maybe_call_fit(
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/client.py", line 224, in maybe_call_fit
+    return client.fit(fit_ins)
+  File "/usr/local/lib/python3.10/dist-packages/flwr/client/numpy_client.py", line 227, in _fit
+    results = self.numpy_client.fit(parameters, ins.config)  # type: ignore
+  File "/root/.flwr/apps/wwjang.e2fl.1.0.0.b270b87b/e2fl/client_app.py", line 159, in fit
+    train_loss = train(
+  File "/root/.flwr/apps/wwjang.e2fl.1.0.0.b270b87b/e2fl/task.py", line 240, in train
+    for batch in trainloader:
+  File "/usr/local/lib/python3.10/dist-packages/torch/utils/data/dataloader.py", line 631, in __next__
+    data = self._next_data()
+  File "/usr/local/lib/python3.10/dist-packages/torch/utils/data/dataloader.py", line 675, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "/usr/local/lib/python3.10/dist-packages/torch/utils/data/_utils/fetch.py", line 49, in fetch
+    data = self.dataset.__getitems__(possibly_batched_index)
+  File "/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py", line 2766, in __getitems__
+    batch = self.__getitem__(keys)
+  File "/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py", line 2762, in __getitem__
+    return self._getitem(key)
+  File "/usr/local/lib/python3.10/dist-packages/datasets/arrow_dataset.py", line 2747, in _getitem
+    formatted_output = format_table(
+  File "/usr/local/lib/python3.10/dist-packages/datasets/formatting/formatting.py", line 639, in format_table
+    return formatter(pa_table, query_type=query_type)
+  File "/usr/local/lib/python3.10/dist-packages/datasets/formatting/formatting.py", line 407, in __call__
+    return self.format_batch(pa_table)
+  File "/usr/local/lib/python3.10/dist-packages/datasets/formatting/formatting.py", line 522, in format_batch
+    return self.transform(batch)
+  File "/root/.flwr/apps/wwjang.e2fl.1.0.0.b270b87b/e2fl/task.py", line 103, in apply_transforms
+    batch["img"] = [transforms(img) for img in batch["img"]]
+KeyError: 'img'
+INFO:flwr:[flwr-clientapp] Push `ClientAppOutputs` for token 7738425665732848477
+INFO:test:[2025-05-26 03:26:17.580972] Stopping power monitor via atexit...
+INFO:test:Measured power consumption: Duration=11.779852s, Data size=1007 samples.
+INFO:test:['[2025-05-26 03:26:17.585837] Communication end: 1748229977.5858355']
+INFO:test:['[2025-05-26 03:26:17.586435] Evaluation phase (eth0): [sent: 21535, recv: 69695]']
