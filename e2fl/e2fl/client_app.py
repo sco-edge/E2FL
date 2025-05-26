@@ -98,7 +98,7 @@ class FlowerClient(NumPyClient):
             time.sleep(0.5)  # Example duration for monitoring
         '''
     
-    def get_last_octet_from_ip():
+    def get_last_octet_from_ip(self):
         # 현재 로컬 IP 주소의 마지막 옥텟 추출
         hostname = socket.gethostname()
         ip_address = socket.gethostbyname(hostname)
