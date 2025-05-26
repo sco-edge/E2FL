@@ -1,0 +1,40 @@
+myFlowerExperiment | ERROR flwr 2025-05-26 03:34:26,151 | app.py:152 | ClientApp raised an exception
+Traceback (most recent call last):
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/flwr/client/clientapp/app.py", line 137, in run_clientapp
+    reply_message = client_app(message=message, context=context)
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/flwr/client/client_app.py", line 144, in __call__
+    return self._call(message, context)
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/flwr/client/client_app.py", line 128, in ffn
+    out_message = handle_legacy_message_from_msgtype(
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/flwr/client/message_handler/message_handler.py", line 135, in handle_legacy_message_from_msgtype
+    evaluate_res = maybe_call_evaluate(
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/flwr/client/client.py", line 244, in maybe_call_evaluate
+    return client.evaluate(evaluate_ins)
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/flwr/client/numpy_client.py", line 251, in _evaluate
+    results = self.numpy_client.evaluate(parameters, ins.config)  # type: ignore
+  File "/home/ubuntu/.flwr/apps/wwjang.e2fl.1.0.0.b270b87b/e2fl/client_app.py", line 220, in evaluate
+    loss, accuracy = test(self.net, self.valloader, self.device)
+  File "/home/ubuntu/.flwr/apps/wwjang.e2fl.1.0.0.b270b87b/e2fl/task.py", line 259, in test
+    for batch in testloader:
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 701, in __next__
+    data = self._next_data()
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 757, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/torch/utils/data/_utils/fetch.py", line 50, in fetch
+    data = self.dataset.__getitems__(possibly_batched_index)
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/datasets/arrow_dataset.py", line 2766, in __getitems__
+    batch = self.__getitem__(keys)
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/datasets/arrow_dataset.py", line 2762, in __getitem__
+    return self._getitem(key)
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/datasets/arrow_dataset.py", line 2747, in _getitem
+    formatted_output = format_table(
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/datasets/formatting/formatting.py", line 639, in format_table
+    return formatter(pa_table, query_type=query_type)
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/datasets/formatting/formatting.py", line 407, in __call__
+    return self.format_batch(pa_table)
+  File "/home/ubuntu/anaconda3/envs/E2FL/lib/python3.10/site-packages/datasets/formatting/formatting.py", line 522, in format_batch
+    return self.transform(batch)
+  File "/home/ubuntu/.flwr/apps/wwjang.e2fl.1.0.0.b270b87b/e2fl/task.py", line 103, in apply_transforms
+    batch["img"] = [transforms(img) for img in batch["img"]]
+KeyError: 'img'
+myFlowerExperiment | INFO flwr 2025-05-26 03:34:26,156 | app.py:222 | [flwr-clientapp] Push `ClientAppOutputs` for token 5650647731207245770
