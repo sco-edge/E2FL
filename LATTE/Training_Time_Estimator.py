@@ -35,7 +35,7 @@ class Training_Time_Estimator:
 def create_estimator():
     return Training_Time_Estimator()
 
-
+'''
 # Example
 estimator = create_estimator()
 
@@ -65,3 +65,4 @@ batch_size = 32
 num_batches = 100
 T_train = estimator.estimate_training_time(algo_selection, C_key, C_non, num_epochs, batch_size, num_batches)
 print(f"Estimated total training time: {T_train}")
+'''
