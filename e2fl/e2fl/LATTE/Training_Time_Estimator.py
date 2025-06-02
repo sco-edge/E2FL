@@ -35,7 +35,6 @@ class Training_Time_Estimator:
 def create_estimator():
     return Training_Time_Estimator()
 
-
 # Example
 estimator = create_estimator()
 
