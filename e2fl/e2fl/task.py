@@ -32,17 +32,32 @@ class Net(nn.Module):
         x = F.relu(self.fc2(x))
         return self.fc3(x)
 
-def get_model(model_name: str, num_classes: int):
+def get_model(model_name: str, num_classes: int, dataset_name: str = None):
+    # MNIST 등 1채널 입력이 필요한 데이터셋인지 확인
+    is_gray = dataset_name in ["mnist", "fashion_mnist"]
+
     if model_name == "resnet18":
-        return models.resnet18(num_classes=num_classes)
+        model = models.resnet18(num_classes=num_classes)
+        if is_gray:
+            model.conv1 = torch.nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        return model
     elif model_name == "resnet50":
-        return models.resnet50(num_classes=num_classes)
+        model = models.resnet50(num_classes=num_classes)
+        if is_gray:
+            model.conv1 = torch.nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        return model
     elif model_name == "resnext50":
         return models.resnext50_32x4d(num_classes=num_classes)
     elif model_name == "vgg16":
-        return models.vgg16(num_classes=num_classes)
+        model = models.vgg16(num_classes=num_classes)
+        if is_gray:
+            model.features[0] = torch.nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
+        return model
     elif model_name == "alexnet":
-        return models.alexnet(num_classes=num_classes)
+        model = models.alexnet(num_classes=num_classes)
+        if is_gray:
+            model.features[0] = torch.nn.Conv2d(1, 64, kernel_size=11, stride=4, padding=2, bias=False)
+        return model
     elif model_name == "convnext_tiny":
         return models.convnext_tiny(num_classes=num_classes)
     elif model_name == "squeezenet1":
