@@ -301,7 +301,7 @@ def get_partition_id_from_ip():
     
     # 사전 정의된 매핑 테이블
     ip_to_partition = {
-        2: 0,
+        17: 0,
         40: 1,
         47: 2,
         54: 3,
