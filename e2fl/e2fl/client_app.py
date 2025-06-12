@@ -57,8 +57,8 @@ class FlowerClient(NumPyClient):
             self.interface = 'wlp1s0' if self.validate_network_interface('wlp1s0') else "wlan0"
             self.device_name = 'RPi5'
             self.power = "PMIC"
-        elif 'wlan0' in interfaces:
-            self.interface = 'wlan0' #if self.validate_network_interface('eth0') else "wlan0"
+        elif 'wlP1p1s0' in interfaces:
+            self.interface = 'wlP1p1s0' #if self.validate_network_interface('eth0') else "wlan0"
             self.device_name = 'jetson'
             self.power = "INA3221"
         else:
@@ -341,8 +341,8 @@ if 'wlp1s0' in interfaces:
     wlan_interf = 'wlp1s0' if validate_network_interface('wlp1s0') else "wlan0"
     device_name = 'RPi5'
     power = "PMIC"
-elif 'wlan0' in interfaces:
-    wlan_interf = 'wlan0' #if validate_network_interface('eth0') else "wlan0"
+elif 'wlP1p1s0' in interfaces:
+    wlan_interf = 'wlP1p1s0' #if validate_network_interface('eth0') else "wlan0"
     device_name = 'jetson'
     power = "INA3221"
 else:
