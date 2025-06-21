@@ -1,2 +1,0 @@
-INFO:test:['[1742893323.2370856] Client Start!']
-INFO:test:Using network interface: wlp1s0

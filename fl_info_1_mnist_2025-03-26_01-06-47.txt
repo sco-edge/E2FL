@@ -1,6 +1,0 @@
-INFO:test:['[1742951207.6369233] Client Start!']
-INFO:test:Using network interface: wlp1s0
-INFO:test:Starting power monitoring...
-ERROR:root:PMIC: Command failed: Command '['vcgencmd', 'pmmic_read_adc']' returned non-zero exit status 255.
-WARNING:test:Power monitoring failed or returned no data.
-INFO:test:Client 1 connecting to 192.168.0.17
