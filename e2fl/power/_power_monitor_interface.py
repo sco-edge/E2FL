@@ -44,6 +44,14 @@ class PowerMonitor(ABC):
         pass
 
     @abstractmethod
+    def read_power_avg(self):
+        """
+        Reads the average power consumption in mW using the 'vcgencmd pmic_read_adc' command.
+        :return: Average power consumption in mW (float), or None if reading fails.
+        """
+        pass
+
+    @abstractmethod
     def save(self, filepath):
         """
         Save the collected power data to the specified file.

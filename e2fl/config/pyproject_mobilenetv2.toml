@@ -43,33 +43,17 @@ num-server-rounds = 1
 fraction-train = 1.0
 local-epochs = 1
 min-clients = 2
-model = ""TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-dataset = "wikitext"
+model = "mobilenet_v2"
+dataset = "cifar10"
 batch_size = 32
-eval-batch-size = 1
 num_partitions = 2
 strategy = "FedAvgLog"
 enable-latte = false
 power-monitor = true
 resume = true
 checkpoint-path = "./eval/final_model.pt"
-
-# Optim
-learning-rate = 5e-5
-weight-decay = 0.0
-lr-scheduler = "cosine"         # "none"|"cosine"
-warmup-steps = 100
-
-# LLM/tokenizers/sequence
-seq-len = 1024                   # LLM max length
-
-# LoRA (필요 시)
-lora.enabled = true
-lora.r = 4
-lora.alpha = 8
-lora.dropout = 0.05
-lora.targets = "q_proj,v_proj"
-lora.task-type = "CAUSAL_LM"     # "SEQ_CLS"...
+learning-rate = 0.01
+weight-decay = 0.0005
 
 [tool.flwr.federations]
 default = "local-deployment"

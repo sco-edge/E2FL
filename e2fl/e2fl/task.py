@@ -1,292 +1,306 @@
 """E2FL: A Flower / PyTorch app."""
-
 from collections import OrderedDict
+import numpy as np
+from typing import Any, Optional
+import logging, os, torch
+from peft import get_peft_model_state_dict, set_peft_model_state_dict
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from flwr_datasets import FederatedDataset
-from flwr_datasets.partitioner import IidPartitioner
-from torch.utils.data import DataLoader
-from torchvision.transforms import Compose, Normalize, ToTensor
-import torchvision.models as models
+# 디버그 토글: E2FL_DEBUG=1 로 디버그 활성화 (기본 비활성)
+E2FL_DEBUG = os.environ.get("E2FL_DEBUG", "0") == "1"
+# 기존 DEBUG 변수를 대체하여 환경변수 기반으로 동작하게 함
+DEBUG = E2FL_DEBUG
 
+# task 전용 로거
+logger = logging.getLogger("e2fl_task")
+if not logger.handlers:
+    logger.setLevel(logging.DEBUG if E2FL_DEBUG else logging.INFO)
+    ch = logging.StreamHandler()
+    ch.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+    logger.addHandler(ch)
 
-class Net(nn.Module):
-    """Model (simple CNN adapted from 'PyTorch: A 60 Minute Blitz')"""
+def is_hf_model_name(model_name: Optional[str]) -> bool:
+    if not model_name:
+        return False
+    if model_name.startswith("hf:"):
+        return True
+    hf_indicators = ["bert", "roberta", "distilbert", "gpt2", "deberta", "electra", "xlnet"]
+    return any(ind in model_name.lower() for ind in hf_indicators)
 
-    def __init__(self):
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+def is_lora_model(model) -> bool:
+    return hasattr(model, "peft_config") or any("lora" in n.lower() for n, _ in model.named_parameters())
 
-    def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        return self.fc3(x)
-
-def get_model(model_name: str, num_classes: int, dataset_name: str = None):
-    # MNIST 등 1채널 입력이 필요한 데이터셋인지 확인
-    is_gray = dataset_name in ["mnist", "fashion_mnist"]
-
-    if model_name == "resnet18":
-        model = models.resnet18(num_classes=num_classes)
-        if is_gray:
-            model.conv1 = torch.nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        return model
-    elif model_name == "resnet50":
-        model = models.resnet50(num_classes=num_classes)
-        if is_gray:
-            model.conv1 = torch.nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        return model
-    elif model_name == "resnext50":
-        return models.resnext50_32x4d(num_classes=num_classes)
-    elif model_name == "vgg16":
-        model = models.vgg16(num_classes=num_classes)
-        if is_gray:
-            model.features[0] = torch.nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
-        return model
-    elif model_name == "alexnet":
-        model = models.alexnet(num_classes=num_classes)
-        if is_gray:
-            model.features[0] = torch.nn.Conv2d(1, 64, kernel_size=11, stride=4, padding=2, bias=False)
-        return model
-    elif model_name == "convnext_tiny":
-        return models.convnext_tiny(num_classes=num_classes)
-    elif model_name == "squeezenet1":
-        return models.squeezenet1_0(num_classes=num_classes)
-    elif model_name == "densenet121":
-        return models.densenet121(num_classes=num_classes)
-    elif model_name == "densenet161":
-        return models.densenet161(num_classes=num_classes)
-    elif model_name == "inception_v3":
-        return models.inception_v3(num_classes=num_classes, aux_logits=False)
-    elif model_name == "googlenet":
-        return models.googlenet(num_classes=num_classes, aux_logits=False)
-    elif model_name == "shufflenet_v2":
-        return models.shufflenet_v2_x1_0(num_classes=num_classes)
-    elif model_name == "mobilenet_v2":
-        return models.mobilenet_v2(num_classes=num_classes)
-    elif model_name == "mobilenet_v3_small":
-        return models.mobilenet_v3_small(num_classes=num_classes)
-    elif model_name == "mnasnet1":
-        return models.mnasnet1_0(num_classes=num_classes)
-    elif model_name == "lenet":
-        return Net()
-    else:
-        raise ValueError(f"Unsupported model: {model_name}")
-
-def get_num_classes(dataset_name: str):
-    if dataset_name in ["cifar10", "mnist", "fashion_mnist"]:
-        return 10
-    elif dataset_name == "cifar100":
-        return 100
-    elif dataset_name == "imagenet":
-        return 1000
-    else:
-        raise ValueError(f"Unsupported dataset: {dataset_name}")
-
-def get_transforms(dataset_name: str):
-    if dataset_name in ["cifar10", "cifar100"]:
-        return Compose([ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-    elif dataset_name in ["mnist", "fashion_mnist"]:
-        return Compose([ToTensor(), Normalize((0.1307,), (0.3081,))])
-    else:
-        return Compose([ToTensor()])
-
-def load_data(dataset_name: str, partition_id: int, num_partitions: int, batch_size: int):
-    global fds
-    if fds is None:
-        partitioner = IidPartitioner(num_partitions=num_partitions)
-        fds = FederatedDataset(
-            dataset=dataset_name,
-            partitioners={"train": partitioner},
-        )
-
-    partition = fds.load_partition(partition_id)
-    partition_train_test = partition.train_test_split(test_size=0.2, seed=42)
-    transforms = get_transforms(dataset_name)
-
-    def apply_transforms(batch):
-        batch["img"] = [transforms(img) for img in batch["img"]]
-        return batch
-
-    partition_train_test = partition_train_test.with_transform(apply_transforms)
-
-    trainloader = DataLoader(partition_train_test["train"], batch_size=batch_size, shuffle=True)
-    testloader = DataLoader(partition_train_test["test"], batch_size=batch_size)
-
-    return trainloader, testloader
-
-'''
-LLM Fine-tuning with Flower [https://github.com/adap/flower/tree/main/examples/flowertune-llm]
-Vision Transformer with Flower [https://github.com/adap/flower/tree/main/examples/flowertune-vit]
-
-def initialize_model(self, model, dataset):
-    """Initialize the model based on the dataset and model type."""
-    if model == 'resnet18' and dataset == 'mnist':
-        resnet18 = models.resnet18(pretrained=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        resnet18.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        self.model = resnet18
-    elif model == 'resnet18':
-        # Pretrained ResNet model
-        self.model = models.resnet18(pretrained=False)
-    elif model == 'resnext50':
-        self.model = models.resnext50_32x4d(pretrained=False)
-    elif model == 'resnet50':
-        self.model = models.wide_resnet50_2(pretrained=False)
-    elif model == 'vgg16' and dataset == 'mnist':
-        # Pretrained VGG model
-        vgg16 = models.vgg16(pretrained=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        vgg16.features[0] = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
-        self.model = vgg16
-    elif model == 'vgg16':
-        self.model = models.vgg16(pretrained=False)
-    elif model == 'alexnet' and dataset == 'mnist':
-        # Pretrained AlexNet model
-        alexnet = models.alexnet(pretrained=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        alexnet.features[0] = nn.Conv2d(1, 64, kernel_size=11, stride=4, padding=2, bias=False)
-        self.model = alexnet
-    elif model == 'alexnet':
-        self.model = models.alexnet(pretrained=False)
-    elif model == 'convnext_tiny' and `dataset` == 'mnist':
-        # Create a ConvNeXt Tiny model
-        convnext_tiny = models.convnext_tiny(pretrained=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        convnext_tiny.stem[0] = nn.Conv2d(1, 96, kernel_size=4, stride=4, padding=0)
-        self.model = convnext_tiny
-    elif model == 'convnext_tiny':
-        self.model = models.convnext_tiny(pretrained=False)
-    elif model == 'squeezenet1' and dataset == 'mnist':
-        # Pretrained SqueezeNet1 model
-        squeezenet = models.squeezenet1_0(pretrained=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        squeezenet.features[0] = nn.Conv2d(1, 96, kernel_size=7, stride=2, padding=3, bias=False)
-        squeezenet.classifier[1] = nn.Conv2d(512, 10, kernel_size=1)
-        self.model = squeezenet
-    elif model == 'squeezenet1':
-        self.model = models.squeezenet1_0(pretrained=False)
-    elif model == 'densenet121' and dataset == 'mnist':
-        # Pretrained DenseNet model
-        densenet = models.densenet121(pretrained=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        densenet.features.conv0 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        self.model = densenet
-    elif model == 'densenet121':
-        self.model = models.densenet121(pretrained=False)
-    elif model == 'densenet161':
-        self.model = models.densenet161(pretrained=False)
-    elif model == 'inception_v3' and dataset == 'mnist':
-        # Pretrained Inception V3 model
-        inception_v3 = models.inception_v3(pretrained=False, aux_logits=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        inception_v3.Conv2d_1a_3x3.conv = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=0, bias=False)
-        self.model = inception_v3
-    elif model == 'inception_v3':
-        self.model = models.inception_v3(pretrained=False)
-    elif model == 'googlenet' and dataset == 'mnist':
-        # Pretrained GoogleNet model
-        googlenet = models.googlenet(pretrained=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        googlenet.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        self.model = googlenet
-    elif model == 'googlenet':
-        self.model = models.googlenet(pretrained=False)
-    elif model == 'shufflenet_v2' and dataset == 'mnist':
-        # Pretrained ShuffleNet V2 model
-        shufflenet_v2 = models.shufflenet_v2_x1_0(pretrained=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        shufflenet_v2.conv1[0] = nn.Conv2d(1, 24, kernel_size=3, stride=2, padding=1, bias=False)
-        shufflenet_v2.fc = nn.Linear(1024, 10)
-        self.model = shufflenet_v2
-    elif model == 'shufflenet_v2':
-        self.model = models.shufflenet_v2_x1_0(pretrained=False)
-    elif model == 'mobilenet_v2' and dataset == 'mnist':
-        # Pretrained MobileNet V2 model
-        mobilenet_v2 = models.mobilenet_v2(pretrained=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        mobilenet_v2.features[0][0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
-        mobilenet_v2.classifier[1] = nn.Linear(mobilenet_v2.last_channel, 10)
-        self.model = mobilenet_v2
-    elif model == 'mobilenet_v2':
-        self.model = models.mobilenet_v2(pretrained=False)
-    elif model == 'mobilenet_v3_small' and dataset == 'mnist':
-        mobilenet_v3 = models.mobilenet_v3_small(pretrained=False)
-        mobilenet_v3.features[0][0] = nn.Conv2d(1, 16, kernel_size=3, stride=2, padding=1, bias=False)
-        mobilenet_v3.classifier[3] = nn.Linear(mobilenet_v3.classifier[3].in_features, 10)
-        self.model = mobilenet_v3
-    elif model == 'mobilenet_v3_small':
-        self.model = models.mobilenet_v3_small(pretrained=False)
-    elif model == 'mnasnet1' and dataset == 'mnist':
-        # Pretrained MNASNet model
-        mnasnet = models.mnasnet1_0(pretrained=False)
-        # Modify the first convolutional layer to accept 1 channel input
-        mnasnet.layers[0] = nn.Conv2d(1, 32, kernel_size=3, stride=2, padding=1, bias=False)
-        self.model = mnasnet
-    elif model == 'mnasnet1':
-        self.model = models.mnasnet1_0(pretrained=False)
-    elif model == 'lenet':
-        self.model = LeNet()
-    else: #default:
-        self.model = Net()
-'''
-
-
-fds = None  # Cache FederatedDataset
-
-def train(net, trainloader, epochs, device):
-    """Train the model on the training set."""
-    net.to(device)  # move model to GPU if available
+def train(net, trainloader, epochs, device) -> float:
+    """Train the model on the training set. BatchNorm에 대해 batch_size==1이면 BN을 eval로 전환하여 오류 방지."""
+    net.to(device)
     criterion = torch.nn.CrossEntropyLoss().to(device)
-    optimizer = torch.optim.Adam(net.parameters(), lr=0.01)
+    optimizer = torch.optim.Adam(net.parameters(), lr=5e-5)
     net.train()
     running_loss = 0.0
+    total_batches = 0
+
     for _ in range(epochs):
         for batch in trainloader:
             images = batch["img"]
             labels = batch["label"]
+
+            # 안전한 텐서 변환/차원 정리
+            if isinstance(images, list):
+                images = torch.stack([x if isinstance(x, torch.Tensor) else torch.tensor(x) for x in images])
+            if not isinstance(images, torch.Tensor):
+                images = torch.tensor(images)
+            # (C,H,W) 형태일 때 배치 차원 추가
+            if images.dim() == 3:
+                images = images.unsqueeze(0)
+
+            batch_size = images.size(0)
+            images = images.to(device)
+            labels = labels.to(device)
+
+            # BatchNorm이 배치 크기 1에서 에러를 내므로, 해당 경우에만 BN 계층을 eval로 전환
+            bn_toggled = False
+            if batch_size == 1:
+                bn_toggled = True
+                for m in net.modules():
+                    if isinstance(m, torch.nn.modules.batchnorm._BatchNorm):
+                        m.eval()
+
             optimizer.zero_grad()
-            loss = criterion(net(images.to(device)), labels.to(device))
+            outputs = net(images)
+            loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
-            running_loss += loss.item()
 
-    avg_trainloss = running_loss / len(trainloader)
+            running_loss += loss.item()
+            total_batches += 1
+
+            # BN 상태 복원 (train 모드로)
+            if bn_toggled:
+                for m in net.modules():
+                    if isinstance(m, torch.nn.modules.batchnorm._BatchNorm):
+                        m.train()
+
+    avg_trainloss = running_loss / total_batches if total_batches > 0 else 0.0
     return avg_trainloss
 
 
-def test(net, testloader, device):
+def test(net, testloader, device) -> tuple[Any | float, Any]:
     """Validate the model on the test set."""
     net.to(device)
+    net.eval()  # 평가 모드: BatchNorm/Dropout을 평가용 동작으로 변경
     criterion = torch.nn.CrossEntropyLoss()
-    correct, loss = 0, 0.0
+    correct = 0
+    total = 0
+    loss = 0.0
     with torch.no_grad():
         for batch in testloader:
             images = batch["img"].to(device)
-            labels = batch["label"].to(device)
-            outputs = net(images)
-            loss += criterion(outputs, labels).item()
-            correct += (torch.max(outputs.data, 1)[1] == labels).sum().item()
-    accuracy = correct / len(testloader.dataset)
-    loss = loss / len(testloader)
-    return loss, accuracy
+            labels = batch["label"]
+            # if labels might be None or -1 dummy
+            if labels is None:
+                logger.debug("[test] received None labels; skipping batch")
+                continue
+            labels = labels.to(device)
+            # create mask to ignore dummy labels (-1)
+            valid_mask = labels >= 0
+            if valid_mask.sum().item() == 0:
+                logger.debug("[test] no valid labels in batch; skipping")
+                continue
+            # select valid samples
+            if valid_mask.all():
+                imgs_sel = images
+                labels_sel = labels
+            else:
+                imgs_sel = images[valid_mask]
+                labels_sel = labels[valid_mask]
+            outputs = net(imgs_sel)
+            loss += criterion(outputs, labels_sel).item() * imgs_sel.size(0)
+            correct += (torch.argmax(outputs, dim=1) == labels_sel).sum().item()
+            total += imgs_sel.size(0)
+    avg_loss = loss / total if total > 0 else 0.0
+    accuracy = correct / total if total > 0 else 0.0
+    return avg_loss, accuracy
 
 
 def get_weights(net):
     return [val.cpu().numpy() for _, val in net.state_dict().items()]
-
-
+        
 def set_weights(net, parameters):
-    params_dict = zip(net.state_dict().keys(), parameters)
-    state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
-    net.load_state_dict(state_dict, strict=True)
+    """
+    Robust set_weights:
+    - 다양한 flwr Array wrapper 형태(.as_numpy/.to_numpy/.arrays/.value/.data/...)를 시도해서 numpy->tensor로 변환
+    - bytes/memoryview -> frombuffer 처리 (대상 shape을 이용해 reshape 시도)
+    - iterable -> np.array(list(...)) 시도
+    - 실패 시 기존 파라미터를 fallback으로 사용
+    - 첫 번째 반복 실패 항목에 대해 타입/dir/간단 repr 출력 (디버깅용)
+    """
+    if is_lora_model(net):
+        try:
+            sd_keys = list(get_peft_model_state_dict(net).keys())
+            if isinstance(parameters, dict): # parameters가 dict일 경우: key matching 우선
+                new_sd = {k: torch.tensor(v).cpu() for k, v in parameters.items() if k in sd_keys}
+            else: # list/array case
+                if len(parameters) != len(sd_keys):
+                    logger.warning(f"[set_weights] LoRA adapter: key/weight count mismatch {len(sd_keys)} vs {len(parameters)})")
+                new_sd = {k: torch.tensor(w).cpu() for k, w in zip(sd_keys, parameters)}
+
+            set_peft_model_state_dict(net, new_sd)
+            logger.debug(f"[set_weights] Loaded {len(new_sd)} LoRA adapter weights.")
+            return  # ✅ LoRA branch handled, skip rest
+        except Exception as e:
+            logger.warning(f"[set_weights] LoRA adapter load failed: {e}. Falling back to default path.")
+
+    state_keys = list(net.state_dict().keys())
+
+    if isinstance(parameters, dict) or hasattr(parameters, "items"):
+        items = parameters.items()
+    else:
+        try:
+            params_list = list(parameters)
+        except Exception as e:
+            raise TypeError(f"Unsupported parameters format: {type(parameters)}") from e
+        items = zip(state_keys, params_list)
+
+    new_state = OrderedDict()
+    first_fail_debugged = False
+
+    # target shapes for reshape attempts
+    target_shapes = {k: v.cpu().numpy().shape for k, v in net.state_dict().items()}
+
+    for k, v in items:
+        try:
+            # 이미 tensor이면 그대로 사용
+            if isinstance(v, torch.Tensor):
+                new_state[k] = v.cpu()
+                continue
+
+            arr = None
+
+            # 1) 시도: common numpy-like accessors
+            for acc in ("as_numpy", "to_numpy", "numpy", "to_ndarray"):
+                if hasattr(v, acc):
+                    try:
+                        fn = getattr(v, acc)
+                        arr = fn() if callable(fn) else fn
+                        break
+                    except Exception:
+                        arr = None
+
+            # 2) 시도: common attrs
+            if arr is None:
+                for attr in ("arrays", "value", "data", "array", "buffer"):
+                    if hasattr(v, attr):
+                        try:
+                            arr = getattr(v, attr)
+                            break
+                        except Exception:
+                            arr = None
+
+            # 3) tolist/tobytes/tobytearray
+            if arr is None and hasattr(v, "tolist"):
+                try:
+                    arr = v.tolist()
+                except Exception:
+                    arr = None
+
+            # 4) raw bytes / memoryview / tobytes
+            if arr is None and isinstance(v, (bytes, bytearray, memoryview)):
+                try:
+                    arr = np.frombuffer(v, dtype=np.float32)
+                except Exception:
+                    arr = None
+
+            if arr is None:
+                # some wrappers provide .tobytes()
+                if hasattr(v, "tobytes") and callable(getattr(v, "tobytes")):
+                    try:
+                        b = v.tobytes()
+                        arr = np.frombuffer(b, dtype=np.float32)
+                    except Exception:
+                        arr = None
+
+            # 5) __array__ protocol
+            if arr is None:
+                try:
+                    arr = np.asarray(v)
+                    # if result is object-dtype or scalar wrapper, treat arr further below
+                except Exception:
+                    arr = None
+
+            # 6) iterable fallback: list(...) -> array
+            if arr is None:
+                try:
+                    if hasattr(v, "__iter__") and not isinstance(v, (str, bytes, bytearray)):
+                        lst = list(v)
+                        # avoid huge unintended expansions: require at least one numeric element
+                        if len(lst) > 0:
+                            arr = np.array(lst)
+                except Exception:
+                    arr = None
+
+            # If arr exists but is not ndarray, try to convert
+            if arr is not None and not isinstance(arr, np.ndarray):
+                try:
+                    arr = np.asarray(arr)
+                except Exception:
+                    pass
+
+            # If arr is a 1D flat array from bytes, try reshape to target shape if available
+            if isinstance(arr, np.ndarray):
+                if arr.ndim == 1 and k in target_shapes:
+                    tgt = target_shapes[k]
+                    try:
+                        if arr.size == np.prod(tgt):
+                            arr = arr.reshape(tgt)
+                        # if sizes mismatch but dtype convertible, leave as-is and rely on load_state_dict strict=False
+                    except Exception:
+                        pass
+
+            # Finally convert to tensor
+            if isinstance(arr, np.ndarray):
+                # ensure float compatibility
+                try:
+                    # if dtype is object, try to cast to float32
+                    if arr.dtype == object:
+                        arr = arr.astype(np.float32)
+                    new_state[k] = torch.from_numpy(arr).cpu()
+                    continue
+                except Exception:
+                    # proceed to next fallback
+                    pass
+
+            # try torch.as_tensor directly as last numeric attempt
+            try:
+                new_state[k] = torch.as_tensor(v).cpu()
+                continue
+            except Exception:
+                pass
+
+            # If we reach here, conversion failed -> fallback to existing param
+            raise RuntimeError("Could not convert parameter to tensor")
+
+        except Exception as e:
+            logger.debug(f"[set_weights] failed to convert param {k} (type={type(v)}): {e}. Using existing parameter as fallback.")
+            if not first_fail_debugged and E2FL_DEBUG:
+                try:
+                    tname = getattr(v, "__class__", None)
+                    logger.debug(f"[set_weights] FIRST_FAIL type: {tname}")
+                    logger.debug(f"[set_weights] FIRST_FAIL dir: {str(dir(v))[:400]}")  # truncate
+                    try:
+                        s = repr(v)
+                        if len(s) > 400:
+                            s = s[:400] + "...(truncated)"
+                        logger.debug(f"[set_weights] FIRST_FAIL repr: {s}")
+                    except Exception:
+                        logger.debug("[set_weights] FIRST_FAIL repr: <repr-failed>")
+                except Exception:
+                    pass
+                first_fail_debugged = True
+            new_state[k] = net.state_dict()[k].clone().cpu()
+
+    # load into model (allow partial loads)
+    try:
+        net.load_state_dict(new_state, strict=False)
+    except Exception as e:
+        if DEBUG:
+            print(f"[DEBUG set_weights] load_state_dict failed: {e}. Falling back to strict=True load attempt.")
+        net.load_state_dict(new_state, strict=True)

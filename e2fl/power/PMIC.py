@@ -23,6 +23,18 @@ class PMICMonitor(PowerMonitor):
         # Configure logging
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+    def read_power_avg(self):
+        """
+        Reads the average power consumption in mW using the 'vcgencmd pmic_read_adc' command.
+        :return: Average power consumption in mW (float), or None if reading fails.
+        """
+        if not self.power_data:
+            return 0
+        else:
+            data = self.power_data
+            return float(sum(p for _, p in data) / len(data))
+        return 0
+
     def read_power(self):
         """
         Implements the abstract method from PowerMonitor.
@@ -85,9 +97,7 @@ class PMICMonitor(PowerMonitor):
         """
         logging.info(f"RPi5: Power monitoring started.")
         while self.monitoring:
-            #timestamp = (datetime.now() - self.start_time).total_seconds()
-            now = datetime.now()
-            timestamp = now.strftime('%Y-%m-%d %H:%M:%S.%f')
+            timestamp = (datetime.now() - self.start_time).total_seconds()
             power = self.read_power()
             if power is not None:
                 with self.lock:
@@ -143,12 +153,12 @@ class PMICMonitor(PowerMonitor):
             with open(filepath, 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 # Write the global start time in the header
-                #writer.writerow([f"start_time", f"{self.start_time}"])
-                writer.writerow(["Timestamp (s)", "Power (mW)"])
+                writer.writerow([f"start_time", f"{self.start_time}"])
+                writer.writerow(["timestamp", "power_mW"])
                 # Write each (timestamp, power) pair into the file
                 with self.lock:
                     for timestamp, power in self.power_data:
-                        writer.writerow([f"{timestamp}", f"{power:.2f}"])
+                        writer.writerow([f"{timestamp:.2f}", power])
             logging.info(f"RPi5: Data saved to {filepath}.")
         except Exception as e:
             logging.error(f"Failed to save data to {filepath}: {e}")
