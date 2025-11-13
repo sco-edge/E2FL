@@ -1,0 +1,86 @@
+aiohappyeyeballs==2.6.1
+aiohttp==3.13.0
+aiosignal==1.4.0
+async-timeout==5.0.1
+attrs==25.4.0
+bcrypt==5.0.0
+certifi==2025.10.5
+cffi==2.0.0
+charset-normalizer==3.4.4
+click==8.1.8
+contourpy==1.3.2
+cryptography==44.0.3
+cycler==0.12.1
+datasets==3.1.0
+dill==0.3.8
+filelock==3.20.0
+flwr==1.22.0
+flwr-datasets==0.5.0
+fonttools==4.60.1
+frozenlist==1.8.0
+fsspec==2024.9.0
+grpcio==1.75.1
+grpcio-health-checking==1.62.3
+hf-xet==1.1.10
+huggingface-hub==0.35.3
+idna==3.11
+invoke==2.2.1
+iterators==0.0.2
+Jinja2==3.1.6
+joblib==1.5.2
+kiwisolver==1.4.9
+markdown-it-py==4.0.0
+MarkupSafe==3.0.3
+matplotlib==3.10.7
+mdurl==0.1.2
+mpmath==1.3.0
+multidict==6.7.0
+multiprocess==0.70.16
+networkx==3.4.2
+numpy==1.26.4
+packaging==25.0
+pandas==2.3.3
+paramiko==4.0.0
+pathspec==0.12.1
+pillow==11.3.0
+propcache==0.4.1
+protobuf==4.25.3
+psutil==7.1.0
+pyarrow==21.0.0
+pycparser==2.23
+pycryptodome==3.23.0
+Pygments==2.19.2
+PyNaCl==1.6.0
+pyparsing==3.2.5
+python-dateutil==2.9.0.post0
+pytz==2025.2
+PyYAML==6.0.3
+regex==2025.10.23
+requests==2.32.5
+rich==13.9.4
+safetensors==0.6.2
+scikit-learn==1.7.2
+scipy==1.15.3
+seaborn==0.13.2
+shellingham==1.5.4
+six==1.17.0
+sympy==1.14.0
+threadpoolctl==3.6.0
+tinycudann @ file:///home/netlab/tinycudann-2.0-cp310-cp310-linux_aarch64.whl#sha256=5059de88e5516687ca6257f9d047649f11d48c8714e889faad922553217aec4a
+tokenizers==0.22.1
+tomli==2.3.0
+tomli_w==1.2.0
+torch @ file:///home/netlab/torch-2.8.0-cp310-cp310-linux_aarch64.whl#sha256=59092ab729aee2b8937d80cc1b35d1128275bd02a7e1bc911e7efa375bd97226
+torch_memory_saver @ file:///home/netlab/torch_memory_saver-0.0.9-cp310-cp310-linux_aarch64.whl#sha256=70d090b3d5153ce0bf88866df4ec1b107aea5839504252328d0e34cdc6d60c52
+torchao @ file:///home/netlab/torchao-0.14.0-cp39-abi3-linux_aarch64.whl#sha256=7d3707930a000fd6ecc57308289e168ac82c742748d1a4c72137432b201ab0db
+torchaudio @ file:///home/netlab/torchaudio-2.8.0-cp310-cp310-linux_aarch64.whl#sha256=de15388b8f70e4e17a05b23a4ae1f55a288c91449371bb8aeeb69184d40be17f
+torchcodec @ file:///home/netlab/torchcodec-0.6.0-cp310-cp310-linux_aarch64.whl#sha256=7b5ac36302315e8d0098d324ecaa85a6e81d8a5e6ba19ce4d86d1e0e43d08a8d
+torchvision @ file:///home/netlab/torchvision-0.23.0-cp310-cp310-linux_aarch64.whl#sha256=1c03de08a69e95542024477e0cde95fab3436804917133d3f00e67629d3fe902
+tqdm==4.66.3
+transformers==4.57.1
+typer==0.12.5
+typing_extensions==4.15.0
+tzdata==2025.2
+urllib3==2.5.0
+xxhash==3.6.0
+yarl==1.22.0
