@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "e2fl"
+version = "1.0.1"
+description = ""
+license = "Apache-2.0"
+dependencies = [
+    "flwr[simulation]>=1.17.0",
+    "flwr-datasets[vision]>=0.5.0",
+    "torch==2.5.1",
+    "torchvision==0.20.1",
+    "pandas>=1.3.0",
+    "numpy>=1.21.0",
+    "scikit-learn>=1.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+    "psutil>=5.8.0",
+    "paramiko>=2.8.0",
+    "pyyaml>=6.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.flwr.app]
+publisher = "wwjang"
+
+[tool.flwr.app.components]
+serverapp = "e2fl.server_app:app"
+clientapp = "e2fl.client_app:app"
+
+[tool.flwr.app.config]
+num-server-rounds = 5
+fraction-train = 1.0
+local-epochs = 1
+min-clients = 5
+model = "resnet18"
+dataset = "cifar10"
+batch_size = 32
+num_partitions = 5
+strategy = "FedAvg"
+enable-latte = true
+power-monitor = true
+
+[tool.flwr.federations]
+default = "local-deployment"
+
+[tool.flwr.federations.local-simulation]
+options.num-supernodes = 10
+
+[tool.flwr.federations.local-deployment]
+address = "192.168.0.17:9093"
+insecure = true
