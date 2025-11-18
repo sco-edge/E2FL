@@ -10,11 +10,10 @@ import torch
 import flwr as fl
 from flwr.clientapp import ClientApp
 from flwr.app import ArrayRecord, Context, Message, MetricRecord, RecordDict
-from e2fl.task import set_weights, test, train, is_lora_model
+from e2fl.task import set_weights, test, train
 from e2fl.models import get_model
 from e2fl.dataset import load_data, get_num_classes
 from e2fl.utils import get_device_name, get_last_octet_from_ip, parse_node_config_string, get_network_usage
-from peft import get_peft_model_state_dict, set_peft_model_state_dict
 
 class CustomFormatter(logging.Formatter):
     
@@ -119,40 +118,10 @@ def cleanup_power_monitor(power_monitor, interface, device_name, start_net):
             logger.warning("Power monitoring failed or returned no data.")
     end_time = time.time()
     logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Communication end: {end_time}"])
-    # Log the network IO
-    end_net = get_network_usage(interface)
-    net_usage_sent = end_net["bytes_sent"] - start_net["bytes_sent"]
-    net_usage_recv = end_net["bytes_recv"] - start_net["bytes_recv"]
-    logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Evaluation phase ({interface}): [sent: {net_usage_sent}, recv: {net_usage_recv}]"])
-
-##############################################################################################################
-pid = psutil.Process().ppid()
-logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] PPID: {pid}")
-current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-# 안전하게 last octet 얻기 (실패 시 '0' 사용)
-try:
-    last_oct = get_last_octet_from_ip()
-except Exception:
-    last_oct = 0
-_, device_name_placeholder, _ = get_device_name()
-# 로그 파일명에 placeholder 사용 (실제 device_name은 train/evaluate에서 덮어씌움)
-logging.basicConfig(filename=_LOCAL_PATH+f"fl_info_{current_time}_{device_name_placeholder}_{last_oct}.txt")
-try:
-    fl.common.logger.configure(identifier="myFlowerExperiment", filename=_LOCAL_PATH+f"fl_log_{current_time}_{device_name_placeholder}_{last_oct}.txt")
-except Exception:
-    logger.warning("fl.common.logger.configure failed (continuing without fl log file)")
-logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Client Start!"])
-
-# 로컬 임시 상태 저장소 (RecordDict 제약을 피하기 위해 사용)
-_LOCAL_STATE = {}
-
-# Flower ClientApp
-app = ClientApp()
-
-##############################################################################################################
 
 def log_phase_event(tag: str, sent: int = 0, recv: int = 0):
     """CSV 로그 한 줄 기록"""
+    os.makedirs(_LOCAL_PATH, exist_ok=True)
     with open(_LOCAL_STATE["fl_csv_fname"], 'a', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow([
@@ -162,6 +131,7 @@ def log_phase_event(tag: str, sent: int = 0, recv: int = 0):
 
 def initialize_state(context: Context):
     """초기화: device_name, interfaces, power monitor 등 설정"""
+    global _LOCAL_STATE
     model_name, batch_size, dataset_name = (
         context.run_config["model"],
         context.run_config.get("batch-size", 32),
@@ -175,48 +145,31 @@ def initialize_state(context: Context):
         partition_id, num_partitions = 0, 1
 
     # Dataset & model
-    trainloader, valloader = load_data(dataset_name, partition_id, num_partitions, batch_size)
+    trainloader, valloader = load_data(dataset_name, partition_id, num_partitions, batch_size, model_name)
     net, local_epochs = get_model(model_name, num_classes), context.run_config.get("local-epochs", 1)
 
     # Device info
-    interfaces, device_name, power_info = get_device_name()
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    net.to(device)
-
-    # CSV 로그 파일명
-    fl_csv_fname = f"fl_{datetime.now().strftime('%Y%m%d')}_{device_name}_{get_last_octet_from_ip()}.csv"
+    net.to(_LOCAL_STATE["device"])
 
     _LOCAL_STATE.update({
         "trainloader": trainloader,
         "valloader": valloader,
         "net": net,
         "local_epochs": local_epochs,
-        "interfaces": interfaces,
-        "device_name": device_name,
-        "power": power_info,
-        "fl_csv_fname": fl_csv_fname,
-        "device": device,
     })
-    # Optional: Power monitor
-    if context.run_config.get("power-monitor", False) and "power_monitor" not in _LOCAL_STATE:
-        logger.info(f"[PM]: initializing power monitor...")
-        _LOCAL_STATE["power_monitor"] = get_power_monitor(power_info, device_name=socket.gethostname())
-    else:
-        _LOCAL_STATE["power_monitor"] = None
-    
     # Initialize net usage
     try:
-        _LOCAL_STATE["net_start"] = get_network_usage(interfaces)
+        _LOCAL_STATE["net_start"] = get_network_usage(_LOCAL_STATE["interfaces"])
     except Exception:
         _LOCAL_STATE["net_start"] = {"bytes_sent": 0, "bytes_recv": 0}
 
     _LOCAL_STATE["initialized"] = True
     logger.info("Initialization completed")
-    #return _LOCAL_STATE
 
 def phase_start(phase_name: str):
     """phase 시작: 전력/네트워크 기록 초기화"""
     logger.info(f"[Phase] {phase_name}: starting...")
+    global _LOCAL_STATE
     _LOCAL_STATE[f"{phase_name}_t0"] = time.time()
     pm = _LOCAL_STATE.get("power_monitor")
     if pm:
@@ -239,6 +192,7 @@ def phase_end(phase_name: str):
     """phase 종료: 전력/네트워크 기록 저장"""
     t1 = time.time()
     logger.info(f"[Phase] {phase_name}: ending...")
+    global _LOCAL_STATE
     if f"{phase_name}_t0" in _LOCAL_STATE:
         t0 = _LOCAL_STATE[f"{phase_name}_t0"]
     else:
@@ -250,13 +204,10 @@ def phase_end(phase_name: str):
 
     # Power stop
     if pm:
-        elapsed_time, data_size = pm.stop()
-        if elapsed_time:
-            logger.info(f"[PM] {phase_name}: Duration={elapsed_time:.2f}s, Samples={data_size}")
-            pm.save(_LOCAL_PATH+f"{phase_name}_power_{_LOCAL_STATE['device_name']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
-            power = pm.read_power_avg()
-        else:
-            logger.warning(f"[PM] {phase_name}: Power monitoring from {_LOCAL_STATE['power']} returned no data.")
+        power = pm.read_power_avg()
+        logger.info(f"[PM] {phase_name}: Average Power Consumption: {power}")
+    else:
+        logger.warning(f"[PM] {phase_name}: Power monitoring from {_LOCAL_STATE['power']} returned no data.")
 
     # Network usage
     try:
@@ -272,15 +223,78 @@ def phase_end(phase_name: str):
     #log_phase_event(f"{phase_name}_end", sent, recv)
     return sent, recv, power, duration
 
-
 ##############################################################################################################
+# Flower ClientApp
+app = ClientApp()
+##############################################################################################################
+
+@app.lifespan()
+def lifespan(context: Context):
+    logger.info("[lifespan] Starting client...")
+
+    pid = psutil.Process().ppid()
+    logger.info(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] PPID: {pid}")
+    current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    # 안전하게 last octet 얻기 (실패 시 '0' 사용)
+    try:
+        last_oct = get_last_octet_from_ip()
+    except Exception:
+        last_oct = 0
+    _, device_name_placeholder, _ = get_device_name()
+    # 로그 파일명에 placeholder 사용 (실제 device_name은 train/evaluate에서 덮어씌움)
+    logging.basicConfig(filename=_LOCAL_PATH+f"fl_info_{current_time}_{device_name_placeholder}_{last_oct}.txt")
+    try:
+        fl.common.logger.configure(identifier="myFlowerExperiment", filename=_LOCAL_PATH+f"fl_log_{current_time}_{device_name_placeholder}_{last_oct}.txt")
+    except Exception:
+        logger.warning("fl.common.logger.configure failed (continuing without fl log file)")
+    logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Client Start!"])
+
+    # 로컬 임시 상태 저장소 (RecordDict 제약을 피하기 위해 사용)
+    global _LOCAL_STATE
+    _LOCAL_STATE = {}
+
+    interfaces, device_name, power_info = get_device_name()
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    # CSV 로그 파일명
+    fl_csv_fname = f"fl_{datetime.now().strftime('%Y%m%d')}_{device_name}_{get_last_octet_from_ip()}.csv"
+
+    _LOCAL_STATE.update({
+        "interfaces": interfaces,
+        "device_name": device_name,
+        "power": power_info,
+        "fl_csv_fname": fl_csv_fname,
+        "device": device,
+    })
+        # Optional: Power monitor
+    if context.run_config.get("power-monitor", False) and "power_monitor" not in _LOCAL_STATE:
+        logger.info(f"[PM]: initializing power monitor...")
+        _LOCAL_STATE["power_monitor"] = get_power_monitor(power_info, device_name=socket.gethostname())
+    else:
+        _LOCAL_STATE["power_monitor"] = None
+    
+    yield
+
+    cleanup_power_monitor(
+        _LOCAL_STATE.get("power_monitor"), _LOCAL_STATE.get("interfaces"),
+        _LOCAL_STATE.get("device_name"), _LOCAL_STATE.get("net_start")
+    )
+
 @app.train()
 def train(msg: Message, context: Context) -> Message:
-    if "net" not in _LOCAL_STATE:
+    global _LOCAL_STATE
+    md = msg.metadata
+    try:
+        server_round = int(md.group_id)  # 만약 그룹ID가 라운드 문자열이라면
+    except Exception:
+        # fallback: 직접 content 안에 있을 수 있으니
+        server_round = msg.content.get("server-round", 1) if hasattr(msg.content, "get") else 1
+
+    logger.info(f"[TRA] server_round = {server_round}")
+    if server_round == 1:
         '''
         1. Initialization Phase (First round)
         '''
-        logger.info("Initializing for train()")
         initialize_state(context)
         update_sent, update_recv, update_power, update_end_time = 0, 0, 0, 0
     else:
@@ -316,13 +330,7 @@ def train(msg: Message, context: Context) -> Message:
     logger.info(f"Local training completed. (Loss: {train_loss}, Duration: {train_duration}s)")
 
     upload_start_time = phase_start("upload_start")
-    if is_lora_model(_LOCAL_STATE["net"]):
-        logger.info("Detected LoRA model: sending adapter weights only")
-        sd = get_peft_model_state_dict(_LOCAL_STATE["net"])
-        arrays = [v.detach().cpu().to(torch.float32).numpy() for k, v in sorted(sd.items())]
-        model_record = ArrayRecord(arrays)
-    else:
-        model_record = ArrayRecord(_LOCAL_STATE["net"].state_dict())
+    model_record = ArrayRecord(_LOCAL_STATE["net"].state_dict())
     metrics = {
         "num-examples": len(_LOCAL_STATE["trainloader"].dataset),
         "train_loss": train_loss,
@@ -343,11 +351,19 @@ def train(msg: Message, context: Context) -> Message:
 
 @app.evaluate()
 def evaluate(msg: Message, context: Context) -> Message:
-    if "net" not in _LOCAL_STATE:
+    global _LOCAL_STATE
+    md = msg.metadata
+    try:
+        server_round = int(md.group_id)  # 만약 그룹ID가 라운드 문자열이라면
+    except Exception:
+        # fallback: 직접 content 안에 있을 수 있으니
+        server_round = msg.content.get("server-round", 1) if hasattr(msg.content, "get") else 1
+
+    logger.info(f"[Eval] server_round = {server_round}")
+    if server_round == 1:
         '''
         1. Initialization Phase (First round)
         '''
-        logger.info("Initializing for evaluate()")
         initialize_state(context)
     '''
     2. Upload Phase (After train())
@@ -363,12 +379,7 @@ def evaluate(msg: Message, context: Context) -> Message:
     logger.info(f"Evaluation completed with accuracy: {eval_acc}, Loss: {eval_loss}, Duration: {eval_duration}s")
     
     update_start_time = phase_start("update_start")
-    if is_lora_model(_LOCAL_STATE["net"]):
-        sd = get_peft_model_state_dict(_LOCAL_STATE["net"])
-        arrays = [v.detach().cpu().to(torch.float32).numpy() for k, v in sorted(sd.items())]
-        model_record = ArrayRecord(arrays)
-    else:
-        model_record = ArrayRecord(_LOCAL_STATE["net"].state_dict())
+    model_record = ArrayRecord(_LOCAL_STATE["net"].state_dict())
     metrics = {
         "num-examples": len(_LOCAL_STATE["valloader"].dataset),
         "eval_loss": eval_loss,
