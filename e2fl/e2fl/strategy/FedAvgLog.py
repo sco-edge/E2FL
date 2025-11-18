@@ -51,16 +51,17 @@ class FedAvgLog(FedAvg):
         rows = []
 
         for msg in results:
-            # Message 객체에서 client_id와 metrics 꺼내기
-            cid = getattr(msg, "node_id", "unknown")  # or msg.metadata["cid"] depending on Flower version
-            if hasattr(msg.content, "metrics"):
-                m = msg.content.metrics
-            elif isinstance(msg.content, dict) and "metrics" in msg.content:
-                m = msg.content["metrics"]
-            else:
-                m = {}
+            # 클라이언트 실패 메시지 필터링
+            if not msg.has_content():
+                continue
 
-            # phase별 metric 정리
+            content = msg.content
+            if not hasattr(content, "metrics"):
+                continue
+
+            m = content.metrics
+            cid = getattr(msg, "node_id", "unknown")
+
             if phase == "fit":
                 loss = m.get("train_loss", "")
                 acc = ""
@@ -70,7 +71,7 @@ class FedAvgLog(FedAvg):
                 comm_t = max(t_end - start_t, 0) if start_t else ""
                 sent = m.get("update_sent", "")
                 recv = m.get("update_recv", "")
-            else:  # evaluate
+            else:
                 loss = m.get("eval_loss", "")
                 acc = m.get("eval_accuracy", "")
                 t = m.get("eval_time", "")
