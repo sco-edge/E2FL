@@ -30,56 +30,94 @@ def is_lora_model(model) -> bool:
     return hasattr(model, "peft_config") or any("lora" in n.lower() for n, _ in model.named_parameters())
 
 def train(net, trainloader, epochs, device) -> float:
-    """Train the model on the training set. BatchNorm에 대해 batch_size==1이면 BN을 eval로 전환하여 오류 방지."""
+    """
+    Unified train function:
+    - Vision models: use CrossEntropyLoss(img/label)
+    - LLM models (Causal LM): use HF forward loss
+    """
     net.to(device)
-    criterion = torch.nn.CrossEntropyLoss().to(device)
-    optimizer = torch.optim.Adam(net.parameters(), lr=5e-5)
     net.train()
+
+    optimizer = torch.optim.Adam(
+        (p for p in net.parameters() if p.requires_grad),
+        lr=5e-5,
+    )
+
+    is_llm = hasattr(net, "base_model") or hasattr(net, "model") or "lm_head" in net.state_dict()
+
+    if not is_llm:
+        criterion = torch.nn.CrossEntropyLoss().to(device)
+
     running_loss = 0.0
     total_batches = 0
 
     for _ in range(epochs):
         for batch in trainloader:
-            images = batch["img"]
-            labels = batch["label"]
-
-            # 안전한 텐서 변환/차원 정리
-            if isinstance(images, list):
-                images = torch.stack([x if isinstance(x, torch.Tensor) else torch.tensor(x) for x in images])
-            if not isinstance(images, torch.Tensor):
-                images = torch.tensor(images)
-            # (C,H,W) 형태일 때 배치 차원 추가
-            if images.dim() == 3:
-                images = images.unsqueeze(0)
-
-            batch_size = images.size(0)
-            images = images.to(device)
-            labels = labels.to(device)
-
-            # BatchNorm이 배치 크기 1에서 에러를 내므로, 해당 경우에만 BN 계층을 eval로 전환
-            bn_toggled = False
-            if batch_size == 1:
-                bn_toggled = True
-                for m in net.modules():
-                    if isinstance(m, torch.nn.modules.batchnorm._BatchNorm):
-                        m.eval()
 
             optimizer.zero_grad()
-            outputs = net(images)
-            loss = criterion(outputs, labels)
+
+            # --------------------------
+            # 📌 LLM TRAINING FLOW
+            # --------------------------
+            if is_llm:
+                # batch: input_ids / attention_mask / labels
+                input_ids = batch["input_ids"].to(device)
+                attention_mask = batch.get("attention_mask")
+                labels = batch["labels"].to(device)
+
+                if attention_mask is not None:
+                    attention_mask = attention_mask.to(device)
+
+                outputs = net(
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    labels=labels,
+                )
+                loss = outputs.loss
+
+            # --------------------------
+            # 📌 VISION TRAINING FLOW
+            # --------------------------
+            else:
+                images = batch["img"]
+                labels = batch["label"]
+
+                if isinstance(images, list):
+                    images = torch.stack([
+                        x if isinstance(x, torch.Tensor) else torch.tensor(x)
+                        for x in images
+                    ])
+
+                if not isinstance(images, torch.Tensor):
+                    images = torch.tensor(images)
+
+                if images.dim() == 3:
+                    images = images.unsqueeze(0)
+
+                images = images.to(device)
+                labels = labels.to(device)
+
+                bn_toggled = False
+                if images.size(0) == 1:
+                    bn_toggled = True
+                    for m in net.modules():
+                        if isinstance(m, torch.nn.modules.batchnorm._BatchNorm):
+                            m.eval()
+
+                outputs = net(images)
+                loss = criterion(outputs, labels)
+
+                if bn_toggled:
+                    for m in net.modules():
+                        if isinstance(m, torch.nn.modules.batchnorm._BatchNorm):
+                            m.train()
             loss.backward()
             optimizer.step()
 
             running_loss += loss.item()
             total_batches += 1
 
-            # BN 상태 복원 (train 모드로)
-            if bn_toggled:
-                for m in net.modules():
-                    if isinstance(m, torch.nn.modules.batchnorm._BatchNorm):
-                        m.train()
-
-    avg_trainloss = running_loss / total_batches if total_batches > 0 else 0.0
+    avg_trainloss = running_loss / max(total_batches, 1)
     return avg_trainloss
 
 

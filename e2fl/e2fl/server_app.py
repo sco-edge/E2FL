@@ -13,7 +13,7 @@ from flwr.app import ArrayRecord, ConfigRecord, Context, MetricRecord
 from flwr.serverapp import Grid, ServerApp
 from e2fl.task import test, train, is_lora_model
 from e2fl.models import get_model
-from e2fl.dataset import load_data, get_num_classes
+from e2fl.dataset import load_data, get_num_classes, is_llm_model_name
 from e2fl.utils import cfg, lora_cfg_from
 from peft import get_peft_model_state_dict, set_peft_model_state_dict
 
@@ -168,24 +168,30 @@ def main(grid: Grid, context: Context) -> None:
     dataset_name = context.run_config["dataset"]
     bs_train     = int(cfg(context, "batch_size", 32))
     bs_eval      = int(cfg(context, "eval-batch-size", max(1, bs_train)))
-    lr           = float(cfg(context, "learning-rate", 1e-2))
+    lr_max       = float(cfg(context, "learning-rate-max", 5e-5))
+    lr_min       = float(cfg(context, "learning-rate-min", 1e-6))
     wd           = float(cfg(context, "weight-decay", 5e-4))
     resume       = bool(cfg(context, "resume", True))
-    ckpt_path    = cfg(context, "checkpoint-path", None)
-    seq_len      = int(cfg(context, "seq-len", 0)) or None
+    quantization = int(cfg(context, "quantization", 4))
+    grad_ckpt      = int(cfg(context, "gradient-checkpointing", False))
     lora_cfg     = lora_cfg_from(context)
+    num_classes = get_num_classes(dataset_name)
+    num_rounds = int(cfg(context, "num-server-rounds", 1))
+    save_every_round = int(cfg(context, "save-every-round", 1))
 
     # Initialize model parameters
     model_name = context.run_config["model"]
-    num_classes = get_num_classes(dataset_name)
     
     # Load global model
-    global_model = get_model(model_name, num_classes, dataset_name, lora_cfg, seq_len)
+    global_model = get_model(model_name, num_classes, dataset_name, lora_cfg, grad_ckpt, quantization)
 
-    ckpt_path = _LOCAL_PATH + (
-        "final_adapter.pt" if is_lora_model(global_model) else "final_model.pt"
-    )
-    
+    # Create checkpoint filename using model name, dataset, and LoRA/full mode
+    model_tag = model_name.replace("/", "_")
+    mode_tag = "adapter" if is_lora_model(global_model) else "full"
+
+    ckpt_name = f"{model_tag}_{dataset_name}_{mode_tag}.pt"
+    ckpt_path = os.path.join(_LOCAL_PATH, ckpt_name)
+
     if resume and os.path.exists(ckpt_path):
         logger.info(f"[Server] Resuming from checkpoint: {ckpt_path}")
         state = torch.load(ckpt_path, map_location="cpu")
@@ -205,16 +211,10 @@ def main(grid: Grid, context: Context) -> None:
 
     # Instantiate strategy
     strategy = create_strategy(context)
-    evaluate_fn = make_global_evaluate(model_name, dataset_name, bs_eval, lora_cfg, seq_len)
-
     train_conf = {
-        "lr": lr,
+        "lr": lr_max,
         "weight_decay": wd,
         "batch_size": bs_train,
-        "seq_len": seq_len or 0,
-        "lr_scheduler": cfg(context, "lr-scheduler", "none"),
-        "warmup_steps": int(cfg(context, "warmup-steps", 0)),
-        "lora": lora_cfg,
     }
 
     # Start strategy, run for 'num_rounds'
@@ -223,7 +223,9 @@ def main(grid: Grid, context: Context) -> None:
         initial_arrays=arrays,
         train_config=ConfigRecord(train_conf),
         num_rounds=int(cfg(context, "num-server-rounds", 1)),
-        evaluate_fn=evaluate_fn,
+        evaluate_fn=make_global_evaluate(model_name, dataset_name, 
+                                         bs_eval, num_rounds, save_every_round, 
+                                         lora_cfg, grad_ckpt, quantization),
     )
     logger.info("Saving final model to disk...")
     if is_lora_model(global_model):
@@ -231,8 +233,9 @@ def main(grid: Grid, context: Context) -> None:
     else:
         torch.save(result.arrays.to_torch_state_dict(), _LOCAL_PATH+"final_model.pt")
 
-def make_global_evaluate(model_name: str, dataset_name: str,
-                         eval_bs: int, lora_cfg: dict | None, seq_len: int | None):
+def make_global_evaluate(model_name: str, dataset_name: str, eval_bs: int, 
+                         total_round: int = 1, save_every_round: int = 1,
+                         lora_cfg: dict | None = None, grad_ckpt: bool | None = None, quantization: int | None = None):
     """Factory returning an evaluate function bound to the given model/dataset.
 
     The returned function has the signature expected by Flower's strategy
@@ -241,46 +244,38 @@ def make_global_evaluate(model_name: str, dataset_name: str,
     num_classes = get_num_classes(dataset_name)
 
     def global_evaluate(server_round: int, arrays: ArrayRecord) -> MetricRecord:
-        # Build model with the same architecture used to initialize training
-        model = get_model(model_name, num_classes, dataset_name, lora_cfg, seq_len)
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        model.to(device)
+        if is_llm_model_name(model_name):
+            logger.info("[Server] LLM detected → skipping global evaluation dataset loading")
 
-        if is_lora_model(model):
-            logger.info(f"[Server] Loading LoRA adapter weights for round {server_round}")
-            lora_arrays = arrays.as_numpy()
-            sd_keys = list(get_peft_model_state_dict(model).keys())
-            adapter_sd = {k: torch.tensor(w).cpu() for k, w in zip(sd_keys, lora_arrays)}
-            set_peft_model_state_dict(model, adapter_sd)
-        else:
-            model.load_state_dict(arrays.to_torch_state_dict())
+            if server_round != 0 and (
+                server_round == total_round or server_round % save_every_round == 0
+            ):
+                model = get_model(model_name, num_classes, dataset_name, lora_cfg, grad_ckpt, quantization)
+                set_peft_model_state_dict(model, arrays.to_torch_state_dict())
 
-        # Load entire test set by using load_data with num_partitions=1 (centralized)
-        # load_data returns (trainloader, valloader) in this codebase; use valloader as testset
-        _, test_dataloader = load_data(
-            dataset_name=dataset_name,
-            partition_id=0,
-            num_partitions=1,
-            batch_size=eval_bs,   
-            mode="eval",
-            seq_len=seq_len,
-        )
+                #model.save_pretrained(f"{_LOCAL_PATH}peft_{model_name}_{server_round}")
+                adapter_sd = get_peft_model_state_dict(model)
+                safe_name = model_name.replace("/", "_")
+                torch.save(adapter_sd, f"{_LOCAL_PATH}peft_{safe_name}_{server_round}.pt")
+            return MetricRecord()
+        else:             
+            # Build model with the same architecture used to initialize training
+            logger.info(f"[Server] starts global evaluation.")
+            model = get_model(model_name, num_classes, dataset_name, lora_cfg, grad_ckpt, quantization)
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+            model.to(device)
 
-        # Evaluate the global model on the test set using the project's test() function
-        test_loss, test_acc = test(model, test_dataloader, device)
+            # Load entire test set by using load_data with num_partitions=1 (centralized)
+            # load_data returns (trainloader, valloader) in this codebase; use valloader as testset
+            _, test_dataloader = load_data(
+                dataset_name=dataset_name,
+                partition_id=0,
+                num_partitions=1,
+                batch_size=eval_bs,
+            )
 
-        # Return the evaluation metrics
-        return MetricRecord({"accuracy": test_acc, "loss": test_loss})
+            # Evaluate the global model on the test set using the project's test() function
+            test_loss, test_acc = test(model, test_dataloader, device)
+            return MetricRecord({"accuracy": test_acc, "loss": test_loss})
 
     return global_evaluate
-
-'''
-logger = logging.getLogger("test")
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-ch.setFormatter(CustomFormatter())
-logger.addHandler(ch)
-current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-fl.common.logger.configure(identifier="myFlowerExperiment", filename=f"fl_log_server_{current_time}.txt")
-'''
