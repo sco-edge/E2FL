@@ -37,24 +37,54 @@ publisher = "wwjang"
 
 [tool.flwr.app.components]
 serverapp = "e2fl.server_app:app"
-clientapp = "e2fl.client_app:app"
+clientapp = "e2fl.client_app_llm:app"
 
 [tool.flwr.app.config]
-num-server-rounds = 5
+num-server-rounds = 100
+save-every-round = 5
 fraction-train = 1.0
 local-epochs = 1
 min-clients = 2
-model = "mobilenet_v2"
-dataset = "cifar10"
+model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+dataset = "vicgalle/alpaca-gpt4"
 batch_size = 32
+eval-batch-size = 1
 num_partitions = 2
 strategy = "FedAvgLog"
 enable-latte = false
 power-monitor = true
 resume = true
-checkpoint-path = "./eval/final_model.pt"
-learning-rate = 0.01
-weight-decay = 0.0005
+gradient-checkpointing = true
+learning-rate-max = 5e-5
+learning-rate-min = 1e-6
+weight-decay = 0.0
+lr-scheduler = "cosine"
+warmup-steps = 100
+seq-len = 1024
+quantization = 4
+lora-enabled = true
+lora-r = 4
+lora-alpha = 8
+lora-dropout = 0.05
+lora-targets = "q_proj,v_proj"
+lora-task-type = "CAUSAL_LM"
+training-arguments.output-dir = ""
+training-arguments.learning-rate = ""
+training-arguments.per-device-train-batch-size = 16
+training-arguments.gradient-accumulation-steps = 1
+training-arguments.logging-steps = 10
+training-arguments.num-train-epochs = 3
+training-arguments.max-steps = 10
+training-arguments.save-steps = 1000
+training-arguments.save-total-limit = 10
+training-arguments.gradient-checkpointing = true
+training-arguments.lr-scheduler-type = "constant"
+training-arguments.remove-unused-columns = false
+training-arguments.ddp-find-unused-parameters = false
+training-arguments.bf16 = false
+training-arguments.fp16 = false
+training-arguments.report-to = "none"
+
 
 [tool.flwr.federations]
 default = "local-deployment"
