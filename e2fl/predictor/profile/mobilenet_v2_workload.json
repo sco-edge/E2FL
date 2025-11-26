@@ -1,0 +1,3639 @@
+{
+  "model_name": "mobilenet_v2",
+  "input_shape": [
+    1,
+    3,
+    224,
+    224
+  ],
+  "key_layers": [
+    {
+      "idx": 0,
+      "name": "features.0.0",
+      "type": "Conv2d",
+      "flops": 10838016
+    },
+    {
+      "idx": 3,
+      "name": "features.1.conv.0.0",
+      "type": "Conv2d",
+      "flops": 3612672
+    },
+    {
+      "idx": 6,
+      "name": "features.1.conv.1",
+      "type": "Conv2d",
+      "flops": 6422528
+    },
+    {
+      "idx": 8,
+      "name": "features.2.conv.0.0",
+      "type": "Conv2d",
+      "flops": 19267584
+    },
+    {
+      "idx": 11,
+      "name": "features.2.conv.1.0",
+      "type": "Conv2d",
+      "flops": 2709504
+    },
+    {
+      "idx": 14,
+      "name": "features.2.conv.2",
+      "type": "Conv2d",
+      "flops": 7225344
+    },
+    {
+      "idx": 16,
+      "name": "features.3.conv.0.0",
+      "type": "Conv2d",
+      "flops": 10838016
+    },
+    {
+      "idx": 19,
+      "name": "features.3.conv.1.0",
+      "type": "Conv2d",
+      "flops": 4064256
+    },
+    {
+      "idx": 22,
+      "name": "features.3.conv.2",
+      "type": "Conv2d",
+      "flops": 10838016
+    },
+    {
+      "idx": 24,
+      "name": "features.4.conv.0.0",
+      "type": "Conv2d",
+      "flops": 10838016
+    },
+    {
+      "idx": 27,
+      "name": "features.4.conv.1.0",
+      "type": "Conv2d",
+      "flops": 1016064
+    },
+    {
+      "idx": 30,
+      "name": "features.4.conv.2",
+      "type": "Conv2d",
+      "flops": 3612672
+    },
+    {
+      "idx": 32,
+      "name": "features.5.conv.0.0",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 35,
+      "name": "features.5.conv.1.0",
+      "type": "Conv2d",
+      "flops": 1354752
+    },
+    {
+      "idx": 38,
+      "name": "features.5.conv.2",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 40,
+      "name": "features.6.conv.0.0",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 43,
+      "name": "features.6.conv.1.0",
+      "type": "Conv2d",
+      "flops": 1354752
+    },
+    {
+      "idx": 46,
+      "name": "features.6.conv.2",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 48,
+      "name": "features.7.conv.0.0",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 51,
+      "name": "features.7.conv.1.0",
+      "type": "Conv2d",
+      "flops": 338688
+    },
+    {
+      "idx": 54,
+      "name": "features.7.conv.2",
+      "type": "Conv2d",
+      "flops": 2408448
+    },
+    {
+      "idx": 56,
+      "name": "features.8.conv.0.0",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 59,
+      "name": "features.8.conv.1.0",
+      "type": "Conv2d",
+      "flops": 677376
+    },
+    {
+      "idx": 62,
+      "name": "features.8.conv.2",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 64,
+      "name": "features.9.conv.0.0",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 67,
+      "name": "features.9.conv.1.0",
+      "type": "Conv2d",
+      "flops": 677376
+    },
+    {
+      "idx": 70,
+      "name": "features.9.conv.2",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 72,
+      "name": "features.10.conv.0.0",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 75,
+      "name": "features.10.conv.1.0",
+      "type": "Conv2d",
+      "flops": 677376
+    },
+    {
+      "idx": 78,
+      "name": "features.10.conv.2",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 80,
+      "name": "features.11.conv.0.0",
+      "type": "Conv2d",
+      "flops": 4816896
+    },
+    {
+      "idx": 83,
+      "name": "features.11.conv.1.0",
+      "type": "Conv2d",
+      "flops": 677376
+    },
+    {
+      "idx": 86,
+      "name": "features.11.conv.2",
+      "type": "Conv2d",
+      "flops": 7225344
+    },
+    {
+      "idx": 88,
+      "name": "features.12.conv.0.0",
+      "type": "Conv2d",
+      "flops": 10838016
+    },
+    {
+      "idx": 91,
+      "name": "features.12.conv.1.0",
+      "type": "Conv2d",
+      "flops": 1016064
+    },
+    {
+      "idx": 94,
+      "name": "features.12.conv.2",
+      "type": "Conv2d",
+      "flops": 10838016
+    },
+    {
+      "idx": 96,
+      "name": "features.13.conv.0.0",
+      "type": "Conv2d",
+      "flops": 10838016
+    },
+    {
+      "idx": 99,
+      "name": "features.13.conv.1.0",
+      "type": "Conv2d",
+      "flops": 1016064
+    },
+    {
+      "idx": 102,
+      "name": "features.13.conv.2",
+      "type": "Conv2d",
+      "flops": 10838016
+    },
+    {
+      "idx": 104,
+      "name": "features.14.conv.0.0",
+      "type": "Conv2d",
+      "flops": 10838016
+    },
+    {
+      "idx": 107,
+      "name": "features.14.conv.1.0",
+      "type": "Conv2d",
+      "flops": 254016
+    },
+    {
+      "idx": 110,
+      "name": "features.14.conv.2",
+      "type": "Conv2d",
+      "flops": 4515840
+    },
+    {
+      "idx": 112,
+      "name": "features.15.conv.0.0",
+      "type": "Conv2d",
+      "flops": 7526400
+    },
+    {
+      "idx": 115,
+      "name": "features.15.conv.1.0",
+      "type": "Conv2d",
+      "flops": 423360
+    },
+    {
+      "idx": 118,
+      "name": "features.15.conv.2",
+      "type": "Conv2d",
+      "flops": 7526400
+    },
+    {
+      "idx": 120,
+      "name": "features.16.conv.0.0",
+      "type": "Conv2d",
+      "flops": 7526400
+    },
+    {
+      "idx": 123,
+      "name": "features.16.conv.1.0",
+      "type": "Conv2d",
+      "flops": 423360
+    },
+    {
+      "idx": 126,
+      "name": "features.16.conv.2",
+      "type": "Conv2d",
+      "flops": 7526400
+    },
+    {
+      "idx": 128,
+      "name": "features.17.conv.0.0",
+      "type": "Conv2d",
+      "flops": 7526400
+    },
+    {
+      "idx": 131,
+      "name": "features.17.conv.1.0",
+      "type": "Conv2d",
+      "flops": 423360
+    },
+    {
+      "idx": 134,
+      "name": "features.17.conv.2",
+      "type": "Conv2d",
+      "flops": 15052800
+    },
+    {
+      "idx": 136,
+      "name": "features.18.0",
+      "type": "Conv2d",
+      "flops": 20070400
+    },
+    {
+      "idx": 140,
+      "name": "classifier.1",
+      "type": "Linear",
+      "flops": 1280000
+    }
+  ],
+  "non_key_layers": [
+    {
+      "idx": 1,
+      "name": "features.0.1",
+      "type": "BatchNorm2d",
+      "flops": 401408
+    },
+    {
+      "idx": 2,
+      "name": "features.0.2",
+      "type": "ReLU6",
+      "flops": 401408
+    },
+    {
+      "idx": 4,
+      "name": "features.1.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 401408
+    },
+    {
+      "idx": 5,
+      "name": "features.1.conv.0.2",
+      "type": "ReLU6",
+      "flops": 401408
+    },
+    {
+      "idx": 7,
+      "name": "features.1.conv.2",
+      "type": "BatchNorm2d",
+      "flops": 200704
+    },
+    {
+      "idx": 9,
+      "name": "features.2.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 1204224
+    },
+    {
+      "idx": 10,
+      "name": "features.2.conv.0.2",
+      "type": "ReLU6",
+      "flops": 1204224
+    },
+    {
+      "idx": 12,
+      "name": "features.2.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 301056
+    },
+    {
+      "idx": 13,
+      "name": "features.2.conv.1.2",
+      "type": "ReLU6",
+      "flops": 301056
+    },
+    {
+      "idx": 15,
+      "name": "features.2.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 75264
+    },
+    {
+      "idx": 17,
+      "name": "features.3.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 451584
+    },
+    {
+      "idx": 18,
+      "name": "features.3.conv.0.2",
+      "type": "ReLU6",
+      "flops": 451584
+    },
+    {
+      "idx": 20,
+      "name": "features.3.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 451584
+    },
+    {
+      "idx": 21,
+      "name": "features.3.conv.1.2",
+      "type": "ReLU6",
+      "flops": 451584
+    },
+    {
+      "idx": 23,
+      "name": "features.3.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 75264
+    },
+    {
+      "idx": 25,
+      "name": "features.4.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 451584
+    },
+    {
+      "idx": 26,
+      "name": "features.4.conv.0.2",
+      "type": "ReLU6",
+      "flops": 451584
+    },
+    {
+      "idx": 28,
+      "name": "features.4.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 112896
+    },
+    {
+      "idx": 29,
+      "name": "features.4.conv.1.2",
+      "type": "ReLU6",
+      "flops": 112896
+    },
+    {
+      "idx": 31,
+      "name": "features.4.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 25088
+    },
+    {
+      "idx": 33,
+      "name": "features.5.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 150528
+    },
+    {
+      "idx": 34,
+      "name": "features.5.conv.0.2",
+      "type": "ReLU6",
+      "flops": 150528
+    },
+    {
+      "idx": 36,
+      "name": "features.5.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 150528
+    },
+    {
+      "idx": 37,
+      "name": "features.5.conv.1.2",
+      "type": "ReLU6",
+      "flops": 150528
+    },
+    {
+      "idx": 39,
+      "name": "features.5.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 25088
+    },
+    {
+      "idx": 41,
+      "name": "features.6.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 150528
+    },
+    {
+      "idx": 42,
+      "name": "features.6.conv.0.2",
+      "type": "ReLU6",
+      "flops": 150528
+    },
+    {
+      "idx": 44,
+      "name": "features.6.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 150528
+    },
+    {
+      "idx": 45,
+      "name": "features.6.conv.1.2",
+      "type": "ReLU6",
+      "flops": 150528
+    },
+    {
+      "idx": 47,
+      "name": "features.6.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 25088
+    },
+    {
+      "idx": 49,
+      "name": "features.7.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 150528
+    },
+    {
+      "idx": 50,
+      "name": "features.7.conv.0.2",
+      "type": "ReLU6",
+      "flops": 150528
+    },
+    {
+      "idx": 52,
+      "name": "features.7.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 37632
+    },
+    {
+      "idx": 53,
+      "name": "features.7.conv.1.2",
+      "type": "ReLU6",
+      "flops": 37632
+    },
+    {
+      "idx": 55,
+      "name": "features.7.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 12544
+    },
+    {
+      "idx": 57,
+      "name": "features.8.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 75264
+    },
+    {
+      "idx": 58,
+      "name": "features.8.conv.0.2",
+      "type": "ReLU6",
+      "flops": 75264
+    },
+    {
+      "idx": 60,
+      "name": "features.8.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 75264
+    },
+    {
+      "idx": 61,
+      "name": "features.8.conv.1.2",
+      "type": "ReLU6",
+      "flops": 75264
+    },
+    {
+      "idx": 63,
+      "name": "features.8.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 12544
+    },
+    {
+      "idx": 65,
+      "name": "features.9.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 75264
+    },
+    {
+      "idx": 66,
+      "name": "features.9.conv.0.2",
+      "type": "ReLU6",
+      "flops": 75264
+    },
+    {
+      "idx": 68,
+      "name": "features.9.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 75264
+    },
+    {
+      "idx": 69,
+      "name": "features.9.conv.1.2",
+      "type": "ReLU6",
+      "flops": 75264
+    },
+    {
+      "idx": 71,
+      "name": "features.9.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 12544
+    },
+    {
+      "idx": 73,
+      "name": "features.10.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 75264
+    },
+    {
+      "idx": 74,
+      "name": "features.10.conv.0.2",
+      "type": "ReLU6",
+      "flops": 75264
+    },
+    {
+      "idx": 76,
+      "name": "features.10.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 75264
+    },
+    {
+      "idx": 77,
+      "name": "features.10.conv.1.2",
+      "type": "ReLU6",
+      "flops": 75264
+    },
+    {
+      "idx": 79,
+      "name": "features.10.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 12544
+    },
+    {
+      "idx": 81,
+      "name": "features.11.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 75264
+    },
+    {
+      "idx": 82,
+      "name": "features.11.conv.0.2",
+      "type": "ReLU6",
+      "flops": 75264
+    },
+    {
+      "idx": 84,
+      "name": "features.11.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 75264
+    },
+    {
+      "idx": 85,
+      "name": "features.11.conv.1.2",
+      "type": "ReLU6",
+      "flops": 75264
+    },
+    {
+      "idx": 87,
+      "name": "features.11.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 18816
+    },
+    {
+      "idx": 89,
+      "name": "features.12.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 112896
+    },
+    {
+      "idx": 90,
+      "name": "features.12.conv.0.2",
+      "type": "ReLU6",
+      "flops": 112896
+    },
+    {
+      "idx": 92,
+      "name": "features.12.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 112896
+    },
+    {
+      "idx": 93,
+      "name": "features.12.conv.1.2",
+      "type": "ReLU6",
+      "flops": 112896
+    },
+    {
+      "idx": 95,
+      "name": "features.12.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 18816
+    },
+    {
+      "idx": 97,
+      "name": "features.13.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 112896
+    },
+    {
+      "idx": 98,
+      "name": "features.13.conv.0.2",
+      "type": "ReLU6",
+      "flops": 112896
+    },
+    {
+      "idx": 100,
+      "name": "features.13.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 112896
+    },
+    {
+      "idx": 101,
+      "name": "features.13.conv.1.2",
+      "type": "ReLU6",
+      "flops": 112896
+    },
+    {
+      "idx": 103,
+      "name": "features.13.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 18816
+    },
+    {
+      "idx": 105,
+      "name": "features.14.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 112896
+    },
+    {
+      "idx": 106,
+      "name": "features.14.conv.0.2",
+      "type": "ReLU6",
+      "flops": 112896
+    },
+    {
+      "idx": 108,
+      "name": "features.14.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 28224
+    },
+    {
+      "idx": 109,
+      "name": "features.14.conv.1.2",
+      "type": "ReLU6",
+      "flops": 28224
+    },
+    {
+      "idx": 111,
+      "name": "features.14.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 7840
+    },
+    {
+      "idx": 113,
+      "name": "features.15.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 47040
+    },
+    {
+      "idx": 114,
+      "name": "features.15.conv.0.2",
+      "type": "ReLU6",
+      "flops": 47040
+    },
+    {
+      "idx": 116,
+      "name": "features.15.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 47040
+    },
+    {
+      "idx": 117,
+      "name": "features.15.conv.1.2",
+      "type": "ReLU6",
+      "flops": 47040
+    },
+    {
+      "idx": 119,
+      "name": "features.15.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 7840
+    },
+    {
+      "idx": 121,
+      "name": "features.16.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 47040
+    },
+    {
+      "idx": 122,
+      "name": "features.16.conv.0.2",
+      "type": "ReLU6",
+      "flops": 47040
+    },
+    {
+      "idx": 124,
+      "name": "features.16.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 47040
+    },
+    {
+      "idx": 125,
+      "name": "features.16.conv.1.2",
+      "type": "ReLU6",
+      "flops": 47040
+    },
+    {
+      "idx": 127,
+      "name": "features.16.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 7840
+    },
+    {
+      "idx": 129,
+      "name": "features.17.conv.0.1",
+      "type": "BatchNorm2d",
+      "flops": 47040
+    },
+    {
+      "idx": 130,
+      "name": "features.17.conv.0.2",
+      "type": "ReLU6",
+      "flops": 47040
+    },
+    {
+      "idx": 132,
+      "name": "features.17.conv.1.1",
+      "type": "BatchNorm2d",
+      "flops": 47040
+    },
+    {
+      "idx": 133,
+      "name": "features.17.conv.1.2",
+      "type": "ReLU6",
+      "flops": 47040
+    },
+    {
+      "idx": 135,
+      "name": "features.17.conv.3",
+      "type": "BatchNorm2d",
+      "flops": 15680
+    },
+    {
+      "idx": 137,
+      "name": "features.18.1",
+      "type": "BatchNorm2d",
+      "flops": 62720
+    },
+    {
+      "idx": 138,
+      "name": "features.18.2",
+      "type": "ReLU6",
+      "flops": 62720
+    }
+  ],
+  "layers": [
+    {
+      "idx": 0,
+      "name": "features.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 10838016,
+      "in_shape": [
+        1,
+        3,
+        224,
+        224
+      ],
+      "out_shape": [
+        1,
+        32,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 1,
+      "name": "features.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 401408,
+      "in_shape": [
+        1,
+        32,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        32,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 2,
+      "name": "features.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 401408,
+      "in_shape": [
+        1,
+        32,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        32,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 3,
+      "name": "features.1.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 3612672,
+      "in_shape": [
+        1,
+        32,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        32,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 4,
+      "name": "features.1.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 401408,
+      "in_shape": [
+        1,
+        32,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        32,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 5,
+      "name": "features.1.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 401408,
+      "in_shape": [
+        1,
+        32,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        32,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 6,
+      "name": "features.1.conv.1",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 6422528,
+      "in_shape": [
+        1,
+        32,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        16,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 7,
+      "name": "features.1.conv.2",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 200704,
+      "in_shape": [
+        1,
+        16,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        16,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 8,
+      "name": "features.2.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 19267584,
+      "in_shape": [
+        1,
+        16,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        96,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 9,
+      "name": "features.2.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 1204224,
+      "in_shape": [
+        1,
+        96,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        96,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 10,
+      "name": "features.2.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 1204224,
+      "in_shape": [
+        1,
+        96,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        96,
+        112,
+        112
+      ]
+    },
+    {
+      "idx": 11,
+      "name": "features.2.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 2709504,
+      "in_shape": [
+        1,
+        96,
+        112,
+        112
+      ],
+      "out_shape": [
+        1,
+        96,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 12,
+      "name": "features.2.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 301056,
+      "in_shape": [
+        1,
+        96,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        96,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 13,
+      "name": "features.2.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 301056,
+      "in_shape": [
+        1,
+        96,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        96,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 14,
+      "name": "features.2.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 7225344,
+      "in_shape": [
+        1,
+        96,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        24,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 15,
+      "name": "features.2.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        24,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        24,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 16,
+      "name": "features.3.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 10838016,
+      "in_shape": [
+        1,
+        24,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        144,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 17,
+      "name": "features.3.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 451584,
+      "in_shape": [
+        1,
+        144,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        144,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 18,
+      "name": "features.3.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 451584,
+      "in_shape": [
+        1,
+        144,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        144,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 19,
+      "name": "features.3.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4064256,
+      "in_shape": [
+        1,
+        144,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        144,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 20,
+      "name": "features.3.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 451584,
+      "in_shape": [
+        1,
+        144,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        144,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 21,
+      "name": "features.3.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 451584,
+      "in_shape": [
+        1,
+        144,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        144,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 22,
+      "name": "features.3.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 10838016,
+      "in_shape": [
+        1,
+        144,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        24,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 23,
+      "name": "features.3.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        24,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        24,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 24,
+      "name": "features.4.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 10838016,
+      "in_shape": [
+        1,
+        24,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        144,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 25,
+      "name": "features.4.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 451584,
+      "in_shape": [
+        1,
+        144,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        144,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 26,
+      "name": "features.4.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 451584,
+      "in_shape": [
+        1,
+        144,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        144,
+        56,
+        56
+      ]
+    },
+    {
+      "idx": 27,
+      "name": "features.4.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 1016064,
+      "in_shape": [
+        1,
+        144,
+        56,
+        56
+      ],
+      "out_shape": [
+        1,
+        144,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 28,
+      "name": "features.4.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        144,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        144,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 29,
+      "name": "features.4.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        144,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        144,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 30,
+      "name": "features.4.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 3612672,
+      "in_shape": [
+        1,
+        144,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        32,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 31,
+      "name": "features.4.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 25088,
+      "in_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        32,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 32,
+      "name": "features.5.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 33,
+      "name": "features.5.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 150528,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 34,
+      "name": "features.5.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 150528,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 35,
+      "name": "features.5.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 1354752,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 36,
+      "name": "features.5.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 150528,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 37,
+      "name": "features.5.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 150528,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 38,
+      "name": "features.5.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        32,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 39,
+      "name": "features.5.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 25088,
+      "in_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        32,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 40,
+      "name": "features.6.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 41,
+      "name": "features.6.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 150528,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 42,
+      "name": "features.6.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 150528,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 43,
+      "name": "features.6.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 1354752,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 44,
+      "name": "features.6.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 150528,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 45,
+      "name": "features.6.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 150528,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 46,
+      "name": "features.6.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        32,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 47,
+      "name": "features.6.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 25088,
+      "in_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        32,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 48,
+      "name": "features.7.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        32,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 49,
+      "name": "features.7.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 150528,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 50,
+      "name": "features.7.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 150528,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        28,
+        28
+      ]
+    },
+    {
+      "idx": 51,
+      "name": "features.7.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 338688,
+      "in_shape": [
+        1,
+        192,
+        28,
+        28
+      ],
+      "out_shape": [
+        1,
+        192,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 52,
+      "name": "features.7.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 37632,
+      "in_shape": [
+        1,
+        192,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        192,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 53,
+      "name": "features.7.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 37632,
+      "in_shape": [
+        1,
+        192,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        192,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 54,
+      "name": "features.7.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 2408448,
+      "in_shape": [
+        1,
+        192,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        64,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 55,
+      "name": "features.7.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 12544,
+      "in_shape": [
+        1,
+        64,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        64,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 56,
+      "name": "features.8.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        64,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 57,
+      "name": "features.8.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 58,
+      "name": "features.8.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 59,
+      "name": "features.8.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 677376,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 60,
+      "name": "features.8.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 61,
+      "name": "features.8.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 62,
+      "name": "features.8.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        64,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 63,
+      "name": "features.8.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 12544,
+      "in_shape": [
+        1,
+        64,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        64,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 64,
+      "name": "features.9.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        64,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 65,
+      "name": "features.9.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 66,
+      "name": "features.9.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 67,
+      "name": "features.9.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 677376,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 68,
+      "name": "features.9.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 69,
+      "name": "features.9.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 70,
+      "name": "features.9.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        64,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 71,
+      "name": "features.9.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 12544,
+      "in_shape": [
+        1,
+        64,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        64,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 72,
+      "name": "features.10.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        64,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 73,
+      "name": "features.10.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 74,
+      "name": "features.10.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 75,
+      "name": "features.10.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 677376,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 76,
+      "name": "features.10.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 77,
+      "name": "features.10.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 78,
+      "name": "features.10.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        64,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 79,
+      "name": "features.10.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 12544,
+      "in_shape": [
+        1,
+        64,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        64,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 80,
+      "name": "features.11.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4816896,
+      "in_shape": [
+        1,
+        64,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 81,
+      "name": "features.11.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 82,
+      "name": "features.11.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 83,
+      "name": "features.11.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 677376,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 84,
+      "name": "features.11.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 85,
+      "name": "features.11.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 75264,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        384,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 86,
+      "name": "features.11.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 7225344,
+      "in_shape": [
+        1,
+        384,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        96,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 87,
+      "name": "features.11.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 18816,
+      "in_shape": [
+        1,
+        96,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        96,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 88,
+      "name": "features.12.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 10838016,
+      "in_shape": [
+        1,
+        96,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 89,
+      "name": "features.12.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 90,
+      "name": "features.12.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 91,
+      "name": "features.12.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 1016064,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 92,
+      "name": "features.12.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 93,
+      "name": "features.12.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 94,
+      "name": "features.12.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 10838016,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        96,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 95,
+      "name": "features.12.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 18816,
+      "in_shape": [
+        1,
+        96,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        96,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 96,
+      "name": "features.13.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 10838016,
+      "in_shape": [
+        1,
+        96,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 97,
+      "name": "features.13.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 98,
+      "name": "features.13.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 99,
+      "name": "features.13.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 1016064,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 100,
+      "name": "features.13.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 101,
+      "name": "features.13.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 102,
+      "name": "features.13.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 10838016,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        96,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 103,
+      "name": "features.13.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 18816,
+      "in_shape": [
+        1,
+        96,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        96,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 104,
+      "name": "features.14.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 10838016,
+      "in_shape": [
+        1,
+        96,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 105,
+      "name": "features.14.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 106,
+      "name": "features.14.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 112896,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        14,
+        14
+      ]
+    },
+    {
+      "idx": 107,
+      "name": "features.14.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 254016,
+      "in_shape": [
+        1,
+        576,
+        14,
+        14
+      ],
+      "out_shape": [
+        1,
+        576,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 108,
+      "name": "features.14.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 28224,
+      "in_shape": [
+        1,
+        576,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        576,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 109,
+      "name": "features.14.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 28224,
+      "in_shape": [
+        1,
+        576,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        576,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 110,
+      "name": "features.14.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 4515840,
+      "in_shape": [
+        1,
+        576,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        160,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 111,
+      "name": "features.14.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 7840,
+      "in_shape": [
+        1,
+        160,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        160,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 112,
+      "name": "features.15.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 7526400,
+      "in_shape": [
+        1,
+        160,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 113,
+      "name": "features.15.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 114,
+      "name": "features.15.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 115,
+      "name": "features.15.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 423360,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 116,
+      "name": "features.15.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 117,
+      "name": "features.15.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 118,
+      "name": "features.15.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 7526400,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        160,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 119,
+      "name": "features.15.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 7840,
+      "in_shape": [
+        1,
+        160,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        160,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 120,
+      "name": "features.16.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 7526400,
+      "in_shape": [
+        1,
+        160,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 121,
+      "name": "features.16.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 122,
+      "name": "features.16.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 123,
+      "name": "features.16.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 423360,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 124,
+      "name": "features.16.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 125,
+      "name": "features.16.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 126,
+      "name": "features.16.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 7526400,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        160,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 127,
+      "name": "features.16.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 7840,
+      "in_shape": [
+        1,
+        160,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        160,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 128,
+      "name": "features.17.conv.0.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 7526400,
+      "in_shape": [
+        1,
+        160,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 129,
+      "name": "features.17.conv.0.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 130,
+      "name": "features.17.conv.0.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 131,
+      "name": "features.17.conv.1.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 423360,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 132,
+      "name": "features.17.conv.1.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 133,
+      "name": "features.17.conv.1.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 47040,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        960,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 134,
+      "name": "features.17.conv.2",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 15052800,
+      "in_shape": [
+        1,
+        960,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        320,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 135,
+      "name": "features.17.conv.3",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 15680,
+      "in_shape": [
+        1,
+        320,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        320,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 136,
+      "name": "features.18.0",
+      "type": "Conv2d",
+      "is_key": true,
+      "flops": 20070400,
+      "in_shape": [
+        1,
+        320,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        1280,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 137,
+      "name": "features.18.1",
+      "type": "BatchNorm2d",
+      "is_key": false,
+      "flops": 62720,
+      "in_shape": [
+        1,
+        1280,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        1280,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 138,
+      "name": "features.18.2",
+      "type": "ReLU6",
+      "is_key": false,
+      "flops": 62720,
+      "in_shape": [
+        1,
+        1280,
+        7,
+        7
+      ],
+      "out_shape": [
+        1,
+        1280,
+        7,
+        7
+      ]
+    },
+    {
+      "idx": 139,
+      "name": "classifier.0",
+      "type": "Dropout",
+      "is_key": false,
+      "flops": 0,
+      "in_shape": [
+        1,
+        1280
+      ],
+      "out_shape": [
+        1,
+        1280
+      ]
+    },
+    {
+      "idx": 140,
+      "name": "classifier.1",
+      "type": "Linear",
+      "is_key": true,
+      "flops": 1280000,
+      "in_shape": [
+        1,
+        1280
+      ],
+      "out_shape": [
+        1,
+        1000
+      ]
+    }
+  ],
+  "C_key": [
+    10838016,
+    3612672,
+    6422528,
+    19267584,
+    2709504,
+    7225344,
+    10838016,
+    4064256,
+    10838016,
+    10838016,
+    1016064,
+    3612672,
+    4816896,
+    1354752,
+    4816896,
+    4816896,
+    1354752,
+    4816896,
+    4816896,
+    338688,
+    2408448,
+    4816896,
+    677376,
+    4816896,
+    4816896,
+    677376,
+    4816896,
+    4816896,
+    677376,
+    4816896,
+    4816896,
+    677376,
+    7225344,
+    10838016,
+    1016064,
+    10838016,
+    10838016,
+    1016064,
+    10838016,
+    10838016,
+    254016,
+    4515840,
+    7526400,
+    423360,
+    7526400,
+    7526400,
+    423360,
+    7526400,
+    7526400,
+    423360,
+    15052800,
+    20070400,
+    1280000
+  ],
+  "C_non": 12783904,
+  "C_key_list": [
+    10838016,
+    3612672,
+    6422528,
+    19267584,
+    2709504,
+    7225344,
+    10838016,
+    4064256,
+    10838016,
+    10838016,
+    1016064,
+    3612672,
+    4816896,
+    1354752,
+    4816896,
+    4816896,
+    1354752,
+    4816896,
+    4816896,
+    338688,
+    2408448,
+    4816896,
+    677376,
+    4816896,
+    4816896,
+    677376,
+    4816896,
+    4816896,
+    677376,
+    4816896,
+    4816896,
+    677376,
+    7225344,
+    10838016,
+    1016064,
+    10838016,
+    10838016,
+    1016064,
+    10838016,
+    10838016,
+    254016,
+    4515840,
+    7526400,
+    423360,
+    7526400,
+    7526400,
+    423360,
+    7526400,
+    7526400,
+    423360,
+    15052800,
+    20070400,
+    1280000
+  ],
+  "C_key_total": 300774272,
+  "C_non_total": 12783904
+}
