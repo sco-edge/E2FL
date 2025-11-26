@@ -2,9 +2,7 @@
 from log import WrlsEnv
 from datetime import datetime
 import subprocess, os, logging, time, socket, pickle
-import paramiko, yaml
-import re
-import argparse
+import paramiko, yaml, re, argparse, json
 from typing import List, Tuple
 
 import torch
@@ -40,7 +38,8 @@ class CustomFormatter(logging.Formatter):
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
 
-_LOCAL_PATH = "./eval/"
+home_dir = os.path.expanduser("~")
+_LOCAL_PATH = f"{home_dir}/EEFL/E2FL"
 
 # 전역 로거 구성 (서버 전용)
 E2FL_DEBUG = os.environ.get("E2FL_DEBUG", "0") == "1"
@@ -54,9 +53,15 @@ if not logger.handlers:
 # 안전하게 Flower 파일 로거 구성 (옵션)
 try:
     current_time = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    fl.common.logger.configure(identifier="e2fl_server", filename=_LOCAL_PATH+f"fl_server_{current_time}.txt")
+    fl.common.logger.configure(identifier="e2fl_server", filename=_LOCAL_PATH+f"/eval/fl_server_{current_time}.txt")
 except Exception:
     logger.debug("fl.common.logger.configure unavailable or failed; continuing without fl file logger")
+
+
+device_lookup = {
+    1: "RPi5",
+    2: "jetson_orin_nx",
+}
 
 '''
 strategy
@@ -131,11 +136,37 @@ def create_strategy(context: Context):
         )
     elif strategy_name == "FedAvgLog":
         from e2fl.strategy.FedAvgLog import FedAvgLog
+
+        if context.run_config.get("enable-latte", True):
+            model_name = context.run_config.get("model", "unknown_model")
+            
+            profile_root = os.path.join(f"{_LOCAL_PATH}/predictor/profile")
+            algo_path = f"{profile_root}/{model_name}_algo_selection.json"
+            model_profile_path = f"{profile_root}/{model_name}_workload.json"
+            with open(model_profile_path, "r") as f:
+                workload = json.load(f)
+            with open(algo_path, "r") as f:
+                algo_sel = json.load(f)
+            model_info = {
+                "C_key": workload["C_key"],
+                "C_non": workload["C_non"],
+                "algo_selection": algo_sel["layers"]
+            }
+        else:
+            algo_selection, model_info = None, None
+            
+
         return FedAvgLog(
             fraction_train=fraction_train,
             fraction_evaluate=1.0,
             min_available_nodes=min_clients,
-            log_dir=_LOCAL_PATH+"logs_fedavg",
+            log_dir="eval/logs_fedavg",
+            model_name=model_name,
+            latte=context.run_config.get("enable-latte", True),
+            algo_selection=algo_sel["layers"],
+            model_info=model_info,
+            device_lookup=device_lookup,
+            ROOT=_LOCAL_PATH,
         )
     elif strategy_name == "EEFL":
         from e2fl.strategy.EEFL import EEFL
@@ -190,7 +221,7 @@ def main(grid: Grid, context: Context) -> None:
     mode_tag = "adapter" if is_lora_model(global_model) else "full"
 
     ckpt_name = f"{model_tag}_{dataset_name}_{mode_tag}.pt"
-    ckpt_path = os.path.join(_LOCAL_PATH, ckpt_name)
+    ckpt_path = os.path.join(_LOCAL_PATH+"/eval", ckpt_name)
 
     if resume and os.path.exists(ckpt_path):
         logger.info(f"[Server] Resuming from checkpoint: {ckpt_path}")
@@ -229,9 +260,9 @@ def main(grid: Grid, context: Context) -> None:
     )
     logger.info("Saving final model to disk...")
     if is_lora_model(global_model):
-        torch.save(get_peft_model_state_dict(global_model), _LOCAL_PATH+"final_adapter.pt")
+        torch.save(get_peft_model_state_dict(global_model), ckpt_path)
     else:
-        torch.save(result.arrays.to_torch_state_dict(), _LOCAL_PATH+"final_model.pt")
+        torch.save(result.arrays.to_torch_state_dict(), ckpt_path)
 
 def make_global_evaluate(model_name: str, dataset_name: str, eval_bs: int, 
                          total_round: int = 1, save_every_round: int = 1,
@@ -253,10 +284,10 @@ def make_global_evaluate(model_name: str, dataset_name: str, eval_bs: int,
                 model = get_model(model_name, num_classes, dataset_name, lora_cfg, grad_ckpt, quantization)
                 set_peft_model_state_dict(model, arrays.to_torch_state_dict())
 
-                #model.save_pretrained(f"{_LOCAL_PATH}peft_{model_name}_{server_round}")
+                #model.save_pretrained(f"{_LOCAL_PATH}/eval/peft_{model_name}_{server_round}")
                 adapter_sd = get_peft_model_state_dict(model)
                 safe_name = model_name.replace("/", "_")
-                torch.save(adapter_sd, f"{_LOCAL_PATH}peft_{safe_name}_{server_round}.pt")
+                torch.save(adapter_sd, f"{_LOCAL_PATH}/eval/peft_{safe_name}_{server_round}.pt")
             return MetricRecord()
         else:             
             # Build model with the same architecture used to initialize training

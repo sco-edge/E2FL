@@ -10,10 +10,14 @@ import torch
 import flwr as fl
 from flwr.clientapp import ClientApp
 from flwr.app import ArrayRecord, Context, Message, MetricRecord, RecordDict
-from e2fl.task import set_weights, test, train, get_flops
+from e2fl.task import set_weights, test, train, is_lora_model
 from e2fl.models import get_model
-from e2fl.dataset import load_data, get_num_classes
-from e2fl.utils import get_device_name, get_last_octet_from_ip, parse_node_config_string, get_network_usage
+from e2fl.dataset import load_data, get_tokenizer_and_data_collator_and_propt_formatting, get_num_classes
+from e2fl.utils import cfg, lora_cfg_from, training_arguments_from, get_device_name, get_last_octet_from_ip, parse_node_config_string, get_network_usage
+from peft import get_peft_model_state_dict, set_peft_model_state_dict
+from flowertune_llm.models import cosine_annealing
+from transformers import TrainingArguments
+from trl import SFTTrainer
 
 class CustomFormatter(logging.Formatter):
     
@@ -39,8 +43,7 @@ class CustomFormatter(logging.Formatter):
 
 ##############################################################################################################
 
-home_dir = os.path.expanduser("~")
-_LOCAL_PATH = f"{home_dir}/EEFL/E2FL/eval/"
+_LOCAL_PATH = './eval/'
 
 # 전역 logger 설정 (CustomFormatter 사용)
 logger = logging.getLogger("e2fl_client")
@@ -49,12 +52,6 @@ if not logger.handlers:
     ch = logging.StreamHandler()
     ch.setFormatter(CustomFormatter())
     logger.addHandler(ch)
-
-
-device_lookup = {
-    "RPi5": 1,
-    "jetson_orin_nx": 2,
-}
 
 ##############################################################################################################
 
@@ -125,7 +122,7 @@ def cleanup_power_monitor(power_monitor, interface, device_name, start_net):
             logger.warning("Power monitoring failed or returned no data.")
     end_time = time.time()
     logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Communication end: {end_time}"])
-
+    
 def log_phase_event(tag: str, sent: int = 0, recv: int = 0):
     """CSV 로그 한 줄 기록"""
     os.makedirs(_LOCAL_PATH, exist_ok=True)
@@ -139,12 +136,18 @@ def log_phase_event(tag: str, sent: int = 0, recv: int = 0):
 def initialize_state(context: Context):
     """초기화: device_name, interfaces, power monitor 등 설정"""
     global _LOCAL_STATE
-    model_name, batch_size, dataset_name = (
-        context.run_config["model"],
-        context.run_config.get("batch-size", 32),
-        context.run_config["dataset"],
-    )
-    num_classes = get_num_classes(dataset_name)
+    model_name       = context.run_config["model"]
+    batch_size       = int(cfg(context, "batch-size", 32))
+    dataset_name     = context.run_config["dataset"]
+    local_epochs     = int(cfg(context, "local-epochs", 1))
+    grad_ckpt        = int(cfg(context, "gradient-checkpointing", False))
+    quantization     = int(cfg(context, "quantization", 4))
+    num_rounds       = int(cfg(context, "num-server-rounds", 1))
+    lr_max           = float(cfg(context, "learning-rate-max", 5e-5))
+    lr_min           = float(cfg(context, "learning-rate-min", 1e-6))
+    seq_len          = int(cfg(context, "seq-len", 0)) 
+    lora_cfg         = lora_cfg_from(context)
+    train_arg        = training_arguments_from(context)
     try:
         partition_id, num_partitions = get_partition_id_from_ip(context)
     except ValueError as e:
@@ -152,14 +155,25 @@ def initialize_state(context: Context):
         partition_id, num_partitions = 0, 1
 
     # Dataset & model
-    trainloader, valloader = load_data(dataset_name, partition_id, num_partitions, batch_size, model_name)
-    net, local_epochs = get_model(model_name, num_classes), context.run_config.get("local-epochs", 1)
+    dataset, _ = load_data(dataset_name, partition_id, num_partitions, batch_size, model_name)
+    tokenizer, data_collator, formatting_prompts = get_tokenizer_and_data_collator_and_propt_formatting(model_name)
+
+    num_classes = get_num_classes(dataset_name)
+    net = get_model(model_name, num_classes, dataset_name, lora_cfg, grad_ckpt, quantization)
 
     _LOCAL_STATE.update({
-        "trainloader": trainloader,
-        "valloader": valloader,
+        "dataset": dataset,
+        "tokenizer": tokenizer,
+        "data_collator": data_collator,
+        "formatting_prompts": formatting_prompts,
         "net": net,
         "local_epochs": local_epochs,
+        "num_rounds": num_rounds,
+        "lr_min": lr_min,
+        "lr_max": lr_max,
+        "lora_cfg": lora_cfg,
+        "train_arg": train_arg,
+        "seq_len": seq_len,
     })
     # Initialize net usage
     try:
@@ -208,10 +222,13 @@ def phase_end(phase_name: str):
 
     # Power stop
     if pm:
-        power = pm.read_power_avg()
-        logger.info(f"[PM] {phase_name}: Average Power Consumption: {power}")
-    else:
-        logger.warning(f"[PM] {phase_name}: Power monitoring from {_LOCAL_STATE['power']} returned no data.")
+        elapsed_time, data_size = pm.stop()
+        if elapsed_time:
+            logger.info(f"[PM] {phase_name}: Duration={elapsed_time:.2f}s, Samples={data_size}")
+            pm.save(_LOCAL_PATH+f"{phase_name}_power_{_LOCAL_STATE['device_name']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
+            power = pm.read_power_avg()
+        else:
+            logger.warning(f"[PM] {phase_name}: Power monitoring from {_LOCAL_STATE['power']} returned no data.")
 
     # Network usage
     try:
@@ -228,8 +245,10 @@ def phase_end(phase_name: str):
     return sent, recv, power, duration
 
 ##############################################################################################################
+
 # Flower ClientApp
 app = ClientApp()
+
 ##############################################################################################################
 
 @app.lifespan()
@@ -289,7 +308,7 @@ def train(msg: Message, context: Context) -> Message:
     global _LOCAL_STATE
     md = msg.metadata
     try:
-        server_round = int(msg.content["config"]["server-round"])
+        server_round = int(md.group_id)  # 만약 그룹ID가 라운드 문자열이라면
     except Exception:
         # fallback: 직접 content 안에 있을 수 있으니
         server_round = msg.content.get("server-round", 1) if hasattr(msg.content, "get") else 1
@@ -299,6 +318,7 @@ def train(msg: Message, context: Context) -> Message:
         '''
         1. Initialization Phase (First round)
         '''
+        initialize_state(context)
         update_sent, update_recv, update_power, update_end_time = 0, 0, 0, 0
     else:
         '''
@@ -311,58 +331,38 @@ def train(msg: Message, context: Context) -> Message:
     '''
     logger.info("Starting local training...")
     _ = phase_start("train_start")
-    # BEFORE:
-    # arrays_rec = msg.content["arrays"]
+    set_peft_model_state_dict(_LOCAL_STATE["net"], msg.content["arrays"].to_torch_state_dict())
 
-    # AFTER:
-    try:
-        arrays_rec = msg.content["arrays"]
-        logger.info("[DEBUG] arrays_rec fetched from msg.content['arrays']")
-    except Exception as e:
-        logger.info(f"[DEBUG] FAILED: msg.content['arrays']: {e}")
-        arrays_rec = None
+    cfg_msg = msg.content.get("config", {})
+    round_id = cfg_msg.get("server-round", 0)
+    new_lr = cosine_annealing(
+        round_id, _LOCAL_STATE["num_rounds"],
+        _LOCAL_STATE["lr_max"], _LOCAL_STATE["lr_min"],
+    )
+    
+    _LOCAL_STATE["train_arg"].learning_rate = new_lr
+    _LOCAL_STATE["train_arg"].output_dir = msg.content["config"]["save_path"]
 
-    # fallback checks
-    if arrays_rec is None:
-        try:
-            arrays_rec = getattr(msg, "arrays")
-            logger.info("[DEBUG] arrays_rec fetched from msg.arrays attribute")
-        except Exception as e:
-            logger.info(f"[DEBUG] FAILED: getattr(msg,'arrays'): {e}")
-            arrays_rec = None
+    # Construct trainer
+    trainer = SFTTrainer(
+        model=_LOCAL_STATE["net"],
+        tokenizer=_LOCAL_STATE["tokenizer"],
+        args=_LOCAL_STATE["train_arg"],
+        max_seq_length=_LOCAL_STATE["seq_len"],
+        train_dataset=_LOCAL_STATE["dataset"],
+        formatting_func=_LOCAL_STATE["formatting_prompts"],
+        data_collator=_LOCAL_STATE["data_collator"],
+    )
 
-    # If still None → definitely the crash source
-    if arrays_rec is None:
-        logger.error("[FATAL] Could not retrieve arrays from message. Train cannot continue.")
-        # You can raise an exception or return a dummy Message to avoid crash
-        raise RuntimeError("Train message missing 'arrays' field")
-
-    try:
-        arrays = arrays_rec.as_numpy()          # older API
-    except Exception:
-        if hasattr(arrays_rec, "arrays"):      # flwr might expose .arrays
-            arrays = arrays_rec.arrays
-        elif hasattr(arrays_rec, "value"):     # alternative name
-            arrays = arrays_rec.value
-        else:
-            # 마지막 수단: 객체 자체가 리스트/ndarray일 수 있음
-            arrays = arrays_rec
-    initialize_state(context)
-    # arrays는 이제 numpy 배열 리스트 또는 state list 여야 함
-    set_weights(_LOCAL_STATE["net"], arrays)
-    task_mod = importlib.import_module("e2fl.task")
-    train_func = getattr(task_mod, "train", None) or getattr(task_mod, "train_model", None)
-    if train_func is None:
-        raise RuntimeError("No train or train_model() function found in e2fl.task")
-    train_loss = train_func(_LOCAL_STATE["net"], _LOCAL_STATE["trainloader"], _LOCAL_STATE["local_epochs"], _LOCAL_STATE["device"])
+    # Do local training
+    results = trainer.train()
     train_sent, train_recv, train_power, train_duration = phase_end("train_end")
-    logger.info(f"Local training completed. (Loss: {train_loss}, Duration: {train_duration}s)")
+    logger.info(f"Local training completed. (Loss: {results.training_loss}, Duration: {train_duration}s)")
 
     upload_start_time = phase_start("upload_start")
-    model_record = ArrayRecord(_LOCAL_STATE["net"].state_dict())
     metrics = {
-        "num-examples": len(_LOCAL_STATE["trainloader"].dataset),
-        "train_loss": train_loss,
+        "num-examples": len(_LOCAL_STATE["dataset"]),
+        "train_loss": results.training_loss,
         "train_energy": train_power,
         "train_sent": train_sent,
         "train_recv": train_recv,
@@ -372,64 +372,8 @@ def train(msg: Message, context: Context) -> Message:
         "update_recv": update_recv,
         "update_end_time": update_end_time,
         "upload_start_time": upload_start_time,
-        "flops": get_flops(_LOCAL_STATE["net"], _LOCAL_STATE["device"]),
-        "device_code": device_lookup[_LOCAL_STATE["device_name"]],
     }
+    model_record = ArrayRecord(get_peft_model_state_dict(_LOCAL_STATE["net"]))
     metric_record = MetricRecord(metrics)
-    config_rec = msg.content.get("config", {})
-    content = RecordDict({
-        "arrays": model_record, 
-        "metrics": metric_record,
-        "config": config_rec,
-    })
+    content = RecordDict({"arrays": model_record, "metrics": metric_record})
     return Message(content=content, reply_to=msg)
-
-
-@app.evaluate()
-def evaluate(msg: Message, context: Context) -> Message:
-    global _LOCAL_STATE
-    md = msg.metadata
-    try:
-        server_round = int(md.group_id)  # 만약 그룹ID가 라운드 문자열이라면
-    except Exception:
-        # fallback: 직접 content 안에 있을 수 있으니
-        server_round = msg.content.get("server-round", 1) if hasattr(msg.content, "get") else 1
-
-    logger.info(f"[Eval] server_round = {server_round}")
-    if server_round == 1:
-        '''
-        1. Initialization Phase (First round)
-        '''
-        initialize_state(context)
-    '''
-    2. Upload Phase (After train())
-    '''
-    upload_sent, upload_recv, upload_power, upload_end_time = phase_end("upload_end")
-
-    '''
-    3. Evaluation Phase
-    '''
-    _ = phase_start("eval_start")
-    eval_loss, eval_acc = test(_LOCAL_STATE.get("net"), _LOCAL_STATE.get("valloader"), _LOCAL_STATE.get("device"))
-    eval_sent, eval_recv, eval_power, eval_duration = phase_end("eval_end")
-    logger.info(f"Evaluation completed with accuracy: {eval_acc}, Loss: {eval_loss}, Duration: {eval_duration}s")
-    
-    update_start_time = phase_start("update_start")
-    metrics = {
-        "num-examples": len(_LOCAL_STATE["valloader"].dataset),
-        "eval_loss": eval_loss,
-        "eval_accuracy": eval_acc,
-        "upload_energy": upload_power,
-        "upload_sent": upload_sent,
-        "upload_recv": upload_recv,
-        "upload_end_time": upload_end_time,        
-        "eval_energy": eval_power,
-        "eval_sent": eval_sent,
-        "eval_recv": eval_recv,
-        "eval_time": eval_duration,
-        "update_start_time": update_start_time,
-    }
-    metric_record = MetricRecord(metrics)
-    content = RecordDict({"metrics": metric_record})
-    return Message(content=content, reply_to=msg)
-        

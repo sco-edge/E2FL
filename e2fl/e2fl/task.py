@@ -4,6 +4,7 @@ import numpy as np
 from typing import Any, Optional
 import logging, os, torch
 from peft import get_peft_model_state_dict, set_peft_model_state_dict
+from fvcore.nn import FlopCountAnalysis
 
 # 디버그 토글: E2FL_DEBUG=1 로 디버그 활성화 (기본 비활성)
 E2FL_DEBUG = os.environ.get("E2FL_DEBUG", "0") == "1"
@@ -29,6 +30,10 @@ def is_hf_model_name(model_name: Optional[str]) -> bool:
 def is_lora_model(model) -> bool:
     return hasattr(model, "peft_config") or any("lora" in n.lower() for n, _ in model.named_parameters())
 
+def get_flops(net, device) -> int:
+    dummy = torch.randn(1, 3, 224, 224).to(device)
+    return FlopCountAnalysis(net, dummy).total()
+    
 def train(net, trainloader, epochs, device) -> float:
     """
     Unified train function:

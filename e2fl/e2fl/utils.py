@@ -115,7 +115,7 @@ def get_device_name():
         return iface, 'RPi5', "PMIC"
     elif 'wlP1p1s0' in interface_list:
         iface = 'wlP1p1s0'
-        return iface, 'jetson', "INA3221"
+        return iface, 'jetson_orin_nx', "INA3221"
     else:
         return 'wlan0', 'RPi3', "Monsoon"
 
