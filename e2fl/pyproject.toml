@@ -20,9 +20,10 @@ dependencies = [
     "psutil>=5.8.0",
     "paramiko>=2.8.0",
     "pyyaml>=6.0",
-    "transformers==4.44.2",
+    "transformers==4.31.0",
+    "trl==0.7.10",
     "accelerate==0.33.0",
-    "peft==0.11.1",
+    "peft==0.5.0",
     "datasets==3.1.0",
     "tokenizers==0.19.1",
     "safetensors>=0.4.2",
@@ -39,37 +40,21 @@ serverapp = "e2fl.server_app:app"
 clientapp = "e2fl.client_app:app"
 
 [tool.flwr.app.config]
-num-server-rounds = 1
+num-server-rounds = 2
 fraction-train = 1.0
 local-epochs = 1
 min-clients = 2
-model = ""TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-dataset = "wikitext"
+model = "mobilenet_v2"
+dataset = "cifar10"
 batch_size = 32
-eval-batch-size = 1
 num_partitions = 2
 strategy = "FedAvgLog"
-enable-latte = false
+enable-latte = true
 power-monitor = true
 resume = true
-checkpoint-path = "./eval/final_model.pt"
-
-# Optim
-learning-rate = 5e-5
-weight-decay = 0.0
-lr-scheduler = "cosine"         # "none"|"cosine"
-warmup-steps = 100
-
-# LLM/tokenizers/sequence
-seq-len = 1024                   # LLM max length
-
-# LoRA (필요 시)
-lora.enabled = true
-lora.r = 4
-lora.alpha = 8
-lora.dropout = 0.05
-lora.targets = "q_proj,v_proj"
-lora.task-type = "CAUSAL_LM"     # "SEQ_CLS"...
+checkpoint-path = "/home/wwjang/EEFL/E2FL/eval/"
+learning-rate = 0.01
+weight-decay = 0.0005
 
 [tool.flwr.federations]
 default = "local-deployment"
