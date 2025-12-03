@@ -5,206 +5,206 @@ import torch.nn as nn
 import time
 import json
 import os
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 
-
-########################################
-# FLOPs 계산 함수
-########################################
+################################################################################
+# Utility: FLOPs
+################################################################################
 
 def conv2d_flops(layer: nn.Conv2d, x_shape: Tuple[int, int, int, int]) -> int:
-    """Conv2d FLOPs 계산 (forward pass 기준)."""
     N, Cin, H, W = x_shape
     Cout = layer.out_channels
     Kh, Kw = layer.kernel_size
     Sh, Sw = layer.stride
     Ph, Pw = layer.padding
 
-    Hout = (H + 2 * Ph - Kh) // Sh + 1
-    Wout = (W + 2 * Pw - Kw) // Sw + 1
+    Hout = (H + 2*Ph - Kh) // Sh + 1
+    Wout = (W + 2*Pw - Kw) // Sw + 1
 
     if layer.groups == 1:
         flops = N * Cout * Hout * Wout * (Cin * Kh * Kw)
-    else:  
+    else:
         flops = N * Cin * Hout * Wout * (Kh * Kw)
 
     return int(flops)
 
-
 def linear_flops(layer: nn.Linear, x_shape: Tuple[int, int]) -> int:
-    N, features = x_shape
-    return int(N * features * layer.out_features)
+    N, in_f = x_shape
+    return int(N * in_f * layer.out_features)
 
-
-def eltwise_flops(x_shape: Tuple[int, ...]) -> int:
+def eltwise_flops(shape):
     numel = 1
-    for v in x_shape:
-        numel *= v
-    return int(numel)
+    for x in shape:
+        numel *= x
+    return numel
 
-
-########################################
-# DeviceProfiler 본체
-########################################
+################################################################################
+# DeviceProfiler
+################################################################################
 
 class DeviceProfiler:
-
-    def __init__(self, device_name: str, save_dir: str = "profile"):
-        # GPU 여부 로깅
-        print(f"[Profiler] Init: device_name = {device_name}")
-        print(f"[Profiler] torch.cuda.is_available = {torch.cuda.is_available()}")
-        print(f"[Profiler] device_count = {torch.cuda.device_count()}")
-
-        if torch.cuda.is_available():
-            print(f"[Profiler] Using CUDA device: {torch.cuda.get_device_name(0)}")
-            self.device = torch.device("cuda")
-        else:
-            print("[Profiler] WARNING: CUDA unavailable → using CPU")
-            self.device = torch.device("cpu")
-
+    def __init__(self, device_name: str, save_dir="profile", mode="coarse"):
+        """
+        mode:
+          - "coarse": op_type 기반 coarse β (PyTorch 연산 타입)
+          - "fine": cuDNN convolution kernel algorithm 기반 β
+        """
+        self.mode = mode
         self.device_name = device_name
+
+        # CUDA 여부 체크
+        use_cuda = torch.cuda.is_available()
+        if use_cuda:
+            self.device = torch.device("cuda")
+            print(f"[Profiler] Using CUDA: {torch.cuda.get_device_name(0)}")
+        else:
+            self.device = torch.device("cpu")
+            print("[Profiler] CUDA unavailable → CPU mode (A-mode fallback only)")
+
         self.save_dir = os.path.join(save_dir, device_name)
         os.makedirs(self.save_dir, exist_ok=True)
 
         self.betas = {
+            "mode": mode,
             "key_fwd": {},
             "key_bwd": {},
             "non_fwd": 0.0,
-            "non_bwd": 0.0
+            "non_bwd": 0.0,
         }
 
-    ########################################
-    # forward / backward 시간 측정
-    ########################################
-    def _measure_fwd_bwd(self, layer: nn.Module, x: torch.Tensor, iters: int = 20):
-        print(f"[Profiler] Measuring layer = {layer.__class__.__name__}")
-
+    ############################################################################
+    # Timing Utility
+    ############################################################################
+    def _measure(self, layer, x, iters=20):
         layer = layer.to(self.device)
         x = x.to(self.device)
         x.requires_grad_(True)
 
-        # Warm-up
-        print("[Profiler] Warm-up start")
+        # warm-up
         for _ in range(5):
             out = layer(x)
             loss = out.sum()
-            try:
-                loss.backward()
-            except Exception as e:
-                print("[ERROR] backward failed during warm-up:", e)
-                return 0.0, 0.0
+            loss.backward()
             layer.zero_grad(set_to_none=True)
             x.grad.zero_()
-        print("[Profiler] Warm-up done")
 
-        # GPU 모드
         if self.device.type == "cuda":
-            starter = torch.cuda.Event(enable_timing=True)
-            ender = torch.cuda.Event(enable_timing=True)
-
             torch.cuda.synchronize()
+            start = torch.cuda.Event(enable_timing=True)
+            end = torch.cuda.Event(enable_timing=True)
 
-            # Forward timing
-            print("[Profiler] Forward timing start")
-            starter.record()
+            # forward
+            start.record()
             for _ in range(iters):
                 out = layer(x)
-            ender.record()
+            end.record()
             torch.cuda.synchronize()
-            fwd_ms = starter.elapsed_time(ender) / iters
-            print(f"[Profiler] Forward avg ms = {fwd_ms}")
+            fwd_ms = start.elapsed_time(end) / iters
 
-            # Backward timing
-            print("[Profiler] Backward timing start")
-            starter.record()
+            # backward
+            start.record()
             for _ in range(iters):
                 out = layer(x)
                 loss = out.sum()
                 loss.backward()
                 layer.zero_grad(set_to_none=True)
                 x.grad.zero_()
-            ender.record()
+            end.record()
             torch.cuda.synchronize()
-            bwd_ms = starter.elapsed_time(ender) / iters
-            print(f"[Profiler] Backward avg ms = {bwd_ms}")
+            bwd_ms = start.elapsed_time(end) / iters
+        else:
+            # CPU fallback
+            s = time.perf_counter()
+            for _ in range(iters):
+                out = layer(x)
+            fwd_ms = (time.perf_counter() - s) * 1000 / iters
 
-            return fwd_ms, bwd_ms
-
-        # CPU 모드
-        print("[Profiler] CPU timing mode")
-        start = time.perf_counter()
-        for _ in range(iters):
-            out = layer(x)
-        fwd_ms = (time.perf_counter() - start) * 1000 / iters
-        print(f"[Profiler] Forward avg ms = {fwd_ms}")
-
-        start = time.perf_counter()
-        for _ in range(iters):
-            out = layer(x)
-            loss = out.sum()
-            loss.backward()
-            layer.zero_grad(set_to_none=True)
-            x.grad.zero_()
-        bwd_ms = (time.perf_counter() - start) * 1000 / iters
-        print(f"[Profiler] Backward avg ms = {bwd_ms}")
+            s = time.perf_counter()
+            for _ in range(iters):
+                out = layer(x)
+                loss = out.sum()
+                loss.backward()
+                layer.zero_grad(set_to_none=True)
+                x.grad.zero_()
+            bwd_ms = (time.perf_counter() - s) * 1000 / iters
 
         return fwd_ms, bwd_ms
 
+    ############################################################################
+    # Coarse-mode: PyTorch 연산 기반 β 프로파일링
+    ############################################################################
+    def _profile_coarse_mode(self):
+        print("[Profiler] Running Coarse-mode (op_type) profiling")
 
-    ########################################
-    # Conv profiling
-    ########################################
-    def profile_conv(self):
         x = torch.randn(8, 32, 56, 56)
 
         # Conv3x3
-        conv3 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
-        flops3 = conv2d_flops(conv3, (8, 32, 56, 56))
-        fwd, bwd = self._measure_fwd_bwd(conv3, x)
-        self.betas["key_fwd"]["conv3x3"] = fwd / flops3
-        self.betas["key_bwd"]["conv3x3"] = bwd / flops3
+        conv = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        flops = conv2d_flops(conv, (8, 32, 56, 56))
+        fwd, bwd = self._measure(conv, x)
+        self.betas["key_fwd"]["conv3x3"] = fwd / flops
+        self.betas["key_bwd"]["conv3x3"] = bwd / flops
 
         # Conv1x1
         conv1 = nn.Conv2d(32, 64, kernel_size=1)
-        flops1 = conv2d_flops(conv1, (8, 32, 56, 56))
-        fwd, bwd = self._measure_fwd_bwd(conv1, x)
-        self.betas["key_fwd"]["conv1x1"] = fwd / flops1
-        self.betas["key_bwd"]["conv1x1"] = bwd / flops1
+        flops = conv2d_flops(conv1, (8, 32, 56, 56))
+        fwd, bwd = self._measure(conv1, x)
+        self.betas["key_fwd"]["conv1x1"] = fwd / flops
+        self.betas["key_bwd"]["conv1x1"] = bwd / flops
 
         # Depthwise
         dw = nn.Conv2d(32, 32, kernel_size=3, padding=1, groups=32)
-        flops_dw = conv2d_flops(dw, (8, 32, 56, 56))
-        fwd, bwd = self._measure_fwd_bwd(dw, x)
-        self.betas["key_fwd"]["depthwise"] = fwd / flops_dw
-        self.betas["key_bwd"]["depthwise"] = bwd / flops_dw
+        flops = conv2d_flops(dw, (8, 32, 56, 56))
+        fwd, bwd = self._measure(dw, x)
+        self.betas["key_fwd"]["depthwise"] = fwd / flops
+        self.betas["key_bwd"]["depthwise"] = bwd / flops
 
-    ########################################
-    # Linear profiling
-    ########################################
-    def profile_linear(self):
-        layer = nn.Linear(512, 512)
-        x = torch.randn(32, 512)
-        flops = linear_flops(layer, (32, 512))
-        fwd, bwd = self._measure_fwd_bwd(layer, x)
+        # Linear
+        fc = nn.Linear(512, 512)
+        x2 = torch.randn(32, 512)
+        flops = linear_flops(fc, (32, 512))
+        fwd, bwd = self._measure(fc, x2)
         self.betas["key_fwd"]["linear"] = fwd / flops
         self.betas["key_bwd"]["linear"] = bwd / flops
 
-    ########################################
-    # Non-key profiling
-    ########################################
-    def profile_nonkey(self):
+        # Non-key
         relu = nn.ReLU()
-        x = torch.randn(8, 64, 56, 56)
+        x3 = torch.randn(8, 64, 56, 56)
         flops = eltwise_flops((8, 64, 56, 56))
-        fwd, bwd = self._measure_fwd_bwd(relu, x)
+        fwd, bwd = self._measure(relu, x3)
         self.betas["non_fwd"] = fwd / flops
         self.betas["non_bwd"] = bwd / flops
 
-    ########################################
-    # 저장
-    ########################################
-    def export(self, model_name: str):
+    ############################################################################
+    # Fine-mode: cuDNN kernel algorithm profiling
+    ############################################################################
+    def _profile_fine_mode(self):
+        # 여기서는 C++ 결과 JSON을 읽기만 함
+        path = os.path.join(self.save_dir, "cudnn_betas_device.json")
+        print(f"[Profiler] Loading Fine-mode betas from {path}")
+        with open(path, "r") as f:
+            data = json.load(f)
+
+        # LATTE Training_Time_Estimator 형식에 맞게 그대로 삽입
+        self.betas["key_fwd"] = data["key_fwd"]
+        self.betas["key_bwd"] = data.get("key_bwd", {})
+        self.betas["non_fwd"] = data.get("non_fwd", 0.0)
+        self.betas["non_bwd"] = data.get("non_bwd", 0.0)
+
+
+    ############################################################################
+    # Public API
+    ############################################################################
+    def run(self):
+        if self.mode == "coarse":
+            self._profile_coarse_mode()
+        elif self.mode == "fine":
+            self._profile_fine_mode()
+        else:
+            raise ValueError(f"Unknown mode {self.mode}")
+
+    def export(self, model_name):
         path = os.path.join(self.save_dir, f"{model_name}_betas.json")
         with open(path, "w") as f:
             json.dump(self.betas, f, indent=4)
-        print(f"[Profiler] Saved beta file → {path}")
+        print(f"[Profiler] Saved → {path}")
