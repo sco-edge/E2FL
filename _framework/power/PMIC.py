@@ -23,6 +23,18 @@ class PMICMonitor(PowerMonitor):
         # Configure logging
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+    def read_power_avg(self):
+        """
+        Reads the average power consumption in mW using the 'vcgencmd pmic_read_adc' command.
+        :return: Average power consumption in mW (float), or None if reading fails.
+        """
+        if not self.power_data:
+            return 0
+        else:
+            data = self.power_data
+            return float(sum(p for _, p in data) / len(data))
+        return 0
+
     def read_power(self):
         """
         Implements the abstract method from PowerMonitor.

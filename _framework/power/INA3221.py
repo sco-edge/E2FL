@@ -65,8 +65,8 @@ import logging
 from power._power_monitor_interface import PowerMonitor
 
 class INA3221(PowerMonitor):
-    def __init__(self, voltage_path='/sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon2/in1_input',
-                 current_path='/sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon2/curr1_input'):
+    def __init__(self, voltage_path='/sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon1/in1_input',
+                 current_path='/sys/bus/i2c/drivers/ina3221/1-0040/hwmon/hwmon1/curr1_input'):
         """
         Initialize the INA3221 power monitor.
         :param voltage_path: Path to read voltage in mV.
@@ -110,9 +110,22 @@ class INA3221(PowerMonitor):
             return None  # Return None if any reading fails
 
         # Convert mV * mA to mW
-        power_mw = (voltage / 1000.0) * (current / 1000.0) * 1000  # Convert to mW
+        power_mw = (voltage / 1000.0) * (current / 1000.0) # Convert to W
         logging.debug(f"{self.device_name}: Voltage={voltage}mV, Current={current}mA, Power={power_mw:.2f}mW")
         return power_mw
+
+    
+    def read_power_avg(self):
+        """
+        Reads the average power consumption in mW using the 'vcgencmd pmic_read_adc' command.
+        :return: Average power consumption in mW (float), or None if reading fails.
+        """
+        if not self.power_data:
+            return 0
+        else:
+            data = self.power_data
+            return float(sum(p for _, p in data) / len(data))
+        return 0
 
     def _monitor(self):
         """
