@@ -397,49 +397,18 @@ def build_algo_selection(
     device: str = "cpu",
     include_features: bool = False,
 ) -> Dict:
-    """
-    Given layer_names and feature_vectors, run selector to obtain algorithm
-    class for each layer and build algo_selection dict.
 
-    Returns:
-        algo_selection: {
-          "layers": {
-            layer_name0: algo_id0,
-            layer_name1: algo_id1,
-            ...
-          },
-          "meta": {
-            "input_dim": <int>,
-            "num_algos": <int>,
-          },
-          (optional) "layer_features": { layer_name: [ ... feature ... ] }
-        }
-    """
-    if not layer_names or not feature_vectors:
-        raise ValueError("layer_names and feature_vectors must be non-empty")
-
-    if len(layer_names) != len(feature_vectors):
-        raise ValueError(
-            f"len(layer_names)={len(layer_names)} "
-            f"!= len(feature_vectors)={len(feature_vectors)}"
-        )
-
-    # Convert to tensor
     feats_tensor = torch.tensor(feature_vectors, dtype=torch.float32, device=device)
-    if feats_tensor.size(1) != selector.input_dim:
-        raise ValueError(
-            f"Selector input_dim {selector.input_dim} "
-            f"!= feature dim {feats_tensor.size(1)}"
-        )
-
-    # Predict algo IDs
+    
     algo_ids = selector.predict_algorithms(feats_tensor).cpu().tolist()
 
-    layers_map: Dict[str, int] = {
-        name: int(aid) for name, aid in zip(layer_names, algo_ids)
+    # ✔ 알고리즘 번호 매핑
+    layers_map = {
+        name: int(aid)   # aid ∈ {0, 1, 2}
+        for name, aid in zip(layer_names, algo_ids)
     }
 
-    algo_selection: Dict = {
+    algo_selection = {
         "layers": layers_map,
         "meta": {
             "input_dim": selector.input_dim,
@@ -448,10 +417,13 @@ def build_algo_selection(
     }
 
     if include_features:
-        feat_map = {name: fv for name, fv in zip(layer_names, feature_vectors)}
-        algo_selection["layer_features"] = feat_map
+        algo_selection["layer_features"] = {
+            name: fv for name, fv in zip(layer_names, feature_vectors)
+        }
 
     return algo_selection
+
+
 
 
 def save_algo_selection_json(algo_selection: Dict, path: str) -> None:
