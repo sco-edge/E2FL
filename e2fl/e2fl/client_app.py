@@ -123,7 +123,7 @@ def cleanup_power_monitor(power_monitor, interface, device_name, start_net):
             power_monitor.close()
         else:
             logger.warning("Power monitoring failed or returned no data.")
-    end_time = time.time()
+    end_time = time.perf_counter()
     logger.info([f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')}] Communication end: {end_time}"])
 
 def log_phase_event(tag: str, sent: int = 0, recv: int = 0):
@@ -174,7 +174,7 @@ def phase_start(phase_name: str):
     """phase 시작: 전력/네트워크 기록 초기화"""
     logger.info(f"[Phase] {phase_name}: starting...")
     global _LOCAL_STATE
-    _LOCAL_STATE[f"{phase_name}_t0"] = time.time()
+    _LOCAL_STATE[f"{phase_name}_t0"] = time.perf_counter()
     pm = _LOCAL_STATE.get("power_monitor")
     if pm:
         logger.info(f"[PM] {phase_name}: starting power monitor...")
@@ -183,7 +183,7 @@ def phase_start(phase_name: str):
 
     try:
         _LOCAL_STATE["net_start"] = get_network_usage(_LOCAL_STATE["interfaces"])
-        logger.info(f"[Network] {phase_name}: starting network usage monitoring...")
+        logger.info(f"[Network] {phase_name}: starting network usage monitoring: {_LOCAL_STATE['net_start']['bytes_sent']} bytes sent, {_LOCAL_STATE['net_start']['bytes_recv']} bytes recv")
     except Exception as e:
         logger.warning(f"Failed to get network usage start for {phase_name}: {e}")
         _LOCAL_STATE["net_start"] = {"bytes_sent": 0, "bytes_recv": 0}
@@ -194,14 +194,9 @@ def phase_start(phase_name: str):
 
 def phase_end(phase_name: str):
     """phase 종료: 전력/네트워크 기록 저장"""
-    t1 = time.time()
+    t1 = time.perf_counter()
     logger.info(f"[Phase] {phase_name}: ending...")
     global _LOCAL_STATE
-    if f"{phase_name}_t0" in _LOCAL_STATE:
-        t0 = _LOCAL_STATE[f"{phase_name}_t0"]
-    else:
-        t0 = 0
-    duration = t1 - t0
     pm = _LOCAL_STATE.get("power_monitor")
     sent = recv = 0
     power = 0
@@ -220,12 +215,12 @@ def phase_end(phase_name: str):
         sent = net_end["bytes_sent"] - net_start["bytes_sent"]
         recv = net_end["bytes_recv"] - net_start["bytes_recv"]
         _LOCAL_STATE["net_start"] = net_end
-        logger.info(f"[Network] {phase_name}: Sent={sent} bytes, Received={recv} bytes")
+        logger.info(f"[Network] {phase_name}: Sent={sent} bytes, Received={recv} bytes (net_start: [bytes_sent: {net_start['bytes_sent']}, bytes_recv: {net_start['bytes_recv']}])")
     except Exception as e:
         logger.warning(f"Failed to get network usage end for {phase_name}: {e}")
 
     #log_phase_event(f"{phase_name}_end", sent, recv)
-    return sent, recv, power, duration
+    return sent, recv, power, t1
 
 ##############################################################################################################
 # Flower ClientApp
@@ -310,7 +305,7 @@ def train(msg: Message, context: Context) -> Message:
     3. Local Training Phase
     '''
     logger.info("Starting local training...")
-    _ = phase_start("train_start")
+    train_start_time = phase_start("train_start")
     # BEFORE:
     # arrays_rec = msg.content["arrays"]
 
@@ -355,8 +350,8 @@ def train(msg: Message, context: Context) -> Message:
     if train_func is None:
         raise RuntimeError("No train or train_model() function found in e2fl.task")
     train_loss = train_func(_LOCAL_STATE["net"], _LOCAL_STATE["trainloader"], _LOCAL_STATE["local_epochs"], _LOCAL_STATE["device"])
-    train_sent, train_recv, train_power, train_duration = phase_end("train_end")
-    logger.info(f"Local training completed. (Loss: {train_loss}, Duration: {train_duration}s)")
+    train_sent, train_recv, train_power, train_end_time = phase_end("train_end")
+    logger.info(f"Local training completed. (Loss: {train_loss}, Duration: {train_end_time - train_start_time}s)")
 
     upload_start_time = phase_start("upload_start")
     model_record = ArrayRecord(_LOCAL_STATE["net"].state_dict())
@@ -366,7 +361,7 @@ def train(msg: Message, context: Context) -> Message:
         "train_energy": train_power,
         "train_sent": train_sent,
         "train_recv": train_recv,
-        "train_time": train_duration,
+        "train_time": train_end_time - train_start_time,
         "update_energy": update_power,
         "update_sent": update_sent,
         "update_recv": update_recv,
@@ -409,10 +404,10 @@ def evaluate(msg: Message, context: Context) -> Message:
     '''
     3. Evaluation Phase
     '''
-    _ = phase_start("eval_start")
+    eval_start_time = phase_start("eval_start")
     eval_loss, eval_acc = test(_LOCAL_STATE.get("net"), _LOCAL_STATE.get("valloader"), _LOCAL_STATE.get("device"))
-    eval_sent, eval_recv, eval_power, eval_duration = phase_end("eval_end")
-    logger.info(f"Evaluation completed with accuracy: {eval_acc}, Loss: {eval_loss}, Duration: {eval_duration}s")
+    eval_sent, eval_recv, eval_power, evaluate_end_time = phase_end("eval_end")
+    logger.info(f"Evaluation completed with accuracy: {eval_acc}, Loss: {eval_loss}, Duration: {evaluate_end_time - eval_start_time}s")
     
     update_start_time = phase_start("update_start")
     metrics = {
@@ -426,7 +421,7 @@ def evaluate(msg: Message, context: Context) -> Message:
         "eval_energy": eval_power,
         "eval_sent": eval_sent,
         "eval_recv": eval_recv,
-        "eval_time": eval_duration,
+        "eval_time": evaluate_end_time - eval_start_time,
         "update_start_time": update_start_time,
     }
     metric_record = MetricRecord(metrics)

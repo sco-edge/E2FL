@@ -139,22 +139,30 @@ def create_strategy(context: Context):
 
         if context.run_config.get("enable-latte", True):
             model_name = context.run_config.get("model", "unknown_model")
+            latte_mode = context.run_config.get("latte-mode", "coarse")
             
             profile_root = os.path.join(f"{_LOCAL_PATH}/predictor/profile")
-            algo_path = f"{profile_root}/{model_name}_algo_selection.json"
-            model_profile_path = f"{profile_root}/{model_name}_workload.json"
+            model_profile_path = f"{profile_root}/{model_name}_workload_{latte_mode}.json"
+
             with open(model_profile_path, "r") as f:
                 workload = json.load(f)
-            with open(algo_path, "r") as f:
-                algo_sel = json.load(f)
+
+            if "layers" not in workload:
+                raise ValueError("Invalid algo_selection JSON: missing 'layers' section")
+
             model_info = {
+                "algo_selection": workload["algo_selection"],
                 "C_key": workload["C_key"],
                 "C_non": workload["C_non"],
-                "algo_selection": algo_sel["layers"]
+                "num_epochs": int(cfg(context, "local-epochs", 1)),
+                "batch_size": int(cfg(context, "batch_size", 32)),
             }
         else:
-            algo_selection, model_info = None, None
-            
+            model_info = None
+        
+        latte_mode = context.run_config.get("latte-mode", "coarse")
+        if latte_mode == "fine":
+            model_info = None # Fine-grained mode does not use model_info
 
         return FedAvgLog(
             fraction_train=fraction_train,
@@ -163,7 +171,6 @@ def create_strategy(context: Context):
             log_dir="eval/logs_fedavg",
             model_name=model_name,
             latte=context.run_config.get("enable-latte", True),
-            algo_selection=algo_sel["layers"],
             model_info=model_info,
             device_lookup=device_lookup,
             ROOT=_LOCAL_PATH,
