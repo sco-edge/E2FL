@@ -33,10 +33,10 @@ def get_profile_root() -> str:
 
 
 # ---------------------------------------------------------
-# 1) LayerIdentifier 실행 (coarse/fine 모드)
+# 1) LayerIdentifier 실행 (coarse 모드만)
 # ---------------------------------------------------------
-def run_layer_identifier(model_name: str, mode: str, device_for_hooks: str) -> str:
-    print(f"[1] LayerIdentifier: model={model_name}, mode={mode}, device={device_for_hooks}")
+def run_layer_identifier(model_name: str, device_for_hooks: str) -> str:
+    print(f"[1] LayerIdentifier: model={model_name}, mode=coarse, device={device_for_hooks}")
 
     if model_name not in SUPPORTED_MODELS:
         raise ValueError(f"Unsupported model: {model_name}")
@@ -49,14 +49,14 @@ def run_layer_identifier(model_name: str, mode: str, device_for_hooks: str) -> s
         input_size=(224, 224),
         in_channels=3,
         device=device_for_hooks,
-        mode=mode,  # "coarse" or "fine"
+        mode="coarse",  # always coarse
     )
 
     result = li.identify()
 
     profile_root = get_profile_root()
     # 파일명에 mode를 붙여서 coarse/fine 둘 다 저장 가능하게
-    out_path = os.path.join(profile_root, f"{model_name}_workload_{mode}.json")
+    out_path = os.path.join(profile_root, f"{model_name}_workload_coarse.json")
     LayerIdentifier.save_json(result, out_path)
 
     print(f"[run_profiler] Saved workload → {out_path}")
@@ -95,12 +95,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True, help="e.g., mobilenet_v2")
     parser.add_argument("--device", required=True, help="logical device name (RPi5, jetson_orin_nx, ...)")
-    parser.add_argument(
-        "--mode",
-        choices=["coarse", "fine"],
-        default="coarse",
-        help="LayerIdentifier mode and DeviceProfiler mode: coarse=op_type, fine=kernel algo (default: coarse)",
-    )
+    # Removed mode argument to ignore user-provided mode
     args = parser.parse_args()
 
     # hook용 device 선택 (LayerIdentifier용)
@@ -117,19 +112,17 @@ def main():
     print("  LATTE-style Profiler")
     print("  model     :", args.model)
     print("  device    :", args.device)
-    print("  mode   :", args.mode)
     print("========================================")
 
     workload_path = run_layer_identifier(
         model_name=args.model,
-        mode=args.mode,
         device_for_hooks=hook_device,
     )
 
     betas_path = run_device_profiler(
         model_name=args.model,
         device_name=args.device,
-        mode=args.mode,
+        mode="coarse",
     )
 
     print("========================================")
