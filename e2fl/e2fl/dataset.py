@@ -5,7 +5,6 @@ from typing import Optional
 from torch.utils.data import DataLoader
 from torchvision.transforms import Compose, Normalize, ToTensor
 from transformers import AutoTokenizer, DataCollatorWithPadding, DataCollatorForLanguageModeling
-from trl import DataCollatorForCompletionOnlyLM
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 from datasets.utils.logging import disable_progress_bar
@@ -311,7 +310,7 @@ def is_text_dataset(dataset_name: str) -> bool:
     }
     return any(ds.startswith(x) for x in text_datasets)
 
-def load_text_data(model_name, batch_size):
+def load_text_data(model_name, batch_size, partition_train_test):
     # Use HF tokenizer + DataCollatorWithPadding for text datasets / HF models
     hf_model = model_name[3:] if (model_name and model_name.startswith("hf:")) else model_name or "bert-base-uncased"
     tokenizer = AutoTokenizer.from_pretrained(hf_model, use_fast=True)
@@ -351,35 +350,63 @@ def formatting_prompts_func(example):
     return output_texts
 
 def get_tokenizer_and_data_collator_and_propt_formatting(model_name: str):
-    # From: https://huggingface.co/docs/trl/en/sft_trainer
+    # From: https://huggingface.co/docs/trl/en/sft_trainer (adapted)
+    hf_name = model_name[3:] if model_name.startswith("hf:") else model_name
     tokenizer = AutoTokenizer.from_pretrained(
-        model_name, use_fast=True, padding_side="right"
+        hf_name, use_fast=True, padding_side="right"
     )
-    tokenizer.pad_token = tokenizer.eos_token
-    response_template_with_context = "\n### Response:"  # alpaca response tag
-    response_template_ids = tokenizer.encode(
-        response_template_with_context, add_special_tokens=False
-    )[2:]
-    data_collator = DataCollatorForCompletionOnlyLM(
-        response_template_ids, tokenizer=tokenizer
+    # Use eos token as pad token for causal LM
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    # For now we use a standard causal LM data collator (no completion-only masking)
+    data_collator = DataCollatorForLanguageModeling(
+        tokenizer=tokenizer,
+        mlm=False,
     )
 
     return tokenizer, data_collator, formatting_prompts_func
 
-def load_llm_data(dataset_name, num_partitions, partition_id):
-    """Load partition data."""
-    # Only initialize `FederatedDataset` once
-    global FDS
-    if FDS is None:
-        partitioner = IidPartitioner(num_partitions=num_partitions)
-        FDS = FederatedDataset(
-            dataset=dataset_name,
-            partitioners={"train": partitioner},
-        )
-    client_trainset = FDS.load_partition(partition_id, "train")
-    client_trainset = client_trainset.rename_column("output", "response")
+def load_llm_data(dataset_name, model_name, batch_size, partition_train_test):
+    """Build a DataLoader for LLM-style instruction-following datasets.
 
-    return client_trainset, None
+    Expects the underlying HF dataset to provide fields like 'instruction' and
+    'output' (renamed to 'response' here). Uses an Alpaca-style prompt template
+    and a CompletionOnlyLM data collator so that only the response segment is
+    used for loss.
+    """
+    # We only use the train split; validation can be handled separately if needed.
+    train_ds = partition_train_test["train"]
+
+    # Some datasets (e.g., Alpaca variants) use 'output' as the response field.
+    # Normalize to 'response' if needed.
+    if "output" in train_ds.column_names and "response" not in train_ds.column_names:
+        train_ds = train_ds.rename_column("output", "response")
+
+    # Prepare tokenizer and collator (robust to 'hf:' prefix).
+    tokenizer, data_collator, prompt_formatter = get_tokenizer_and_data_collator_and_propt_formatting(model_name)
+
+    # Map raw instruction/response pairs into tokenized text.
+    def format_and_tokenize(batch):
+        texts = prompt_formatter(batch)
+        tokenized = tokenizer(texts, truncation=True, padding=False)
+        return tokenized
+
+    # Remove original columns after tokenization to keep only model inputs.
+    train_ds = train_ds.map(
+        format_and_tokenize,
+        batched=True,
+        remove_columns=train_ds.column_names,
+    )
+
+    trainloader = DataLoader(
+        train_ds,
+        batch_size=batch_size,
+        shuffle=True,
+        collate_fn=data_collator,
+    )
+    # For now, we do not create a separate testloader for LLM fine-tuning.
+    return trainloader, None
 
 def get_transforms(dataset_name: str):
     if is_vision_dataset(dataset_name):
@@ -432,10 +459,12 @@ def load_data(dataset_name: str, partition_id: int, num_partitions: int,
         return load_vision_data(dataset_name, partition_train_test)
 
     elif is_llm_model_name(model_name):
-        return load_llm_data(dataset_name, num_partitions, partition_id)
-    
+        # LLM + LoRA fine-tuning (e.g., Gemma3 270M)
+        return load_llm_data(dataset_name, model_name, batch_size, partition_train_test)
+
     elif is_text_dataset(dataset_name) or is_hf_model_name(model_name):
-        return load_text_data(model_name, batch_size)
+        # HF text classification / sequence tasks
+        return load_text_data(model_name, batch_size, partition_train_test)
     
     else:
         # Fallback: treat as vision-like using default transforms
