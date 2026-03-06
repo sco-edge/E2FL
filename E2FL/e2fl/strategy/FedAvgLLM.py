@@ -17,13 +17,14 @@ from flwr.common import (
     ArrayRecord,
     ConfigRecord,
     Message,
+    MessageType,
     MetricRecord,
     log,
 )
 from sklearn.linear_model import SGDRegressor
 import numpy as np
 from e2fl.LATTE.Training_Time_Estimator import Training_Time_Estimator
-
+# https://github.com/adap/flower/blob/v1.22.0/framework/py/flwr/serverapp/strategy/fedavg.py
 
 class FedAvgLLM(FedAvg):
     """FedAvg strategy that logs unified client metrics (train + evaluate)."""
@@ -50,6 +51,8 @@ class FedAvgLLM(FedAvg):
                 "phase_sent", "phase_recv",
                 "comm_time", "comm_sent", "comm_recv",
                 "energy",
+                "batch_size", "local_epochs", "local_steps", 
+                "max_samples", "seq_len", "lora_rank", "lora_modules",
                 "pred_time", "latte_residual",
             ])
 
@@ -93,6 +96,58 @@ class FedAvgLLM(FedAvg):
             print(f"  C_non          = {self.C_non}")
             print(f"  device_betas devices  = {self.device_betas.keys()}")
             print("=================================")
+            
+    def update_train_config(self, server_round: int, train_config: ConfigRecord) -> ConfigRecord:
+        """Round-level policy hook.
+
+        Single source of truth: this function mutates/returns train_config.
+        For now, it only ensures default fields exist and can be extended later
+        to implement SLO-aware workload allocation.
+        """
+        # Ensure keys exist (safe defaults)
+        if "batch_size" not in train_config:
+            train_config["batch_size"] = 32
+        if "local_epochs" not in train_config:
+            train_config["local_epochs"] = 1
+        if "max_samples_per_round" not in train_config:
+            train_config["max_samples_per_round"] = ""
+        if "max_seq_len" not in train_config:
+            train_config["max_seq_len"] = ""
+        if "lora_rank" not in train_config:
+            train_config["lora_rank"] = ""
+        if "lora_modules" not in train_config:
+            train_config["lora_modules"] = ""
+
+        # Example placeholder for later: you can change values per round here.
+        # (Keep it as no-op for now.)
+
+        return train_config
+
+    def configure_train(
+            self, server_round: int, arrays: ArrayRecord, config: ConfigRecord, grid: Grid
+        ) -> Iterable[Message]:
+            """Configure the next round of federated training."""
+            # Do not configure federated train if fraction_train is 0.
+            if self.fraction_train == 0.0:
+                return []
+            # Sample nodes
+            num_nodes = int(len(list(grid.get_node_ids())) * self.fraction_train)
+            sample_size = max(num_nodes, self.min_train_nodes)
+            node_ids, num_total = sample_nodes(grid, self.min_available_nodes, sample_size)
+            log(
+                INFO,
+                "configure_train: Sampled %s nodes (out of %s)",
+                len(node_ids),
+                len(num_total),
+            )
+            # Always inject current server round
+            config["server-round"] = server_round
+
+            # Construct messages
+            record = RecordDict(
+                {self.arrayrecord_key: arrays, self.configrecord_key: config}
+            )
+            return self._construct_messages(record, node_ids, MessageType.TRAIN)
         
     def _check_and_log_replies(
         self, replies: Iterable[Message], is_train: bool, validate: bool = True
@@ -155,10 +210,20 @@ class FedAvgLLM(FedAvg):
 
         return valid_replies, error_replies
 
-    def aggregate_train(self, server_round: int, replies: Iterable[Message]
-                    ) -> tuple[ArrayRecord | None, MetricRecord | None]:
+    def aggregate_train(
+        self,
+        train_config: ConfigRecord,
+        server_round: int,
+        replies: Iterable[Message],
+        train_msgs: list[Message] | None = None,
+    ) -> tuple[ArrayRecord | None, MetricRecord | None]:
         print("\n==============================")
         print(f"=== DEBUG aggregate_train (round {server_round}) ===")
+        # Round-level training config may change per round.
+
+        print(
+            f"[ROUND {server_round}] train_config snapshot: bs={train_config.get('batch_size','')} ep={train_config.get('local_epochs','')} max_samples={train_config.get('max_samples_per_round','')} seq_len={train_config.get('max_seq_len','')}"
+        )
 
         # replies iterator 때문에 리스트화
         replies = list(replies)
@@ -218,7 +283,7 @@ class FedAvgLLM(FedAvg):
         # 4) 로깅 + 기존 aggregation 실행
         # ---------------------------------------------------------
         print("=== VALID REPLIES FOUND → AGGREGATING ===")
-        self._write_metrics("train", server_round, valid_replies)
+        self._write_metrics("train", train_config, server_round, valid_replies)
 
         reply_contents = [msg.content for msg in valid_replies]
 
@@ -243,26 +308,56 @@ class FedAvgLLM(FedAvg):
             metrics = None
 
         return arrays, metrics
+
+    def configure_evaluate(
+        self, server_round: int, arrays: ArrayRecord, config: ConfigRecord, grid: Grid
+    ) -> Iterable[Message]:
+        """Configure the next round of federated evaluation."""
+        # Do not configure federated evaluation if fraction_evaluate is 0.
+        if self.fraction_evaluate == 0.0:
+            return []
+
+        # Sample nodes
+        num_nodes = int(len(list(grid.get_node_ids())) * self.fraction_evaluate)
+        sample_size = max(num_nodes, self.min_evaluate_nodes)
+        node_ids, num_total = sample_nodes(grid, self.min_available_nodes, sample_size)
+        log(
+            INFO,
+            "configure_evaluate: Sampled %s nodes (out of %s)",
+            len(node_ids),
+            len(num_total),
+        )
+
+        # Always inject current server round
+        config["server-round"] = server_round
+
+        # Construct messages
+        record = RecordDict(
+            {self.arrayrecord_key: arrays, self.configrecord_key: config}
+        )
+        return self._construct_messages(record, node_ids, MessageType.EVALUATE)
     
-    def aggregate_evaluate(self, server_round: int, replies: Iterable[Message],
+    def aggregate_evaluate(self, train_config: ConfigRecord, server_round: int, replies: Iterable[Message],
             ) -> MetricRecord | None:
         valid_replies, _ = self._check_and_log_replies(replies, is_train=False)
         metrics = None
         if valid_replies:
-            self._write_metrics("evaluate", server_round, valid_replies)
+            self._write_metrics("evaluate", train_config, server_round, valid_replies)
             
             reply_contents = [msg.content for msg in valid_replies]
             metrics = self.evaluate_metrics_aggr_fn(
                 reply_contents, self.weighted_by_key,)
         return metrics
 
-    def _write_metrics(self, phase, server_round, valid_replies):
+    def _write_metrics(self, phase, train_config, server_round, valid_replies):
         print("=== DEBUG _write_metrics ===")
         print("phase:", phase)
         print("num valid_replies:", len(valid_replies))
 
         now = time.strftime("%Y-%m-%d_%H-%M-%S")
-        t_end = time.perf_counter()
+        # Use wall-clock time here to match client-side timestamps (time.time),
+        # assuming NTP keeps server and clients roughly in sync.
+        t_end = time.time()
         rows = []
 
         for idx, msg in enumerate(valid_replies):
@@ -288,7 +383,11 @@ class FedAvgLLM(FedAvg):
             print("  METRIC KEYS:", list(m.keys()))
 
             print("metadata:", msg.metadata)
-            cid = msg.metadata.src_node_id
+            raw_cid = msg.metadata.src_node_id
+            try:
+                cid = int(raw_cid)
+            except Exception:
+                cid = raw_cid
             print("cid extracted:", cid)
             if phase == "train":
                 loss = m.get("train_loss", "")
@@ -328,18 +427,52 @@ class FedAvgLLM(FedAvg):
                 comm_t, comm_sent, comm_recv,
                 e,
             ]
+            # -------------------------------
+            # Knob fields (server-side intended)
+            # -------------------------------
+            if phase == "train":
+                # Round-level config (global for all clients in this round)
+                batch_size = train_config.get("batch_size", "")
+                local_epochs = train_config.get("local_epochs", "")
+                max_samples = train_config.get("max_samples_per_round", "")
+                seq_len = train_config.get("max_seq_len", "")
+                lora_rank = train_config.get("lora_rank", "")
+                lora_modules = train_config.get("lora_modules", "")
+
+                # Estimate local_steps if possible
+                local_steps = ""
+                try:
+                    ne = float(m.get("num-examples", 0) or 0)
+                    bs = float(batch_size) if batch_size != "" else None
+                    ep = float(local_epochs) if local_epochs != "" else None
+                    if bs and ep and bs > 0 and ep > 0:
+                        local_steps = int(math.ceil(ne / bs) * ep)
+                except Exception:
+                    local_steps = ""
+
+                knob_row = [batch_size, local_epochs, local_steps, max_samples, seq_len, lora_rank, lora_modules]
+            else:
+                knob_row = ["", "", "", "", "", "", ""]
+
+            # -------------------------------
+            # LATTE fields
+            # -------------------------------
+            latte_row = ["", ""]
             if self.latte and phase == "train":
                 print("LATTE mode enabled, applying _latte_update...")
                 print("[LATTE DEBUG] algo_raw sample:", self.algo_sel[:5])
                 try:
                     latte_vals = self._latte_update(m, device_name)
-                    print("LATTE update success. Output length:", len(latte_vals))
-                    rows.append(base_row + latte_vals)
+                    if isinstance(latte_vals, list) and len(latte_vals) == 2:
+                        latte_row = latte_vals
+                    else:
+                        latte_row = ["", ""]
+                    print("LATTE update success. Output length:", len(latte_vals) if isinstance(latte_vals, list) else -1)
                 except Exception as ex:
                     print("!!! LATTE update FAILED !!!", ex)
-                    rows.append(base_row)
-            else:   
-                rows.append(base_row)
+                    latte_row = ["", ""]
+
+            rows.append(base_row + knob_row + latte_row)
 
         with open(self.csv_path, "a", newline="") as f:
             print("\n=== DEBUG rows before CSV write ===")
@@ -485,6 +618,18 @@ class FedAvgLLM(FedAvg):
             # ============================================================
             # TRAIN CONFIGURE
             # ============================================================
+            # Round-level policy update (single source of truth)
+            train_config = self.update_train_config(current_round, train_config)
+            log(
+                INFO,
+                "[ROUND %s] train_config: batch_size=%s local_epochs=%s max_samples_per_round=%s max_seq_len=%s lora_rank=%s",
+                current_round,
+                train_config.get("batch_size", ""),
+                train_config.get("local_epochs", ""),
+                train_config.get("max_samples_per_round", ""),
+                train_config.get("max_seq_len", ""),
+                train_config.get("lora_rank", ""),
+            )
             train_msgs = self.configure_train(
                 current_round,
                 arrays,
@@ -507,8 +652,10 @@ class FedAvgLLM(FedAvg):
             # AGGREGATE TRAIN
             # ============================================================
             agg_arrays, agg_train_metrics = self.aggregate_train(
+                train_config,
                 current_round,
                 train_replies,
+                train_msgs,
             )
 
             if agg_arrays is not None:
@@ -543,6 +690,7 @@ class FedAvgLLM(FedAvg):
             # AGGREGATE EVALUATE
             # ============================================================
             agg_eval_metrics = self.aggregate_evaluate(
+                evaluate_config,
                 current_round,
                 eval_replies,
             )
