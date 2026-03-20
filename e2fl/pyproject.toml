@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "e2fl"
-version = "1.0.2"
+version = "1.0.3"
 description = ""
 license = "Apache-2.0"
 dependencies = [
@@ -42,13 +42,9 @@ clientapp = "e2fl.client_app_llm:app"
 
 [tool.flwr.app.config]
 # Federated LLM fine-tuning schedule
-num-server-rounds = 10           # 처음엔 5 라운드 정도로 테스트
+num-server-rounds = 40          # 본 실험 기본값: 10 라운드
 fraction-train    = 1.0
 min-clients       = 2
-
-# Model / dataset for Gemma3 270M LoRA FT
-model   = "hf:google/gemma-3-270m"
-dataset = "yahma/alpaca-cleaned"
 
 # Data / partition
 num_partitions = 2
@@ -56,16 +52,35 @@ num_partitions = 2
 # Workload per round (RPi5 기준으로 안전하게)
 batch_size           = 1        # CPU/메모리 안전선
 local-epochs         = 1        # RPi에서는 1 epoch만
-max-samples-per-round = 32       # ★ 핵심: 라운드당 샘플 수를 강하게 제한
-max-seq-len          = 64       # ★ 시퀀스 길이도 줄여서 FLOPs 감소
+max-samples-per-round = 256       # ★ 핵심: 라운드당 샘플 수를 강하게 제한; 10%: 64 samples (40 rounds), 100%: 256 samples (40 rounds)
+max-seq-len          = 128      # ★ 시퀀스 길이도 줄여서 FLOPs 감소
 
 # Strategy / logging
-strategy       = "FedAvgLLM"
-latte-mode     = "fine"
-enable-latte   = false
+strategy       = "FedAvgLoRA"
+enable-rpi-only-rounds = true
+use-token-ratio        = true
+enable-deadline-guard  = false
 power-monitor  = true
-resume         = true
-checkpoint-path = "/home/wwjang/EEFL/E2FL/eval/"
+resume         = false
+checkpoint-path = "/home/wwjang/EEFL/E2FL/eval/chkp/"
+device-profiles-path = "eval/profiling/20260218/profiling_merged.json"
+tokens-per-example   = 64.0
+
+# LoRA adapter configuration
+# Global default rank (used when no device-specific override is set)
+lora-r              = 16
+
+# Optional device-specific overrides (matched against device_name from get_device_name()).
+# Example:
+#   - RPi5 uses a smaller rank to reduce compute/memory load
+#   - jetson_orin_nx keeps the full rank
+# You can freely adjust these values or comment them out if not needed.
+lora-r-RPi5           = 16
+lora-r-jetson_orin_nx = 16
+
+# Model / dataset for Gemma3 270M LoRA FT
+model   = "hf:google/gemma-3-270m" #"hf:Qwen/Qwen2.5-0.5B-Instruct"  
+dataset = "yahma/alpaca-cleaned"
 
 # Optimizer configuration for LLM fine-tuning
 learning-rate = 5e-5
@@ -78,8 +93,6 @@ eval-batch-size = 4
 quantization           = 0      # Jetson/ARM에서 꼬이는 것 방지용으로 일단 off
 gradient-checkpointing = 0      # RPi에서는 off (연산량 줄이기)
 
-# LoRA adapter configuration
-lora-r              = 16
 lora-alpha          = 32
 lora-dropout        = 0.05
 lora-target-modules = "q_proj,k_proj,v_proj,o_proj"
