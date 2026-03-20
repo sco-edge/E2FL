@@ -1,0 +1,95 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "e2fl"
+version = "1.0.2"
+description = ""
+license = "Apache-2.0"
+dependencies = [
+    "flwr[simulation]>=1.17.0",
+    "flwr-datasets[vision]>=0.5.0",
+    "torch>=2.0.0",
+    "torchvision==0.23.0",
+    "pandas>=1.3.0",
+    "numpy>=1.26.4",
+    "scikit-learn>=1.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+    "psutil>=5.8.0",
+    "paramiko>=2.8.0",
+    "pyyaml>=6.0",
+    "transformers==4.50.0",
+    "trl==0.21.0",
+    "accelerate==1.4.0",
+    "peft==0.14.0",
+    "datasets==3.1.0",
+    "bitsandbytes>=0.45.3",
+    "tokenizers==0.19.1",
+    "safetensors>=0.4.2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.flwr.app]
+publisher = "wwjang"
+
+[tool.flwr.app.components]
+serverapp = "e2fl.server_app_llm:app"
+clientapp = "e2fl.client_app_llm:app"
+
+[tool.flwr.app.config]
+# Federated LLM fine-tuning schedule
+num-server-rounds = 20           # 처음엔 5 라운드 정도로 테스트
+fraction-train    = 1.0
+min-clients       = 2
+
+# Model / dataset for Gemma3 270M LoRA FT
+model   = "hf:google/gemma-3-270m"
+dataset = "yahma/alpaca-cleaned"
+
+# Data / partition
+num_partitions = 2
+
+# Workload per round (RPi5 기준으로 안전하게)
+batch_size           = 1        # CPU/메모리 안전선
+local-epochs         = 1        # RPi에서는 1 epoch만
+max-samples-per-round = 8       # ★ 핵심: 라운드당 샘플 수를 강하게 제한
+max-seq-len          = 64       # ★ 시퀀스 길이도 줄여서 FLOPs 감소
+
+# Strategy / logging
+strategy       = "FedAvgLLM"
+latte-mode     = "fine"
+enable-latte   = false
+power-monitor  = true
+resume         = false
+checkpoint-path = "/home/wwjang/EEFL/E2FL/eval/"
+
+# Optimizer configuration for LLM fine-tuning
+learning-rate = 5e-5
+weight-decay  = 0.0
+
+# Evaluation batch size (LLM 글로벌 eval은 현재 skip 중)
+eval-batch-size = 4
+
+# Quantization / memory configuration for LLM loading
+quantization           = 0      # Jetson/ARM에서 꼬이는 것 방지용으로 일단 off
+gradient-checkpointing = 0      # RPi에서는 off (연산량 줄이기)
+
+# LoRA adapter configuration
+lora-r              = 16
+lora-alpha          = 32
+lora-dropout        = 0.05
+lora-target-modules = "q_proj,k_proj,v_proj,o_proj"
+
+[tool.flwr.federations]
+default = "local-deployment"
+
+[tool.flwr.federations.local-simulation]
+options.num-supernodes = 10
+
+[tool.flwr.federations.local-deployment]
+address = "192.168.0.17:9093"
+insecure = true
