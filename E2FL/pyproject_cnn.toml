@@ -1,0 +1,68 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "e2fl"
+version = "1.0.2"
+description = ""
+license = "Apache-2.0"
+dependencies = [
+    "flwr[simulation]>=1.17.0",
+    "flwr-datasets[vision]>=0.5.0",
+    "torch==2.8.0",
+    "torchvision==0.23.0",
+    "pandas>=1.3.0",
+    "numpy>=1.26.4",
+    "scikit-learn>=1.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+    "psutil>=5.8.0",
+    "paramiko>=2.8.0",
+    "pyyaml>=6.0",
+    "transformers==4.31.0",
+    "trl==0.7.10",
+    "accelerate==0.33.0",
+    "peft==0.5.0",
+    "datasets==3.1.0",
+    "tokenizers==0.19.1",
+    "safetensors>=0.4.2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.flwr.app]
+publisher = "wwjang"
+
+[tool.flwr.app.components]
+serverapp = "e2fl.server_app:app"
+clientapp = "e2fl.client_app:app"
+
+[tool.flwr.app.config]
+num-server-rounds = 10
+fraction-train = 1.0
+local-epochs = 4
+min-clients = 2
+model = "mobilenet_v2"
+dataset = "cifar10"
+batch_size = 16
+num_partitions = 2
+strategy = "FedAvgLog"
+latte-mode = "coarse"
+enable-latte = true
+power-monitor = true
+resume = true
+checkpoint-path = "/home/wwjang/EEFL/E2FL/eval/"
+learning-rate = 0.01
+weight-decay = 0.0005
+
+[tool.flwr.federations]
+default = "local-deployment"
+
+[tool.flwr.federations.local-simulation]
+options.num-supernodes = 10
+
+[tool.flwr.federations.local-deployment]
+address = "192.168.0.17:9093"
+insecure = true
