@@ -66,6 +66,15 @@ def train(net, trainloader, epochs, device, lr: float = 5e-5) -> float:
 
     running_loss = 0.0
     total_batches = 0
+    total_input_tokens = 0
+    total_supervised_tokens = 0
+
+    # Debug: log epochs argument and dataset length for this round
+    try:
+        ds_len = len(trainloader.dataset) if hasattr(trainloader, "dataset") else "unknown"
+    except Exception:
+        ds_len = "unknown"
+    logger.info(f"[task_llm.train] epochs={epochs}, dataset_len={ds_len}")
 
     for _ in range(epochs):
         for batch in trainloader:
@@ -83,6 +92,15 @@ def train(net, trainloader, epochs, device, lr: float = 5e-5) -> float:
 
                 if attention_mask is not None:
                     attention_mask = attention_mask.to(device)
+                    batch_input_tokens = int(attention_mask.sum().item())
+                else:
+                    # Fallback: if no attention mask is provided, count all tokens
+                    batch_input_tokens = int(input_ids.numel())
+
+                # Count only tokens that actually contribute to the loss
+                batch_supervised_tokens = int((labels != -100).sum().item())
+                total_input_tokens += batch_input_tokens
+                total_supervised_tokens += batch_supervised_tokens
 
                 outputs = net(
                     input_ids=input_ids,
@@ -132,7 +150,10 @@ def train(net, trainloader, epochs, device, lr: float = 5e-5) -> float:
 
             running_loss += loss.item()
             total_batches += 1
-
+    logger.info(
+        f"[task_llm.train] total_batches={total_batches}, "
+        f"input_tokens={total_input_tokens}, supervised_tokens={total_supervised_tokens}"
+    )
     avg_trainloss = running_loss / max(total_batches, 1)
     return avg_trainloss
 
