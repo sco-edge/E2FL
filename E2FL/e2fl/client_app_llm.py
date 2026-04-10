@@ -658,13 +658,21 @@ def train(msg: Message, context: Context) -> Message:
 
     # Use the unified train() from e2fl.task_llm, which supports both LLM and vision models
     t_loop0 = time.perf_counter()
-    train_loss = train_model(
+    train_result = train_model(
         _LOCAL_STATE["net"],
         trainloader,
         _LOCAL_STATE["local_epochs"],
         _LOCAL_STATE["device"],
         lr=lr,
     )
+
+    # Backward-compatible unpacking: older train() may return only loss
+    if isinstance(train_result, tuple) and len(train_result) == 3:
+        train_loss, input_tokens_seen, supervised_tokens_seen = train_result
+    else:
+        train_loss = train_result
+        input_tokens_seen = 0
+        supervised_tokens_seen = 0
     t_loop1 = time.perf_counter()
     loop_time = t_loop1 - t_loop0
 
@@ -675,7 +683,9 @@ def train(msg: Message, context: Context) -> Message:
         f"Local training completed. (Loss: {train_loss}, "
         f"total_train_time={total_train_time:.6f}s, "
         f"init_time={init_time:.6f}s, "
-        f"loop_time={loop_time:.6f}s)"
+        f"loop_time={loop_time:.6f}s, "
+        f"input_tokens={input_tokens_seen}, "
+        f"supervised_tokens={supervised_tokens_seen})"
     )
 
     _, upload_start_time = phase_start("upload_start")
@@ -701,6 +711,8 @@ def train(msg: Message, context: Context) -> Message:
         "train_sent": train_sent,
         "train_recv": train_recv,
         "train_time": total_train_time,          # 기존
+        "input_tokens": input_tokens_seen,
+        "supervised_tokens": supervised_tokens_seen,
         "train_init_time": init_time,            # 새로 추가
         "train_loop_time": loop_time,           # 새로 추가
         "update_energy": update_power,
