@@ -3,60 +3,138 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "E2FL"
-version = "1.0.0"
-description = "Federated AI with Embedded Devices using Flower"
+name = "e2fl"
+version = "1.0.3"
+description = ""
 license = "Apache-2.0"
 dependencies = [
-    "flwr>=1.17.0",
+    "flwr[simulation]>=1.17.0",
     "flwr-datasets[vision]>=0.5.0",
-    "torch==2.5.1",
-    "torchvision==0.20.1",
-]
-
-[tool.hatch.build]
-exclude = [
-    "datasets/*", # Exclude datasets from FAB (if generated in this directory)
-    "_static/*", # Exclude images in README from FAB
+    "torch>=2.0.0",
+    "torchvision==0.23.0",
+    "pandas>=1.3.0",
+    "numpy>=1.26.4",
+    "scikit-learn>=1.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+    "psutil>=5.8.0",
+    "paramiko>=2.8.0",
+    "pyyaml>=6.0",
+    "transformers==4.50.0",
+    "trl==0.21.0",
+    "accelerate==1.4.0",
+    "peft==0.14.0",
+    "datasets==3.1.0",
+    "bitsandbytes>=0.45.3",
+    "tokenizers==0.19.1",
+    "safetensors>=0.4.2",
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["."]
 
 [tool.flwr.app]
-publisher = "flwrlabs"
+publisher = "wwjang"
 
 [tool.flwr.app.components]
-serverapp = "E2FL.server_app:app"
-clientapp = "E2FL.client_app:app"  # Fixed typo here
+serverapp = "e2fl.server_app_llm:app"
+clientapp = "e2fl.client_app_llm:app"
 
 [tool.flwr.app.config]
-num-server-rounds = 3
-fraction-evaluate = 0.5
-min-clients = 2
-local-epochs = 1
-learning-rate = 0.1
-batch-size = 32
+# Federated LLM fine-tuning schedule
+# Scalability sanity setting: 1 Jetson Orin NX + 4 Raspberry Pi 5 clients.
+# Use 10 rounds first to validate multi-client scheduling before longer runs.
+num-server-rounds = 40
+fraction-train    = 1.0
+min-clients       = 2
+
+# Data / partition
+# Match the number of participating clients so each physical client gets a partition.
+num_partitions = 2
+
+# Workload per round (RPi5 기준으로 안전하게)
+batch_size           = 1        # CPU/메모리 안전선
+local-epochs         = 1        # RPi에서는 1 epoch만
+max-samples-per-round = 256       # ★ 핵심: 라운드당 샘플 수를 강하게 제한; 10%: 64 samples (40 rounds), 100%: 256 samples (40 rounds)
+max-seq-len          = 128      # ★ 시퀀스 길이도 줄여서 FLOPs 감소
+
+# Strategy / logging
+strategy       = "PyramidFLLoRA_NoDropout"#"FedAvgLoRA"
+enable-rpi-only-rounds = false
+use-token-ratio        = false
+# Participation guard mode:
+# - "slow-group": legacy behavior; protects the slowest device group.
+# - "per-client": protects clients whose windowed token share falls below
+#   rho times their fair-share target, i.e., q_i < rho / N.
+# 1J1R: 0.3, 1J3R: 0.6
+participation-guard-mode = "per-client"
+participation-fairness-rho = 0.6
+enable-deadline-guard  = false
+power-monitor  = true
+resume         = false
+
+window-W = 5
+policy-warmup-rounds = 2
+
+rpi-normal-quota = 128
+rpi-sample-step = 32
+rpi-correction-max-quota = 384
+max-correction-time-s = 3600
+correction-cooldown-rounds = 2
+
+jetson-base-quota = 64
+jetson-max-quota = 4096
+jetson-sample-step = 64
+jetson-target-margin = 0.95
+
+# Communication emulation (optional)
+# Keep throttling disabled for scalability evaluation; isolate client-count effects.
+# 'jetson_orin_nx' or 'none'
+# 0, 20, 10, 5
+upload-throttle-device = "none"
+upload-throttle-mbps   = 0
+
+checkpoint-path = "/home/wwjang/EEFL/E2FL/eval/chkp/"
+device-profiles-path = "eval/profiling/20260218/profiling_merged.json"
+tokens-per-example   = 64.0
+
+# LoRA adapter configuration
+# Global default rank (used when no device-specific override is set)
+lora-r              = 16
+
+# Optional device-specific overrides (matched against device_name from get_device_name()).
+# Example:
+#   - RPi5 uses a smaller rank to reduce compute/memory load
+#   - jetson_orin_nx keeps the full rank
+# You can freely adjust these values or comment them out if not needed.
+lora-r-RPi5           = 16
+lora-r-jetson_orin_nx = 16
+
+# Model / dataset for Gemma3 270M LoRA FT
+model   = "hf:Qwen/Qwen2.5-0.5B-Instruct" #"hf:google/gemma-3-270m"  
+dataset = "yahma/alpaca-cleaned"
+
+# Optimizer configuration for LLM fine-tuning
+learning-rate = 5e-5
+weight-decay  = 0.0
+
+# Evaluation batch size (LLM 글로벌 eval은 현재 skip 중)
+eval-batch-size = 4
+
+# Quantization / memory configuration for LLM loading
+quantization           = 0      # Jetson/ARM에서 꼬이는 것 방지용으로 일단 off
+gradient-checkpointing = 0      # RPi에서는 off (연산량 줄이기)
+
+lora-alpha          = 32
+lora-dropout        = 0.05
+lora-target-modules = "q_proj,k_proj,v_proj,o_proj"
 
 [tool.flwr.federations]
 default = "local-deployment"
 
+[tool.flwr.federations.local-simulation]
+options.num-supernodes = 10
+
 [tool.flwr.federations.local-deployment]
-address = '192.168.0.17:9093'
-insecure = true
-
-[tool.flwr.federations.local-sim]
-options.num-supernodes = 10
-options.backend.client-resources.num-cpus = 1
-options.backend.client-resources.num-gpus = 0
-options.backend.init-args.log-to-driver = false
-
-[tool.flwr.federations.local-sim-gpu]
-options.num-supernodes = 10
-options.backend.client-resources.num-cpus = 2
-options.backend.client-resources.num-gpus = 0.2
-options.backend.init-args.log-to-driver = false
-
-[tool.flwr.federations.remote]
-address = '192.168.0.17:9093'
+address = "192.168.0.17:9093"
 insecure = true
