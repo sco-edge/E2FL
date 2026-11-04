@@ -1,0 +1,468 @@
+{
+  "adaptive_launch_allowed": true,
+  "adaptive_native_source_hashes_sha256": "1c3f5f5b71c71735e9a6c392b8d90979a8cde7d4b1fd16ae7e198ae77aeac919",
+  "controller": {
+    "exposure_limit": 2.0,
+    "flower_venv_python": "/home/wwjang/flwr/bin/python",
+    "native_train_config": {
+      "LoRACast-Exposure": {
+        "aggregation-mode": "processed_samples",
+        "batch_size": 1,
+        "enable-rpi-only-rounds": true,
+        "estimator-freeze-after-round": 0,
+        "experiment-seed": 42,
+        "jetson-base-quota": 256,
+        "jetson-max-quota": 600,
+        "jetson-max-steps": 600,
+        "jetson-sample-step": 4,
+        "jetson-step-increment": 1,
+        "jetson-target-margin": 0.95,
+        "local-epochs": 1,
+        "log_reply_arrivals": true,
+        "max-correction-time-s": 240.0,
+        "max-samples-per-round": 600,
+        "max-seq-len": 64,
+        "min-clients": 2,
+        "num-server-rounds": 100,
+        "num_partitions": 2,
+        "participation-fairness-rho": 0.6,
+        "participation-guard-mode": "per-client",
+        "partition-manifest-path": "/home/wwjang/workload_policy/inputs/loracast_strong.json",
+        "policy-warmup-rounds": 4,
+        "power-monitor": false,
+        "rebalancing-enabled": false,
+        "reference-nano-correction-max-samples": 320,
+        "reference-nano-correction-max-seconds": 240.0,
+        "reference-nano-correction-max-steps": 320,
+        "reference-nano-samples": 320,
+        "reference-nano-steps": 320,
+        "residual-calibration-enabled": true,
+        "round-cooldown-enabled": true,
+        "rpi-correction-max-quota": 320,
+        "rpi-normal-quota": 320,
+        "rpi-sample-step": 2,
+        "sample-seed": 42,
+        "sample-selection-mode": "exposure_aware",
+        "save-every-round": 1,
+        "static-allocation-after-round": 0,
+        "use-comm-prediction": false,
+        "use-token-ratio": true,
+        "window-W": 3
+      }
+    },
+    "no_future_observation": true,
+    "normal_feedback": "completed Strong input-token count projected with frozen normal-condition device-local time/energy profile; same-policy prior rounds only",
+    "nx_eligible_unique": 18441,
+    "original_source_root": "/home/wwjang/loracast_server_overhead_eval/app",
+    "policy_rules": {
+      "LoRACast-Exposure": "Unmodified NanoFinalExposure and native Flower allocator; c=2, D_NX=18441, E=1, maximum S=600, NX minimum search S=256 (was 360 in v1), 4-sample search grid. The v2 run_adaptive_training rejects post-warmup final workloads violating the predicted 0.95 Nano compute window before RTX training.",
+      "PyramidFL-style": "NanoPyramidBounded original source; fixed common safety bounds"
+    },
+    "unsupported_edge_token_range_action": "fail before source feedback commit; preserve committed checkpoint"
+  },
+  "experiment_id": "nanonx_s42_dfull_qwen_loracast_floor256_matched_repeat4x_full100_20261026",
+  "frozen_edge_profile_sha256": "6182c7a90ea7837303f50daf088cf47136c1d27dfcab9167600723904aba0a00",
+  "native_controller_source_hashes_sha256": "60416f7a6e169af902387bd5732c79ee6c520b93b32ec8d9b206907e7f354ef8",
+  "native_past_log_parity_sha256": "aed5d59369f32af439aa4988eea05ae5df1088b90da5cce109f8f34dbd6c87f8",
+  "rtx_core_runner_sha256": "18f5d3a74c9365c3ed33ec7594576b84bf7560aba01a97df39f59a0c5428ba1c",
+  "run_common": {
+    "aggregation": "actual processed-sample-weighted LoRA A/B factor parameters",
+    "batch_size": 1,
+    "evaluation_metric": "full_sequence_64_token token-weighted NLL",
+    "evaluation_rounds": [
+      0,
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100
+    ],
+    "holdout": "original Strong Non-IID fixed global/client-associated validation views; cap 512 per view, scorer seed 777",
+    "learning_hardware": "RTX 6000 Ada",
+    "local_epochs": 1,
+    "lora": {
+      "alpha": 32,
+      "dropout": 0.05,
+      "modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj"
+      ],
+      "rank": 16
+    },
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "normal_condition_edge_feedback": "frozen_edge_compute_profile.json; completed Strong input tokens; device-local time and energy only; strict measured support",
+    "optimizer": "torch.optim.Adam",
+    "rounds": 100,
+    "seed": 42,
+    "sequence_cap": 64,
+    "source_sampler": "existing RTX long-horizon deterministic least-exposed sample-ID sampler; same across policies; distinct from original edge round_shuffle",
+    "strong_partition_mapping": {
+      "nano": "original Pi5 client 1 train indices",
+      "nx": "original NX client 0 train indices"
+    },
+    "virtual_devices": [
+      "Jetson Orin Nano Super",
+      "Jetson Orin NX"
+    ]
+  },
+  "runs": [
+    {
+      "policy": "LoRACast-Exposure",
+      "run_id": "nanonx_s42_dfull_qwen_loracast_floor256_matched_repeat4x_full100",
+      "status": "not_started"
+    }
+  ],
+  "schema_version": 2,
+  "source_provenance": {
+    "base_corrected_floor_manifest_sha256": "f316ecda58877fb2c09a24c62f8a890511d92f31c94fffe97cf12be5869539f1",
+    "contention_factor_origin": "Previously measured Fig9 Nano+NX 12-round contention/recovery compute-time trace (R5-R12); values are frozen in source_repeated_contention_manifest_snapshot.json, not measured by the Oct26 physical PyramidFL run.",
+    "device_profile_origin": "Previously frozen Nano Super/NX local-compute profile, pinned by frozen_edge_profile_sha256; used to project feedback after each actual RTX local update.",
+    "frozen_repeated_schedule_manifest_sha256": "c8a9b67c33ce900f58932d3a48267b3568499a7083c9b92780a8b5c4043b63de",
+    "new_training_from_round0": true,
+    "physical_nano_nx_campaign_20261026": "Not a training or validation input for this LoRACast run; the separate physical PyramidFL profile-slack campaign validates its 320/342 workload only.",
+    "previous_r49_checkpoint_must_not_be_used": true,
+    "validation_origin": "Strong DFull client-associated holdout, full-sequence 64-token scorer seed777, cap512 per view; not the Oct26 physical IID 12-round validation dataset."
+  },
+  "static_manifest_sha256": "6c8791fbd4856eec0228ec7363350cc09a183de39a14c8a34bd800fe5246cb57",
+  "static_nano_runner_sha256": "57fb0f14e6031e33b790009f118342437c0e9fc123ec2f43c426af6db89b12c8",
+  "status": "prepared_not_launched",
+  "stress_schedule": {
+    "definition": "R1-R49 normal; R50-R100 repeat 4 normal, 4 contention, 4 recovery, starting with normal at R50; Fig9 R5-R12 measured Nano compute-time factors are applied only to completed Nano feedback after training; NX profile remains normal.",
+    "factor_rounds": [
+      {
+        "extension_round": 50,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 51,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 52,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 53,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 54,
+        "fig9_reference_round": 5,
+        "nano_compute_seconds_per_token_factor": 1.6184791703203878,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 55,
+        "fig9_reference_round": 6,
+        "nano_compute_seconds_per_token_factor": 1.590762717627721,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 56,
+        "fig9_reference_round": 7,
+        "nano_compute_seconds_per_token_factor": 1.5733519453206113,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 57,
+        "fig9_reference_round": 8,
+        "nano_compute_seconds_per_token_factor": 1.5939314338542616,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 58,
+        "fig9_reference_round": 9,
+        "nano_compute_seconds_per_token_factor": 0.9914999467386788,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 59,
+        "fig9_reference_round": 10,
+        "nano_compute_seconds_per_token_factor": 0.9996766894015062,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 60,
+        "fig9_reference_round": 11,
+        "nano_compute_seconds_per_token_factor": 0.9965552009669651,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 61,
+        "fig9_reference_round": 12,
+        "nano_compute_seconds_per_token_factor": 0.9784788943655022,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 62,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 63,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 64,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 65,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 66,
+        "fig9_reference_round": 5,
+        "nano_compute_seconds_per_token_factor": 1.6184791703203878,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 67,
+        "fig9_reference_round": 6,
+        "nano_compute_seconds_per_token_factor": 1.590762717627721,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 68,
+        "fig9_reference_round": 7,
+        "nano_compute_seconds_per_token_factor": 1.5733519453206113,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 69,
+        "fig9_reference_round": 8,
+        "nano_compute_seconds_per_token_factor": 1.5939314338542616,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 70,
+        "fig9_reference_round": 9,
+        "nano_compute_seconds_per_token_factor": 0.9914999467386788,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 71,
+        "fig9_reference_round": 10,
+        "nano_compute_seconds_per_token_factor": 0.9996766894015062,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 72,
+        "fig9_reference_round": 11,
+        "nano_compute_seconds_per_token_factor": 0.9965552009669651,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 73,
+        "fig9_reference_round": 12,
+        "nano_compute_seconds_per_token_factor": 0.9784788943655022,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 74,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 75,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 76,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 77,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 78,
+        "fig9_reference_round": 5,
+        "nano_compute_seconds_per_token_factor": 1.6184791703203878,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 79,
+        "fig9_reference_round": 6,
+        "nano_compute_seconds_per_token_factor": 1.590762717627721,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 80,
+        "fig9_reference_round": 7,
+        "nano_compute_seconds_per_token_factor": 1.5733519453206113,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 81,
+        "fig9_reference_round": 8,
+        "nano_compute_seconds_per_token_factor": 1.5939314338542616,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 82,
+        "fig9_reference_round": 9,
+        "nano_compute_seconds_per_token_factor": 0.9914999467386788,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 83,
+        "fig9_reference_round": 10,
+        "nano_compute_seconds_per_token_factor": 0.9996766894015062,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 84,
+        "fig9_reference_round": 11,
+        "nano_compute_seconds_per_token_factor": 0.9965552009669651,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 85,
+        "fig9_reference_round": 12,
+        "nano_compute_seconds_per_token_factor": 0.9784788943655022,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 86,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 87,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 88,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 89,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 90,
+        "fig9_reference_round": 5,
+        "nano_compute_seconds_per_token_factor": 1.6184791703203878,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 91,
+        "fig9_reference_round": 6,
+        "nano_compute_seconds_per_token_factor": 1.590762717627721,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 92,
+        "fig9_reference_round": 7,
+        "nano_compute_seconds_per_token_factor": 1.5733519453206113,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 93,
+        "fig9_reference_round": 8,
+        "nano_compute_seconds_per_token_factor": 1.5939314338542616,
+        "phase": "contention"
+      },
+      {
+        "extension_round": 94,
+        "fig9_reference_round": 9,
+        "nano_compute_seconds_per_token_factor": 0.9914999467386788,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 95,
+        "fig9_reference_round": 10,
+        "nano_compute_seconds_per_token_factor": 0.9996766894015062,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 96,
+        "fig9_reference_round": 11,
+        "nano_compute_seconds_per_token_factor": 0.9965552009669651,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 97,
+        "fig9_reference_round": 12,
+        "nano_compute_seconds_per_token_factor": 0.9784788943655022,
+        "phase": "recovery"
+      },
+      {
+        "extension_round": 98,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 99,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      },
+      {
+        "extension_round": 100,
+        "fig9_reference_round": null,
+        "nano_compute_seconds_per_token_factor": 1.0,
+        "phase": "normal"
+      }
+    ],
+    "nano_energy_during_stress": "unsupported; time-only Nano slowdown projection",
+    "normal_rounds": [
+      1,
+      49
+    ],
+    "nx_energy_during_stress": "normal frozen profile; not a matched energy campaign",
+    "source_path": "source_repeated_contention_manifest_snapshot.json",
+    "source_sha256": "c8a9b67c33ce900f58932d3a48267b3568499a7083c9b92780a8b5c4043b63de"
+  },
+  "variant_provenance": {
+    "changed_field": "controller.native_train_config.LoRACast-Exposure.jetson-base-quota",
+    "claim_scope": "single-seed Qwen Strong DFull matched R0-R100 RTX retraining with repeated Nano contention trace; edge local compute time is projected, not measured during RTX learning",
+    "do_not_label_as_original_loracast": true,
+    "new_value": 256,
+    "no_further_threshold_tuning_after_r1": true,
+    "not_independent_confirmation": true,
+    "old_value": 360,
+    "original_v1_manifest_path": "/Users/jang-won-u/.codex/.chatgpt-projects/g-p-676ea41457bc8191a3c05e8ec4da98b4/training_cost_projection/edge_protocol/adaptive_launch_v1/nano_adaptive_experiment_manifest_v1.json",
+    "original_v1_manifest_sha256": "da47dfd7dda20c6b8d7cf425535a70f07cce86cb2801c92915c451044967da89",
+    "single_seed_post_hoc_diagnostic": true,
+    "why_256": "Chosen before observing v2 outcomes. It is on the original 4-sample candidate grid, below the observed infeasible S=320 at the R93 stress transition, and conservatively above the frozen NX profile minimum of 13,148 input tokens at the observed shortest prior sample length. Actual R1 tokens still require a no-extrapolation support check."
+  }
+}
