@@ -1,0 +1,6 @@
+{
+  "experiment_manifest.json": "65dc554d99329bd466669be7d36133a8f299897a333cf6ae47b723c941582ac3",
+  "launch_static.sh": "f210b7f3db0b88d8bb43697b3657ea60458639dc527bd509795d939ecaee4554",
+  "run_static_training.py": "df97150ff7c8ae60a789cd660d440e6a5f26f9a66a5fde74f0c47f4f6aa0c54d",
+  "prepare_manifest.py": "69ed9acdf44a25882fd869afc4ca1c0cc5ef1933f2970fc70917fb76539c392b"
+}
