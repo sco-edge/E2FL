@@ -1,0 +1,41 @@
+# One round; same initial seed, fixed data prefix, Pi 4; observation only.
+# Dynamic fast-client pilot: frozen-model Jetson inference starts after round-5 assignment; passive Pi cooling between rounds.
+# All variants start from the same IID partition and share bounds/seed.
+experiment-id = "feedback-round-probe-03-j60-clean-s42-20261019"
+strategy = "ProbeFixed"
+partition-manifest-path = "manifests/alpaca-cleaned/v2/loracast_iid.json"
+sample-selection-mode = "probe_fixed_prefix"
+sample-seed = 42
+experiment-seed = 42
+aggregation-mode = "processed_samples"
+rebalancing-enabled = false
+num-server-rounds = 1
+min-clients = 2
+num_partitions = 2
+max-samples-per-round = 4
+batch_size = 1
+local-epochs = 1
+max-seq-len = 64
+enable-rpi-only-rounds = true
+use-token-ratio = true
+participation-guard-mode = "per-client"
+participation-fairness-rho = 0.6
+window-W = 3
+policy-warmup-rounds = 2
+rpi-normal-quota = 4
+rpi-sample-step = 2
+rpi-correction-max-quota = 4
+max-correction-time-s = 120
+jetson-base-quota = 60
+jetson-max-quota = 60
+jetson-max-steps = 60
+jetson-sample-step = 4
+jetson-target-margin = 0.95
+use-comm-prediction = false
+residual-calibration-enabled = true
+estimator-freeze-after-round = 0
+static-allocation-after-round = 0
+power-monitor = false
+resume = false
+save-every-round = 1
+round-cooldown-enabled = true
