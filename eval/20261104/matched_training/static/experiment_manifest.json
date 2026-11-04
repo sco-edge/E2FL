@@ -1,0 +1,754 @@
+{
+  "claim_scope": "Actual RTX adapter training and balanced validation NLL; measured Nano contention trace affects adaptive Flower feedback but for these two fixed-quota policies it is post hoc local-compute timing only.",
+  "expected_inputs": {
+    "fixed_partitions.json": "8b700bd14f40bfce951971fe929a641f49c0730bf131b827494480f49d559371",
+    "initial_adapter_round0.pt": "b3ff342f8a6a0b9c42263a311fd6a845ccad2cbba106e84c485779b9cfd0511d",
+    "loracast_strong.json": "ee13a0fb12e4f917a01b6ff6fe5fc1f1b867fed3599e1c1dcd79ae36451b6493",
+    "prior_verified_serialized_R0_adapter": "7ae6c591bc59c7c31f781e4b5c689b19ef5703b23aaa732a9e0b9d8cb4f8975b"
+  },
+  "experiment_id": "nanonx_s42_dfull_qwen_three_policy_matched_repeat4x_r50_100_20261026",
+  "factor_rounds": [
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 1
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 2
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 3
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 4
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 5
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 6
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 7
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 8
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 9
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 10
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 11
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 12
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 13
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 14
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 15
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 16
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 17
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 18
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 19
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 20
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 21
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 22
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 23
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 24
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 25
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 26
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 27
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 28
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 29
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 30
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 31
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 32
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 33
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 34
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 35
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 36
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 37
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 38
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 39
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 40
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 41
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 42
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 43
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 44
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 45
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 46
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 47
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 48
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 49
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 50
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 51
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 52
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 53
+    },
+    {
+      "fig9_reference_round": 5,
+      "nano_compute_seconds_per_token_factor": 1.6184791703203878,
+      "phase": "contention",
+      "round": 54
+    },
+    {
+      "fig9_reference_round": 6,
+      "nano_compute_seconds_per_token_factor": 1.590762717627721,
+      "phase": "contention",
+      "round": 55
+    },
+    {
+      "fig9_reference_round": 7,
+      "nano_compute_seconds_per_token_factor": 1.5733519453206113,
+      "phase": "contention",
+      "round": 56
+    },
+    {
+      "fig9_reference_round": 8,
+      "nano_compute_seconds_per_token_factor": 1.5939314338542616,
+      "phase": "contention",
+      "round": 57
+    },
+    {
+      "fig9_reference_round": 9,
+      "nano_compute_seconds_per_token_factor": 0.9914999467386788,
+      "phase": "recovery",
+      "round": 58
+    },
+    {
+      "fig9_reference_round": 10,
+      "nano_compute_seconds_per_token_factor": 0.9996766894015062,
+      "phase": "recovery",
+      "round": 59
+    },
+    {
+      "fig9_reference_round": 11,
+      "nano_compute_seconds_per_token_factor": 0.9965552009669651,
+      "phase": "recovery",
+      "round": 60
+    },
+    {
+      "fig9_reference_round": 12,
+      "nano_compute_seconds_per_token_factor": 0.9784788943655022,
+      "phase": "recovery",
+      "round": 61
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 62
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 63
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 64
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 65
+    },
+    {
+      "fig9_reference_round": 5,
+      "nano_compute_seconds_per_token_factor": 1.6184791703203878,
+      "phase": "contention",
+      "round": 66
+    },
+    {
+      "fig9_reference_round": 6,
+      "nano_compute_seconds_per_token_factor": 1.590762717627721,
+      "phase": "contention",
+      "round": 67
+    },
+    {
+      "fig9_reference_round": 7,
+      "nano_compute_seconds_per_token_factor": 1.5733519453206113,
+      "phase": "contention",
+      "round": 68
+    },
+    {
+      "fig9_reference_round": 8,
+      "nano_compute_seconds_per_token_factor": 1.5939314338542616,
+      "phase": "contention",
+      "round": 69
+    },
+    {
+      "fig9_reference_round": 9,
+      "nano_compute_seconds_per_token_factor": 0.9914999467386788,
+      "phase": "recovery",
+      "round": 70
+    },
+    {
+      "fig9_reference_round": 10,
+      "nano_compute_seconds_per_token_factor": 0.9996766894015062,
+      "phase": "recovery",
+      "round": 71
+    },
+    {
+      "fig9_reference_round": 11,
+      "nano_compute_seconds_per_token_factor": 0.9965552009669651,
+      "phase": "recovery",
+      "round": 72
+    },
+    {
+      "fig9_reference_round": 12,
+      "nano_compute_seconds_per_token_factor": 0.9784788943655022,
+      "phase": "recovery",
+      "round": 73
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 74
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 75
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 76
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 77
+    },
+    {
+      "fig9_reference_round": 5,
+      "nano_compute_seconds_per_token_factor": 1.6184791703203878,
+      "phase": "contention",
+      "round": 78
+    },
+    {
+      "fig9_reference_round": 6,
+      "nano_compute_seconds_per_token_factor": 1.590762717627721,
+      "phase": "contention",
+      "round": 79
+    },
+    {
+      "fig9_reference_round": 7,
+      "nano_compute_seconds_per_token_factor": 1.5733519453206113,
+      "phase": "contention",
+      "round": 80
+    },
+    {
+      "fig9_reference_round": 8,
+      "nano_compute_seconds_per_token_factor": 1.5939314338542616,
+      "phase": "contention",
+      "round": 81
+    },
+    {
+      "fig9_reference_round": 9,
+      "nano_compute_seconds_per_token_factor": 0.9914999467386788,
+      "phase": "recovery",
+      "round": 82
+    },
+    {
+      "fig9_reference_round": 10,
+      "nano_compute_seconds_per_token_factor": 0.9996766894015062,
+      "phase": "recovery",
+      "round": 83
+    },
+    {
+      "fig9_reference_round": 11,
+      "nano_compute_seconds_per_token_factor": 0.9965552009669651,
+      "phase": "recovery",
+      "round": 84
+    },
+    {
+      "fig9_reference_round": 12,
+      "nano_compute_seconds_per_token_factor": 0.9784788943655022,
+      "phase": "recovery",
+      "round": 85
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 86
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 87
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 88
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 89
+    },
+    {
+      "fig9_reference_round": 5,
+      "nano_compute_seconds_per_token_factor": 1.6184791703203878,
+      "phase": "contention",
+      "round": 90
+    },
+    {
+      "fig9_reference_round": 6,
+      "nano_compute_seconds_per_token_factor": 1.590762717627721,
+      "phase": "contention",
+      "round": 91
+    },
+    {
+      "fig9_reference_round": 7,
+      "nano_compute_seconds_per_token_factor": 1.5733519453206113,
+      "phase": "contention",
+      "round": 92
+    },
+    {
+      "fig9_reference_round": 8,
+      "nano_compute_seconds_per_token_factor": 1.5939314338542616,
+      "phase": "contention",
+      "round": 93
+    },
+    {
+      "fig9_reference_round": 9,
+      "nano_compute_seconds_per_token_factor": 0.9914999467386788,
+      "phase": "recovery",
+      "round": 94
+    },
+    {
+      "fig9_reference_round": 10,
+      "nano_compute_seconds_per_token_factor": 0.9996766894015062,
+      "phase": "recovery",
+      "round": 95
+    },
+    {
+      "fig9_reference_round": 11,
+      "nano_compute_seconds_per_token_factor": 0.9965552009669651,
+      "phase": "recovery",
+      "round": 96
+    },
+    {
+      "fig9_reference_round": 12,
+      "nano_compute_seconds_per_token_factor": 0.9784788943655022,
+      "phase": "recovery",
+      "round": 97
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 98
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 99
+    },
+    {
+      "fig9_reference_round": null,
+      "nano_compute_seconds_per_token_factor": 1.0,
+      "phase": "normal",
+      "round": 100
+    }
+  ],
+  "physical_workload_provenance": {
+    "campaign_complete_path": "/Users/jang-won-u/Documents/Codex/2026-10-10/new-chat/outputs/nano_nx_profile_slack_20261026/campaign_complete.json",
+    "campaign_complete_sha256": "4dab74d61d670bc260d4600d67e40830a9ccfe825cc351c49af88e7d1b9923ab",
+    "comparison_source_manifest_path": "/Users/jang-won-u/Documents/Codex/2026-10-10/new-chat/outputs/nano_nx_profile_slack_20261026/comparison/source_manifest.json",
+    "comparison_source_manifest_sha256": "9b0ab7764cbd49b1deea8933edaa28e1bcb235c6c501ea1f571a3973b0e21c56",
+    "scope": "Independent physical Nano Super + Orin NX 12-round profile-slack verification, seeds 43\u201345. Supports the 320/342 fixed workload only; its IID training and evaluation data are not the seed-42 Strong DFull RTX 100-round protocol."
+  },
+  "profile_slack_component": {
+    "base_optimizer_steps": 320,
+    "beta": 0.5,
+    "frozen_decision": {
+      "nano": {
+        "E": 1,
+        "H": 320,
+        "S": 320,
+        "base_completion_s": 127.44814013120615,
+        "base_compute_s": 107.12972806663149,
+        "base_noncompute_completion_s": 20.31841206457466,
+        "executed_target_steps": 320,
+        "extra_iterations_before_beta": 0,
+        "original_requested_steps": 320,
+        "reference_completion_s": 127.44814013120615,
+        "slack_s": 0.0
+      },
+      "nx": {
+        "E": 1,
+        "H": 342,
+        "S": 342,
+        "base_completion_s": 113.73634791384555,
+        "base_compute_s": 95.74329093605694,
+        "base_noncompute_completion_s": 17.99305697778861,
+        "executed_target_steps": 342,
+        "extra_iterations_before_beta": 45,
+        "original_requested_steps": 342,
+        "reference_completion_s": 127.44814013120615,
+        "slack_s": 13.711792217360596
+      }
+    },
+    "full_pyramidfl_system": false
+  },
+  "remote_workdir": "/mnt/ssd4t/loracast_www_fig8_fig9_20261024_wwjang/edge_protocol/matched_repeat4x_static_20261026",
+  "run_common": {
+    "aggregation": "actual processed-sample-weighted LoRA A/B factor parameters",
+    "batch_size": 1,
+    "evaluation_metric": "full_sequence_64_token token-weighted NLL",
+    "evaluation_rounds": [
+      0,
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100
+    ],
+    "holdout": "original Strong Non-IID fixed global/client-associated validation views; cap 512 per view, scorer seed 777",
+    "local_epochs": 1,
+    "lora": {
+      "alpha": 32,
+      "dropout": 0.05,
+      "modules": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj"
+      ],
+      "rank": 16
+    },
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "optimizer": "torch.optim.Adam",
+    "rounds": 100,
+    "seed": 42,
+    "sequence_cap": 64,
+    "source_sampler": "existing RTX long-horizon deterministic least-exposed sample-ID sampler; same across policies; distinct from original edge round_shuffle",
+    "strong_partition_mapping": {
+      "nano": "original Pi5 client 1 train indices",
+      "nx": "original NX client 0 train indices"
+    }
+  },
+  "runs": [
+    {
+      "policy": "Baseline",
+      "requested_steps": {
+        "nano": 320,
+        "nx": 320
+      },
+      "run_id": "nanonx_s42_dfull_qwen_baseline_repeat4x_r50_100_v1",
+      "source_workload": {
+        "nano": [
+          320,
+          1,
+          0
+        ],
+        "nx": [
+          320,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "policy": "PyramidFL-profile-slack",
+      "requested_steps": {
+        "nano": 320,
+        "nx": 342
+      },
+      "run_id": "nanonx_s42_dfull_qwen_pyramid_profile_slack_repeat4x_r50_100_v1",
+      "source_workload": {
+        "nano": [
+          320,
+          1,
+          320
+        ],
+        "nx": [
+          342,
+          1,
+          342
+        ]
+      }
+    }
+  ],
+  "schema_version": 1,
+  "source_hashes": {
+    "edge_profile_oracle.py": "8ffd40c0810fc04936ff34efdda1bc8ce1978945801ed4d804c2543ffe25f543",
+    "frozen_completion_profile.json": "55db04446839a17ecc3d18786abfebbdba7a66840861802bf7e419c2881025fa",
+    "nano_experiment_manifest.json": "6c8791fbd4856eec0228ec7363350cc09a183de39a14c8a34bd800fe5246cb57",
+    "nano_qwen_rtx_run_adaptive_training.py": "57fb0f14e6031e33b790009f118342437c0e9fc123ec2f43c426af6db89b12c8",
+    "profile_rule.py": "034e50efb2ba66a0086b62b26a29d2ee554603671f95da5e59dfd816148f3fd3",
+    "repeated_contention_manifest.json": "c8a9b67c33ce900f58932d3a48267b3568499a7083c9b92780a8b5c4043b63de",
+    "run_qwen_training.py": "18f5d3a74c9365c3ed33ec7594576b84bf7560aba01a97df39f59a0c5428ba1c"
+  },
+  "source_run_ids": {
+    "baseline": "nanonx_s42_dfull_qwen_baseline_100r",
+    "profile_slack": "nanonx_s42_dfull_qwen_pyramid_profile_slack_beta05_stress_100r",
+    "schedule": "nanonx_s42_dfull_qwen_loracast_floor256_repeat4x_r50_100_20261026"
+  },
+  "static_launch_allowed": true,
+  "status": "prepared_for_isolated_smoke_then_sequential_training",
+  "stress_application": "R1-R49 normal; R50-R100 four normal/four contention/four recovery. For Baseline and frozen PyramidFL profile-slack, keep S=H and E=1 fixed. Apply Nano measured factor only to a separate post hoc edge local-compute time projection; it cannot change the RTX NLL trajectory."
+}
