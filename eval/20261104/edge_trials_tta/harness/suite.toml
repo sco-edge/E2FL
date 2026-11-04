@@ -1,0 +1,128 @@
+[suite]
+# Separate speed/accuracy trial: two prime rounds and three onsite rounds use quota 2.
+# Jetson cap 2 intentionally prevents policy expansion; it cannot establish
+# heterogeneous workload-allocation or idle-saving performance.
+# The research estimator uses only earlier observed token lengths. The
+# predeclared-length path is retained solely as an opt-in diagnostic.
+token_input_mode = "historical"
+sample_split_policy = "two_disjoint_windows"
+# The two predictor-prime rounds also set the pre-committed energy SLO.
+slo_source = "prime"
+smoke_transport = "direct"
+require_wifi = true
+import_timeout_s = 180
+warmup_rounds = 0
+calibration_measurement_rounds = 2
+official_measurement_rounds = 3
+accuracy_metric = "within_error_limit"
+time_accuracy_target = 0.90
+time_error_limit = 0.10
+energy_violation_target = 0.10
+slo_margin = 1.10
+power_sample_interval_s = 0.5
+max_power_sample_gap_s = 3.0
+max_clock_offset_ms = 1000
+attempt_timeout_s = 2100
+onsite_target_s = 600
+max_retries = 1
+timezone = "Asia/Seoul"
+
+[server]
+alias = "server"
+repo = "/home/wwjang/EEFL/E2FL"
+python = "/home/wwjang/flwr/bin/python"
+bin = "/home/wwjang/flwr/bin"
+fleet_address = "192.168.128.124:19092"
+control_address = "127.0.0.1:19093"
+
+[hosts.jetson]
+alias = "jetson"
+# Same verified host key as the Wi-Fi address .88; use Ethernet .89 for SSH control.
+# Flower still uses fleet_address and must pass the Wi-Fi route check for formal runs.
+control_host = "192.168.128.89"
+host_key_alias = "192.168.128.88"
+jump_host = "pi5_5"
+python = "/home/wwjang/e2fl/bin/python"
+bin = "/home/wwjang/e2fl/bin"
+sensor = "jetson"
+device = "jetson_orin_nx"
+partition = 0
+client_port = 19094
+
+[hosts.rpi5]
+alias = "pi5_5"
+python = "/home/ubuntu/e2fl-env/bin/python"
+bin = "/home/ubuntu/e2fl-env/bin"
+sensor = "rpi5"
+device = "RPi5"
+partition = 1
+client_port = 19095
+# Only the read-only vcgencmd sensor command runs via sudo -n.
+pmic_sudo = true
+
+[profile_common]
+fraction-train = 1.0
+min-clients = 2
+num_partitions = 2
+
+batch_size = 1
+local-epochs = 1
+max-samples-per-round = 2
+max-seq-len = 128
+
+strategy = "LoRACastCommAware"
+enable-rpi-only-rounds = true
+use-token-ratio = true
+participation-guard-mode = "per-client"
+participation-fairness-rho = 0.0
+enable-deadline-guard = false
+
+# External TTA logger is used to avoid the built-in lifespan-average power
+# monitor contending with the sensor. The LoRACast time estimator is unchanged.
+power-monitor = false
+resume = false
+window-W = 5
+policy-warmup-rounds = 2
+
+# Keep the RPi workload short and fixed. Let Jetson scale inside the same window.
+rpi-normal-quota = 2
+rpi-sample-step = 2
+rpi-correction-max-quota = 2
+max-correction-time-s = 3600
+correction-cooldown-rounds = 2
+
+jetson-base-quota = 2
+jetson-max-quota = 2
+jetson-sample-step = 8
+jetson-target-margin = 0.95
+
+upload-throttle-device = "none"
+upload-throttle-mbps = 0
+
+tokens-per-example = 64.0
+lora-r = 16
+lora-r-RPi5 = 16
+lora-r-jetson_orin_nx = 16
+
+model = "hf:google/gemma-3-270m"
+dataset = "yahma/alpaca-cleaned"
+learning-rate = 5e-5
+weight-decay = 0.0
+
+
+[profiles.smoke]
+num-server-rounds = 3
+max-samples-per-round = 2
+rpi-normal-quota = 2
+jetson-base-quota = 2
+jetson-max-quota = 16
+jetson-sample-step = 2
+
+[profiles.prime]
+num-server-rounds = 2
+
+[profiles.calibration]
+num-server-rounds = 5
+
+[profiles.official]
+num-server-rounds = 3
