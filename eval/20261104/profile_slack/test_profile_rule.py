@@ -15,6 +15,8 @@ def profile(slow_compute=100.0, slow_noncompute=10.0,
 
 
 if __name__ == "__main__":
+    sizes = {"slow": 100, "fast": 100}
+    chosen = choose_steps(profile(), sizes)
     assert (chosen["slow"]["H"], chosen["fast"]["H"]) == (10, 15)
     chosen = choose_steps(profile(fast_noncompute=60), sizes)
     assert (chosen["slow"]["H"], chosen["fast"]["H"]) == (10, 10)
