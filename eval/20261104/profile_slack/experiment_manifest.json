@@ -1,0 +1,131 @@
+{
+  "aggregation": "actual executed-sample-weighted LoRA A/B factors, same RTX core as existing Fig8",
+  "baseline_module": "public PyramidFL completion/slack adaptive local iteration rule only; no selection or update dropout",
+  "batch_size": 1,
+  "beta": 0.5,
+  "common_max_steps": 600,
+  "experiment_id": "pyramidfl_original_profile_slack_component_beta05_nanonx_qwen_s42_dfull_100r",
+  "local_epochs": 1,
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "new_policy_frozen_decision": {
+    "nano": {
+      "E": 1,
+      "H": 320,
+      "S": 320,
+      "base_completion_s": 127.44814013120615,
+      "base_compute_s": 107.12972806663149,
+      "base_noncompute_completion_s": 20.31841206457466,
+      "executed_target_steps": 320,
+      "extra_iterations_before_beta": 0,
+      "original_requested_steps": 320,
+      "reference_completion_s": 127.44814013120615,
+      "slack_s": 0.0
+    },
+    "nx": {
+      "E": 1,
+      "H": 342,
+      "S": 342,
+      "base_completion_s": 113.73634791384555,
+      "base_compute_s": 95.74329093605694,
+      "base_noncompute_completion_s": 17.99305697778861,
+      "executed_target_steps": 342,
+      "extra_iterations_before_beta": 45,
+      "original_requested_steps": 342,
+      "reference_completion_s": 127.44814013120615,
+      "slack_s": 13.711792217360596
+    }
+  },
+  "partition": "original Strong DFull Nano+NX mapping",
+  "profile_updates_during_run": false,
+  "rounds": 100,
+  "run_id": "nanonx_s42_dfull_qwen_pyramid_profile_slack_beta05_stress_100r",
+  "runs": [
+    {
+      "policy": "PyramidFL-profile-slack",
+      "run_id": "nanonx_s42_dfull_qwen_pyramid_profile_slack_beta05_stress_100r"
+    }
+  ],
+  "schema_version": 1,
+  "seed": 42,
+  "sequence_cap": 64,
+  "source_hashes": {
+    "existing_edge_profile_oracle.py": "8ffd40c0810fc04936ff34efdda1bc8ce1978945801ed4d804c2543ffe25f543",
+    "existing_nano_qwen_rtx_run_adaptive_training.py": "57fb0f14e6031e33b790009f118342437c0e9fc123ec2f43c426af6db89b12c8",
+    "existing_static_manifest.json": "6c8791fbd4856eec0228ec7363350cc09a183de39a14c8a34bd800fe5246cb57",
+    "frozen_completion_profile.json": "55db04446839a17ecc3d18786abfebbdba7a66840861802bf7e419c2881025fa",
+    "hardware_calibration_csv": "9cf72a0fa721a3e38158d6ef1c2303a1a730f1f03e40cb4024714f7ef9eaff40",
+    "matched_stress_manifest.json": "1e3d3b88d0e9ec03f457c7aeb5ad11d9c2af9d3fde4086e894ed009a94a70797",
+    "official_pyramidfl_param_server.py": "ec1c2a667a137dc6922460fc7d1505173558a7eb9a2b1b4ef7e24652846a5f9e",
+    "profile_rule.py": "034e50efb2ba66a0086b62b26a29d2ee554603671f95da5e59dfd816148f3fd3",
+    "run_profile_slack.py": "d46009a36843c994de7ca9b95e8930b6a044bf50f72564572360bf0bea58d8d6"
+  },
+  "source_paths": {
+    "existing_edge_protocol": "/Users/jang-won-u/.codex/.chatgpt-projects/g-p-676ea41457bc8191a3c05e8ec4da98b4/training_cost_projection/edge_protocol",
+    "hardware_calibration_csv": "/Users/jang-won-u/Documents/Codex/2026-10-10/new-chat/outputs/learning_efficiency_confirmation/per_round_hardware_results.csv",
+    "matched_stress_manifest": "/Users/jang-won-u/.codex/.chatgpt-projects/g-p-676ea41457bc8191a3c05e8ec4da98b4/training_cost_projection/nano_r93_100_stress_branch/experiment_manifest.json",
+    "official_pyramidfl_param_server.py": "/Users/jang-won-u/Documents/GitHub/EEFL/_SOTA/PyramidFL-main/training/param_server.py"
+  },
+  "static_launch_allowed": true,
+  "status": "frozen_before_R0",
+  "step_translation": "upstream upload_epoch local iteration count -> Flower optimizer H, with S=H, B=1, E=1 and fresh DFull samples",
+  "stress_interpretation": "R1-R92 normal; R93-R96 Nano contention; R97-R100 recovery; apply measured factors to Nano local-compute cost after each completed RTX round; static profile rule never sees those factors",
+  "stress_schedule": [
+    {
+      "extension_round": 93,
+      "fig9_reference_round": 5,
+      "nano_compute_seconds_per_token_factor": 1.6184791703203878,
+      "phase": "contention",
+      "reference_observations": 12
+    },
+    {
+      "extension_round": 94,
+      "fig9_reference_round": 6,
+      "nano_compute_seconds_per_token_factor": 1.590762717627721,
+      "phase": "contention",
+      "reference_observations": 12
+    },
+    {
+      "extension_round": 95,
+      "fig9_reference_round": 7,
+      "nano_compute_seconds_per_token_factor": 1.5733519453206113,
+      "phase": "contention",
+      "reference_observations": 12
+    },
+    {
+      "extension_round": 96,
+      "fig9_reference_round": 8,
+      "nano_compute_seconds_per_token_factor": 1.5939314338542616,
+      "phase": "contention",
+      "reference_observations": 12
+    },
+    {
+      "extension_round": 97,
+      "fig9_reference_round": 9,
+      "nano_compute_seconds_per_token_factor": 0.9914999467386788,
+      "phase": "recovery",
+      "reference_observations": 12
+    },
+    {
+      "extension_round": 98,
+      "fig9_reference_round": 10,
+      "nano_compute_seconds_per_token_factor": 0.9996766894015062,
+      "phase": "recovery",
+      "reference_observations": 12
+    },
+    {
+      "extension_round": 99,
+      "fig9_reference_round": 11,
+      "nano_compute_seconds_per_token_factor": 0.9965552009669651,
+      "phase": "recovery",
+      "reference_observations": 12
+    },
+    {
+      "extension_round": 100,
+      "fig9_reference_round": 12,
+      "nano_compute_seconds_per_token_factor": 0.9784788943655022,
+      "phase": "recovery",
+      "reference_observations": 12
+    }
+  ],
+  "validation": "same held-out full-sequence 64-token scorer at R0 and every 10 rounds"
+}
