@@ -1,0 +1,25 @@
+{
+  "base_optimizer_steps": 320,
+  "batch_size": 1,
+  "beta": 0.5,
+  "calibration": "Nano+NX Qwen, Baseline U, independent seeds 43-45, normal R2-R4",
+  "compute_boundary": "measured local compute seconds",
+  "devices": {
+    "nano": {
+      "base_compute_s": 107.12972806663149,
+      "base_noncompute_completion_s": 20.31841206457466,
+      "observation_count": 9
+    },
+    "nx": {
+      "base_compute_s": 95.74329093605694,
+      "base_noncompute_completion_s": 17.99305697778861,
+      "observation_count": 9
+    }
+  },
+  "local_epochs": 1,
+  "maximum_optimizer_steps": 600,
+  "noncompute_boundary": "dispatch-to-first-reply seconds minus measured local compute; includes Flower adapter preparation and exchange",
+  "schema_version": 1,
+  "source_path": "/Users/jang-won-u/Documents/Codex/2026-10-10/new-chat/outputs/learning_efficiency_confirmation/per_round_hardware_results.csv",
+  "source_sha256": "9cf72a0fa721a3e38158d6ef1c2303a1a730f1f03e40cb4024714f7ef9eaff40"
+}
